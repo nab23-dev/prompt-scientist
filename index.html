@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prompt-Scientist | Sign Up / Log In</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* Global */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Logo */
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #444;
+  animation: fadeSlide 1s ease;
+}
+
+/* Auth Container */
+.auth-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: #fafafa;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  text-align: center;
+  animation: zoomIn 0.8s ease;
+  transition: transform 0.3s;
+}
+.card:hover { transform: translateY(-3px); }
+.card h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Inputs */
+.input-field {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: all 0.3s;
+  font-size: 15px;
+}
+.input-field:focus {
+  border-color: #333;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  padding: 13px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#333,#555);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+.btn:hover { 
+  background: linear-gradient(135deg,#555,#333); 
+  transform: scale(1.02);
+}
+.btn.secondary { background: #888; display: none; }
+.btn.secondary:hover { background: #666; }
+
+/* Switch */
+.switch-text {
+  font-size: 14px;
+  margin-top: 14px;
+  color: #555;
+}
+.switch-text .link {
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+}
+.hidden { display: none; }
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 12px;
+  background: #f8f8f8;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Animations */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+</style>
+</head>
+<body>
+<!-- Logo -->
+<div class="logo">Prompt-Scientist</div>
+
+<!-- Auth Card -->
+<main class="auth-container">
+<div class="card">
+  <h2 id="formTitle">Create Account</h2>
+  
+  <input type="text" id="nameField" placeholder="Full Name" class="input-field"/>
+  <input type="text" id="usernameField" placeholder="Username (min 6 chars)" class="input-field"/>
+  <input type="email" id="emailField" placeholder="Email" class="input-field"/>
+  <input type="password" id="passwordField" placeholder="Password" class="input-field"/>
+  
+  <button id="signupBtn" class="btn">Sign Up</button>
+  <button id="loginBtn" class="btn secondary">Log In</button>
+  
+  <p class="switch-text">
+    Already have an account? 
+    <span id="switchToLogin" class="link">Log In</span>
+  </p>
+  <p class="switch-text hidden">
+    Don’t have an account? 
+    <span id="switchToSignup" class="link">Sign Up</span>
+  </p>
+</div>
+</main>
+
+<!-- Footer -->
+<footer>
+  <p>© 2025 Prompt-Scientist. All rights reserved.</p>
+</footer>
+
+<!-- Firebase + Auth -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, query, collection, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+  authDomain: "prompt-scientist.firebaseapp.com",
+  projectId: "prompt-scientist",
+  storageBucket: "prompt-scientist.firebasestorage.app",
+  messagingSenderId: "240705146800",
+  appId: "1:240705146800:web:e7f05107761f4d3007d075"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// DOM
+const signupBtn = document.getElementById("signupBtn");
+const loginBtn = document.getElementById("loginBtn");
+const nameField = document.getElementById("nameField");
+const usernameField = document.getElementById("usernameField");
+const emailField = document.getElementById("emailField");
+const passwordField = document.getElementById("passwordField");
+const switchToLogin = document.getElementById("switchToLogin");
+const switchToSignup = document.getElementById("switchToSignup");
+const formTitle = document.getElementById("formTitle");
+
+// Toggle Form
+switchToLogin.addEventListener("click", () => {
+  formTitle.innerText = "Log In";
+  nameField.style.display = "none";
+  usernameField.style.display = "none";
+  signupBtn.style.display = "none";
+  loginBtn.style.display = "block";
+  switchToLogin.parentElement.classList.add("hidden");
+  switchToSignup.parentElement.classList.remove("hidden");
+});
+switchToSignup.addEventListener("click", () => {
+  formTitle.innerText = "Create Account";
+  nameField.style.display = "block";
+  usernameField.style.display = "block";
+  signupBtn.style.display = "block";
+  loginBtn.style.display = "none";
+  switchToSignup.parentElement.classList.add("hidden");
+  switchToLogin.parentElement.classList.remove("hidden");
+});
+
+// Check username unique
+async function isUsernameTaken(username) {
+  const q = query(collection(db, "users"), where("username", "==", username));
+  const snapshot = await getDocs(q);
+  return !snapshot.empty;
+}
+
+// Signup
+signupBtn.addEventListener("click", async () => {
+  const username = usernameField.value.trim().toLowerCase();
+  if(username.length < 6) { alert("⚠️ Username must be at least 6 chars"); return; }
+  if(await isUsernameTaken(username)) { alert("⚠️ Username taken"); return; }
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth,emailField.value,passwordField.value);
+    await updateProfile(userCredential.user,{ displayName:nameField.value });
+    await setDoc(doc(db,"users",userCredential.user.uid),{
+      name:nameField.value,
+      username:username,
+      email:emailField.value,
+      createdAt:new Date()
+    });
+    alert("✅ Account created successfully!");
+    window.location.href="promptfeed.html";
+  } catch(err){ alert("⚠️ "+err.message); }
+});
+
+// Login (username/email)
+loginBtn.addEventListener("click", async () => {
+  let loginId = emailField.value.trim().toLowerCase();
+  let emailToLogin = loginId;
+  if(!loginId.includes("@")){
+    const q = query(collection(db,"users"), where("username","==",loginId));
+    const snapshot = await getDocs(q);
+    if(snapshot.empty){ alert("⚠️ Username not found"); return; }
+    emailToLogin = snapshot.docs[0].data().email;
+  }
+
+  try{
+    await signInWithEmailAndPassword(auth,emailToLogin,passwordField.value);
+    alert("✅ Login successful!");
+    window.location.href="promptfeed.html"; // Redirect to feed after login
+  }catch(err){ alert("⚠️ "+err.message); }
+});
+
+// Auto-login: check session
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+    // Already logged in → redirect to feed
+    if(!window.location.href.includes("promptfeed.html")){
+      window.location.href="promptfeed.html";
+    }
+  }else{
+    // Not logged in → stay on signup/login page
+    console.log("User not logged in");
+  }
+});
+</script>
+</body>
+</html>

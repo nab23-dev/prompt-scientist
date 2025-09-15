@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prompt-Scientist | Submit Post</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f5f5f5;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+.header{
+  position:sticky;
+  top:0;
+  background:#fff;
+  padding:15px 20px;
+  font-family:'Montserrat',sans-serif;
+  font-weight:700;
+  font-size:22px;
+  color:#444;
+  border-bottom:1px solid #eee;
+  z-index:100;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.header .title{ font-weight:700; }
+
+.form-container{
+  max-width:600px;
+  margin:20px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 6px 25px rgba(0,0,0,0.08);
+  animation:fadeSlide 0.8s ease;
+}
+
+.form-container h2{
+  text-align:center;
+  margin-bottom:20px;
+  font-weight:700;
+}
+
+.form-container input,
+.form-container textarea{
+  width:100%;
+  padding:12px;
+  margin-bottom:15px;
+  border:1px solid #ccc;
+  border-radius:10px;
+  font-size:14px;
+  resize:none;
+}
+
+.submit-btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#333;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+.submit-btn:hover{ background:#555; }
+
+footer{
+  text-align:center;
+  padding:12px;
+  font-size:13px;
+  color:#666;
+}
+
+/* Animation */
+@keyframes fadeSlide{ from{opacity:0; transform:translateY(-30px);} to{opacity:1; transform:translateY(0);} }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">Prompt-Scientist | Submit Post</div>
+</div>
+
+<div class="form-container">
+  <h2>Create New Post</h2>
+  <input type="text" id="title" placeholder="Title (Optional)">
+  <textarea id="prompt" rows="4" placeholder="Enter your prompt here..." required></textarea>
+  <input type="text" id="imageUrl" placeholder="Image URL from postimages.org" required>
+  <button class="submit-btn" id="submitBtn">Submit Post</button>
+</div>
+
+<footer>© 2025 Prompt-Scientist. All rights reserved.</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+  authDomain: "prompt-scientist.firebaseapp.com",
+  projectId: "prompt-scientist",
+  storageBucket: "prompt-scientist.firebasestorage.app",
+  messagingSenderId: "240705146800",
+  appId: "1:240705146800:web:e7f05107761f4d3007d075"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const submitBtn = document.getElementById("submitBtn");
+const titleField = document.getElementById("title");
+const promptField = document.getElementById("prompt");
+const imageUrlField = document.getElementById("imageUrl");
+
+let currentUser = null;
+
+// Check if user is logged in
+onAuthStateChanged(auth, user => {
+  if(!user){
+    window.location.href = "signup.html";
+  } else {
+    currentUser = user;
+  }
+});
+
+// Submit Post
+submitBtn.addEventListener("click", async ()=>{
+  const title = titleField.value.trim();
+  const prompt = promptField.value.trim();
+  const imageUrl = imageUrlField.value.trim();
+
+  if(!prompt || !imageUrl){
+    alert("⚠️ Prompt and Image URL are required!");
+    return;
+  }
+
+  try{
+    await addDoc(collection(db,"posts"),{
+      uid: currentUser.uid,
+      username: currentUser.displayName || "Anonymous",
+      title: title,
+      prompt: prompt,
+      image: imageUrl,
+      createdAt: serverTimestamp(),
+      approved: false // Needs admin approval
+    });
+    alert("✅ Post submitted! Waiting for admin approval.");
+    titleField.value = "";
+    promptField.value = "";
+    imageUrlField.value = "";
+  } catch(err){
+    alert("⚠️ "+err.message);
+  }
+});
+</script>
+</body>
+</html>
