@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Prompt-Scientist — Feed</title>
+  <style>
+    :root{
+      --bg:#f3f4f6;--card:#fff;--muted:#6b7280;--accent:#2563eb;
+      --radius:12px;--shadow:0 8px 24px rgba(16,24,40,0.06);--maxw:900px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,'Noto Sans',Arial;background:var(--bg);color:#0f172a}
+    .topbar{position:sticky;top:0;left:0;right:0;z-index:100;background:#fff;
+      max-width:var(--maxw);margin:0 auto;padding:12px 18px;
+      display:flex;align-items:center;gap:10px;
+      transition:transform .4s ease,opacity .4s ease;
+      border-bottom:1px solid #e5e7eb}
+    .topbar.hide{transform:translateY(-100%);opacity:0}
+    .brand h1{font-size:20px;margin:0;font-weight:800;color:var(--accent)}
+    .search-box{flex:1}
+    .search-box input{width:100%;padding:6px 10px;border-radius:8px;border:1px solid #d1d5db;font-size:14px}
+    .profile-btn{width:40px;height:40px;border-radius:999px;background:#fff;
+      border:1px solid #e6eefc;display:grid;place-items:center;cursor:pointer;
+      box-shadow:0 4px 10px rgba(16,24,40,0.04)}
+    .container{max-width:var(--maxw);margin:0 auto;padding:0 18px 80px}
+    .feed{margin-top:14px;display:flex;flex-direction:column;gap:16px}
+    .card{background:var(--card);border-radius:12px;padding:14px;
+      border:1px solid #eef2ff;box-shadow:var(--shadow)}
+    .post-header{display:flex;gap:12px;align-items:center}
+    .uicon{width:44px;height:44px;border-radius:50%;background:#eef2ff;
+      display:grid;place-items:center;font-weight:700;color:var(--accent)}
+    .meta{display:flex;flex-direction:column}
+    .username{font-weight:700}
+    .time{font-size:12px;color:var(--muted)}
+    .caption{margin-top:10px;white-space:pre-wrap;line-height:1.45}
+    .post-image{width:100%;max-height:520px;object-fit:cover;margin-top:12px;border-radius:10px}
+    .prompt-block{margin-top:12px;padding:10px;border-radius:10px;background:#f8fafc;border:1px solid #eef2ff;
+      display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .prompt-text{font-family:ui-monospace,monospace;font-size:13px;color:#0f172a;overflow:hidden;text-overflow:ellipsis}
+    .actions{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .reaction-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 8px;border-radius:8px;
+      border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:14px}
+    .reaction-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .reaction-btn .count{font-weight:600}
+    .btn-copy{padding:8px 10px;border-radius:10px;border:none;background:var(--accent);color:#fff;cursor:pointer;position:relative}
+    .btn-copy.copied::after{content:"Copied!";position:absolute;top:-26px;right:0;background:#000;color:#fff;
+      font-size:11px;padding:2px 6px;border-radius:6px;white-space:nowrap}
+    .ad-card{padding:0;border:1px dashed #e6eefc;overflow:hidden}
+    .ad-card img{width:100%;height:auto;display:block}
+    .loading{padding:18px;text-align:center;color:var(--muted)}
+    .empty{padding:28px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header id="topbar" class="topbar">
+    <div class="brand"><h1>Prompt-Scientist</h1></div>
+    <div class="search-box"><input id="searchInput" type="text" placeholder="search..."/></div>
+    <button id="profileBtn" class="profile-btn" title="Profile" aria-label="Profile">👤</button>
+  </header>
+
+  <main class="container">
+    <section id="feed" class="feed" aria-live="polite"></section>
+    <div id="loading" class="loading">Loading posts…</div>
+    <div id="endMsg" class="empty" style="display:none">No more posts</div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig={
+      apiKey:"AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+      authDomain:"prompt-scientist.firebaseapp.com",
+      projectId:"prompt-scientist",
+      storageBucket:"prompt-scientist.firebasestorage.app",
+      messagingSenderId:"240705146800",
+      appId:"1:240705146800:web:e7f05107761f4d3007d075"
+    };
+    const app=initializeApp(firebaseConfig);
+    const auth=getAuth(app);
+    const db=getFirestore(app);
+
+    const feedEl=document.getElementById('feed');
+    const loadingEl=document.getElementById('loading');
+    const endMsgEl=document.getElementById('endMsg');
+    const profileBtn=document.getElementById('profileBtn');
+    const searchInput=document.getElementById('searchInput');
+    const topbar=document.getElementById('topbar');
+
+    let posts=[],ads=[],user=null,currentIndex=0,filteredPosts=[];
+    const PAGE_SIZE=6,AD_INTERVAL=3;
+
+    function getLocalAuth(){try{return JSON.parse(localStorage.getItem('ps_auth')||'null');}catch{return null;}}
+    function ensureAuth(){
+      const ls=getLocalAuth();
+      if(ls&&ls.uid){user=ls;return true;}
+      onAuthStateChanged(auth,(u)=>{
+        if(u){user={uid:u.uid,email:u.email};localStorage.setItem('ps_auth',JSON.stringify(user));loadData();}
+        else{location.href='index.html';}
+      });
+      return false;
+    }
+
+    const escapeHtml=(s='')=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+    const timeAgo=ts=>{
+      try{
+        const d=ts?.toDate?ts.toDate():new Date(ts);
+        const sec=Math.floor((Date.now()-d.getTime())/1000);
+        if(sec<60)return sec+'s';if(sec<3600)return Math.floor(sec/60)+'m';
+        if(sec<86400)return Math.floor(sec/3600)+'h';
+        return Math.floor(sec/86400)+'d';
+      }catch{return '';}
+    };
+    function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+    async function loadData(){
+      loadingEl.style.display='block';
+      feedEl.innerHTML='';endMsgEl.style.display='none';currentIndex=0;posts=[];
+      try{
+        const snap=await getDocs(query(collection(db,'posts'),where('approved','==',true)));
+        posts=shuffle(snap.docs.map(d=>({id:d.id,...d.data()})));
+        filteredPosts=posts;
+        renderNext();
+      }finally{loadingEl.style.display='none';}
+    }
+
+    function renderNext(){
+      if(currentIndex>=filteredPosts.length){endMsgEl.style.display='block';return;}
+      const end=Math.min(currentIndex+PAGE_SIZE,filteredPosts.length);
+      for(let i=currentIndex;i<end;i++){
+        feedEl.appendChild(renderPost(filteredPosts[i]));
+      }
+      currentIndex=end;
+    }
+
+    function renderPost(p){
+      const reactions=p.reactions||{};
+      const myReaction=user?reactions[user.uid]:null;
+
+      const counts={like:0,love:0,haha:0,angry:0,wow:0};
+      Object.values(reactions).forEach(r=>{if(counts[r]!=null)counts[r]++;});
+
+      const el=document.createElement('article');el.className='card post';el.dataset.id=p.id;
+      el.innerHTML=`
+        <div class="post-header">
+          <div class="uicon">${escapeHtml((p.username||'U')[0]||'U')}</div>
+          <div class="meta"><div class="username">${escapeHtml(p.username||'Unknown')}</div>
+          <div class="time">${timeAgo(p.timestamp)}</div></div>
+        </div>
+        <div class="caption">${escapeHtml(p.caption||'')}</div>
+        ${p.imageURL?`<img class="post-image" src="${escapeHtml(p.imageURL)}" alt="post">`:''}
+        <div class="prompt-block"><div class="prompt-text">${escapeHtml(p.prompt||'')}</div>
+          <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||'')}">Copy</button></div>
+        <div class="actions">
+          ${renderReactionBtn('like','👍',counts.like,myReaction)}
+          ${renderReactionBtn('love','❤️',counts.love,myReaction)}
+          ${renderReactionBtn('haha','😂',counts.haha,myReaction)}
+          ${renderReactionBtn('angry','😡',counts.angry,myReaction)}
+          ${renderReactionBtn('wow','🤯',counts.wow,myReaction)}
+        </div>`;
+      return el;
+    }
+
+    function renderReactionBtn(type,emoji,count,myReaction){
+      return `<button class="reaction-btn ${myReaction===type?'active':''}" data-type="${type}">
+        <span class="emoji">${emoji}</span><span class="count">${count}</span>
+      </button>`;
+    }
+
+    feedEl.addEventListener('click',async e=>{
+      const c=e.target.closest('.btn-copy');if(c){
+        try{
+          await navigator.clipboard.writeText(c.dataset.prompt);
+          c.classList.add('copied');setTimeout(()=>c.classList.remove('copied'),1200);
+        }catch{alert('Copy failed');}
+      }
+      const btn=e.target.closest('.reaction-btn');if(btn){
+        if(!user){alert('Login required');return;}
+        const post=btn.closest('.post');const id=post.dataset.id;
+        const type=btn.dataset.type;
+        const allBtns=post.querySelectorAll('.reaction-btn');
+        allBtns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        // update counts locally
+        allBtns.forEach(b=>{
+          const cEl=b.querySelector('.count');
+          let count=+cEl.innerText;
+          if(b.dataset.type===type){
+            if(!b.classList.contains('active'))count=Math.max(0,count-1);
+            else count++;
+          }else{
+            if(b.classList.contains('active'))count=Math.max(0,count-1);
+          }
+          cEl.innerText=count;
+        });
+        try{
+          await updateDoc(doc(db,'posts',id),{[`reactions.${user.uid}`]:type});
+        }catch(err){console.error(err);}
+      }
+    });
+
+    // live search
+    searchInput.addEventListener('input',()=>{
+      const term=searchInput.value.toLowerCase();
+      filteredPosts=term?posts.filter(p=>(p.caption||'').toLowerCase().includes(term)):posts;
+      feedEl.innerHTML='';currentIndex=0;endMsgEl.style.display='none';
+      renderNext();
+    });
+
+    window.addEventListener('scroll',()=>{
+      if(window.innerHeight+window.scrollY>=document.body.offsetHeight-300)renderNext();
+    });
+
+    profileBtn.addEventListener('click',()=>location.href='profile.html');
+
+    let lastY=window.scrollY;
+    window.addEventListener('scroll',()=>{
+      const y=window.scrollY;
+      if(y>lastY && y>50){topbar.classList.add('hide');}
+      else{topbar.classList.remove('hide');}
+      lastY=y;
+    });
+
+    if(ensureAuth())loadData();
+  </script>
+</body>
+</html>
