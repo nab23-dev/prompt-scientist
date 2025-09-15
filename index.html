@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prompt-Scientist | Login / Signup</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0; padding:0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg,#f0f4f8,#d9e2ec);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Header */
+.header{
+  display:flex;
+  align-items:center;
+  padding:15px 25px;
+  font-family:'Montserrat', sans-serif;
+  font-weight:700;
+  font-size:28px;
+  color:#333;
+  background:#fff;
+  box-shadow:0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* Container */
+.container{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:30px 15px;
+}
+
+/* Form card */
+.form-container{
+  width:100%;
+  max-width:360px;
+  background:#fff;
+  padding:25px 20px;
+  border-radius:20px;
+  box-shadow:0 12px 35px rgba(0,0,0,0.12);
+  display:none;
+  animation:fadeSlide 0.7s ease;
+}
+
+.form-container.active{ display:block; }
+
+.form-container h2{
+  text-align:center;
+  margin-bottom:20px;
+  font-weight:700;
+  font-size:22px;
+  color:#222;
+}
+
+/* Input Fields */
+.form-container input{
+  width:100%;
+  padding:12px 15px;
+  margin-bottom:15px;
+  border:1px solid #ccc;
+  border-radius:12px;
+  font-size:14px;
+  transition:0.3s;
+}
+.form-container input:focus{
+  border-color:#555;
+  box-shadow:0 0 5px rgba(0,0,0,0.1);
+  outline:none;
+}
+
+/* Buttons */
+.form-container button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#333;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+.form-container button:hover{
+  background:#555;
+}
+
+/* Toggle link */
+.toggle-link{
+  margin-top:12px;
+  text-align:center;
+  font-size:13px;
+  color:#555;
+  cursor:pointer;
+}
+
+/* Footer */
+footer{
+  text-align:center;
+  padding:12px;
+  font-size:13px;
+  color:#666;
+}
+
+/* Animations */
+@keyframes fadeSlide{
+  from{opacity:0; transform:translateY(-25px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* Responsive */
+@media(max-width:400px){
+  .form-container{ padding:20px; }
+  .header{ font-size:24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">Prompt-Scientist</div>
+
+<div class="container">
+
+  <!-- Signup Form -->
+  <div class="form-container" id="signupForm">
+    <h2>Create Account</h2>
+    <input type="text" id="signupName" placeholder="Name" required>
+    <input type="text" id="signupUsername" placeholder="Username (6+ chars)" required>
+    <input type="email" id="signupEmail" placeholder="Email" required>
+    <input type="password" id="signupPassword" placeholder="Password" required>
+    <button id="signupBtn">Sign Up</button>
+    <div class="toggle-link" id="toLogin">Already have an account? Login</div>
+  </div>
+
+  <!-- Login Form -->
+  <div class="form-container" id="loginForm">
+    <h2>Login</h2>
+    <input type="text" id="loginIdentifier" placeholder="Username or Email" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <button id="loginBtn">Login</button>
+    <div class="toggle-link" id="toSignup">Don't have an account? Sign Up</div>
+  </div>
+
+</div>
+
+<footer>© 2025 Prompt-Scientist. All rights reserved.</footer>
+
+<script type="module">
+// Firebase Import
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+  authDomain: "prompt-scientist.firebaseapp.com",
+  projectId: "prompt-scientist",
+  storageBucket: "prompt-scientist.firebasestorage.app",
+  messagingSenderId: "240705146800",
+  appId: "1:240705146800:web:e7f05107761f4d3007d075"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Elements
+const signupForm = document.getElementById("signupForm");
+const loginForm = document.getElementById("loginForm");
+const toLogin = document.getElementById("toLogin");
+const toSignup = document.getElementById("toSignup");
+
+signupForm.classList.add("active"); // default show signup
+
+// Toggle forms
+toLogin.addEventListener("click", ()=>{
+  signupForm.classList.remove("active");
+  loginForm.classList.add("active");
+});
+toSignup.addEventListener("click", ()=>{
+  loginForm.classList.remove("active");
+  signupForm.classList.add("active");
+});
+
+// Signup
+document.getElementById("signupBtn").addEventListener("click", async ()=>{
+  const name = document.getElementById("signupName").value.trim();
+  const username = document.getElementById("signupUsername").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+
+  if(!name || !username || !email || !password){ alert("All fields required"); return; }
+  if(username.length<6){ alert("Username must be 6+ chars"); return; }
+
+  const usersRef = collection(db,"users");
+  const q = query(usersRef, where("username","==",username));
+  const querySnapshot = await getDocs(q);
+  if(!querySnapshot.empty){ alert("Username already taken"); return; }
+
+  try{
+    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+    const user = userCredential.user;
+    await updateProfile(user,{ displayName: username });
+    await setDoc(doc(db,"users",user.uid),{
+      name:name,
+      username:username,
+      email:email
+    });
+    localStorage.setItem("uid",user.uid);
+    window.location.href="promptfeed.html";
+  }catch(err){ alert("⚠️ "+err.message); }
+});
+
+// Login
+document.getElementById("loginBtn").addEventListener("click", async ()=>{
+  const identifier = document.getElementById("loginIdentifier").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  if(!identifier || !password){ alert("All fields required"); return; }
+
+  try{
+    let userCredential;
+    try{
+      userCredential = await signInWithEmailAndPassword(auth,identifier,password);
+    } catch(e){
+      const usersRef = collection(db,"users");
+      const q = query(usersRef, where("username","==",identifier));
+      const snapshot = await getDocs(q);
+      if(snapshot.empty){ throw new Error("User not found"); }
+      const userData = snapshot.docs[0].data();
+      userCredential = await signInWithEmailAndPassword(auth,userData.email,password);
+    }
+    const user = userCredential.user;
+    localStorage.setItem("uid",user.uid); // save login
+    window.location.href="promptfeed.html";
+  } catch(err){ alert("⚠️ "+err.message); }
+});
+
+// Auto-login
+onAuthStateChanged(auth,user=>{
+  if(user || localStorage.getItem("uid")){
+    window.location.href="promptfeed.html";
+  }
+});
+</script>
+</body>
+</html>
