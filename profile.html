@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Prompt-Scientist — Profile</title>
+  <style>
+    :root{
+      --bg:#f3f4f6;
+      --card:#fff;
+      --accent:#2563eb;
+      --border:#e5e7eb;
+      --muted:#6b7280;
+      --shadow:0 6px 18px rgba(0,0,0,0.06);
+      --radius:14px;
+      --maxw:880px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#111827;}
+    header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border);
+      padding:16px 20px;display:flex;justify-content:space-between;align-items:center;
+      box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+    header h1{font-size:22px;font-weight:700;color:var(--accent)}
+    .container{max-width:var(--maxw);margin:20px auto;padding:0 18px;display:grid;gap:22px;}
+    .card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:transform .25s ease;}
+    .card:hover{transform:translateY(-2px);}
+    .profile-info h2{margin-bottom:6px;font-size:20px}
+    .profile-info p{color:var(--muted);font-size:14px}
+
+    form label{display:block;margin-top:12px;font-weight:600;font-size:14px;}
+    form input, form textarea{
+      width:100%;margin-top:6px;padding:10px;border-radius:10px;border:1px solid var(--border);font-size:14px;
+    }
+    form textarea{min-height:80px;resize:vertical;}
+    form button{
+      margin-top:16px;padding:12px 18px;border:none;border-radius:10px;background:var(--accent);color:#fff;
+      font-weight:600;cursor:pointer;transition:background .2s;
+    }
+    form button:hover{background:#1e40af;}
+    .msg{margin-top:10px;font-size:14px;color:var(--muted)}
+
+    .posts{display:grid;gap:18px;}
+    .post{padding:16px;display:flex;flex-direction:column;gap:10px}
+    .post h3{font-size:16px;font-weight:600;}
+    .post img{max-width:100%;border-radius:10px;object-fit:cover}
+    .post .prompt{background:#f9fafb;border:1px solid var(--border);padding:10px;border-radius:8px;
+      font-family:ui-monospace,monospace;font-size:13px}
+    .post button{align-self:flex-end;padding:6px 12px;font-size:13px;background:#ef4444;color:#fff;
+      border:none;border-radius:8px;cursor:pointer;}
+    .post button:hover{background:#b91c1c;}
+
+    .empty{padding:28px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Prompt-Scientist</h1>
+    <button id="logoutBtn">Logout</button>
+  </header>
+
+  <main class="container">
+    <!-- Profile -->
+    <section class="card profile-info">
+      <h2 id="userName">Loading...</h2>
+      <p id="userEmail"></p>
+    </section>
+
+    <!-- New Post Form -->
+    <section class="card">
+      <h2>নতুন পোস্ট করুন</h2>
+      <p class="msg">ছবি আপলোড করতে <a href="https://postimages.org/" target="_blank">postimages.org</a> ব্যবহার করুন এবং এখানে ডাইরেক্ট লিঙ্ক দিন।</p>
+      <form id="postForm">
+        <label>Image URL
+          <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..."/>
+        </label>
+        <label>Caption (optional)
+          <textarea id="caption" placeholder="আপনার ক্যাপশন লিখুন..."></textarea>
+        </label>
+        <label>Prompt (required)
+          <textarea id="prompt" required placeholder="AI image prompt লিখুন..."></textarea>
+        </label>
+        <button type="submit">Submit Post</button>
+      </form>
+    </section>
+
+    <!-- My Posts -->
+    <section class="card">
+      <h2>আমার পোস্টগুলো</h2>
+      <div id="myPosts" class="posts"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+      authDomain: "prompt-scientist.firebaseapp.com",
+      projectId: "prompt-scientist",
+      storageBucket: "prompt-scientist.firebasestorage.app",
+      messagingSenderId: "240705146800",
+      appId: "1:240705146800:web:e7f05107761f4d3007d075"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const userName=document.getElementById("userName");
+    const userEmail=document.getElementById("userEmail");
+    const postForm=document.getElementById("postForm");
+    const myPosts=document.getElementById("myPosts");
+    const logoutBtn=document.getElementById("logoutBtn");
+
+    let currentUser=null;
+
+    onAuthStateChanged(auth,async(u)=>{
+      if(!u){location.href="index.html";return;}
+      currentUser=u;
+      userEmail.textContent=u.email;
+      userName.textContent=u.displayName||"User";
+      loadPosts();
+    });
+
+    logoutBtn.addEventListener("click",()=>signOut(auth));
+
+    async function loadPosts(){
+      myPosts.innerHTML="Loading...";
+      const q=query(collection(db,"posts"),where("uid","==",currentUser.uid));
+      const snap=await getDocs(q);
+      if(snap.empty){myPosts.innerHTML='<div class="empty">আপনি এখনও কোনো পোস্ট করেননি।</div>';return;}
+      myPosts.innerHTML="";
+      snap.forEach(docSnap=>{
+        const d=docSnap.data();
+        const div=document.createElement("div");
+        div.className="post card";
+        div.innerHTML=`
+          <h3>${d.caption||"(No caption)"}</h3>
+          ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
+          <div class="prompt">${d.prompt}</div>
+          <button data-id="${docSnap.id}">Delete</button>
+          <p class="msg">${d.approved?"✅ Approved":"⏳ Pending approval"}</p>
+        `;
+        div.querySelector("button").addEventListener("click",()=>deletePost(docSnap.id));
+        myPosts.appendChild(div);
+      });
+    }
+
+    postForm.addEventListener("submit",async e=>{
+      e.preventDefault();
+      const imageURL=document.getElementById("imageURL").value.trim();
+      const caption=document.getElementById("caption").value.trim();
+      const prompt=document.getElementById("prompt").value.trim();
+      if(!prompt){alert("Prompt is required");return;}
+      await addDoc(collection(db,"posts"),{
+        uid:currentUser.uid,
+        username:currentUser.displayName||currentUser.email,
+        imageURL,caption,prompt,
+        timestamp:serverTimestamp(),
+        approved:false
+      });
+      alert("✅ Post submitted! Pending admin approval.");
+      postForm.reset();
+      loadPosts();
+    });
+
+    async function deletePost(id){
+      if(confirm("Are you sure you want to delete this post?")){
+        await deleteDoc(doc(db,"posts",id));
+        loadPosts();
+      }
+    }
+  </script>
+</body>
+</html>
