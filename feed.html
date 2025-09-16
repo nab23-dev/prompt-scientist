@@ -6,130 +6,146 @@
   <title>Prompt-Scientist — Feed</title>
   <style>
     :root {
-      --bg: #f0f2f5;
-      --card: rgba(255, 255, 255, 0.85);
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --brand: #1f2937;
+      --bg: #0d1117;
+      --card: rgba(20, 25, 35, 0.85);
+      --muted: #8b9cb5;
+      --accent: #3b82f6;
+      --accent-glow: 0 0 15px rgba(59,130,246,0.7);
       --radius: 14px;
-      --shadow: 0 8px 20px rgba(0,0,0,0.08);
-      --maxw: 880px;
-      --blur: blur(16px);
+      --shadow: 0 6px 16px rgba(0,0,0,0.6);
+      --maxw: 900px;
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
     body{
-      font-family: "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-      background: linear-gradient(135deg,#e0f2fe,#f3f4f6);
-      color:#111827;
-      line-height:1.6;
+      font-family:"Orbitron","Segoe UI",Roboto,Arial,sans-serif;
+      background: radial-gradient(circle at top, #0f172a, #0d1117 70%);
+      color:#e2e8f0;line-height:1.6;
+      min-height:100vh;
     }
 
     /* ==== Topbar ==== */
     .topbar{
       position:sticky;top:0;z-index:100;
-      background:rgba(255,255,255,0.8);
-      backdrop-filter: var(--blur);
-      max-width:var(--maxw);
-      margin:0 auto;
-      padding:12px 18px;
+      background:rgba(18,24,38,0.9);
+      border-bottom:1px solid rgba(59,130,246,0.5);
+      backdrop-filter:blur(12px);
+      box-shadow:0 4px 16px rgba(0,0,0,0.6);
       display:flex;align-items:center;justify-content:space-between;gap:10px;
-      border-bottom:1px solid rgba(229,231,235,0.6);
-      box-shadow:0 2px 6px rgba(0,0,0,0.05);
+      max-width:var(--maxw);margin:0 auto;padding:14px 20px;
       transition:transform .35s ease,opacity .35s ease;
-      border-radius:0 0 var(--radius) var(--radius);
     }
     .topbar.hide{transform:translateY(-100%);opacity:0}
-    .brand h1{font-size:24px;font-weight:800;color:var(--accent);letter-spacing:-0.5px}
+    .brand h1{
+      font-size:22px;font-weight:800;
+      background:linear-gradient(90deg,#3b82f6,#8b5cf6);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      letter-spacing:1px;
+    }
     .search-box{flex:1;max-width:260px}
     .search-box input{
-      width:100%;padding:8px 12px;border:1px solid #d1d5db;
-      border-radius:10px;font-size:14px;
-      background:#f9fafb;transition:all .2s;
+      width:100%;padding:8px 12px;border:1px solid rgba(59,130,246,0.4);
+      border-radius:8px;font-size:14px;background:#111827;color:#e2e8f0;
+      transition:all .25s;
     }
-    .search-box input:focus{border-color:var(--accent);outline:none;background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,0.15);}
+    .search-box input:focus{border-color:#60a5fa;box-shadow:0 0 12px rgba(59,130,246,0.6);outline:none}
     .profile-btn{
-      width:42px;height:42px;border-radius:50%;border:1px solid #d1d5db;background:#fff;
-      display:grid;place-items:center;cursor:pointer;font-size:18px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.08);transition:all .25s;
+      width:42px;height:42px;border-radius:50%;
+      border:1px solid rgba(148,163,184,0.4);
+      background:linear-gradient(145deg,#1e293b,#0f172a);
+      display:grid;place-items:center;cursor:pointer;
+      font-size:18px;color:#60a5fa;
+      box-shadow:inset 0 0 10px rgba(59,130,246,0.5);
+      transition:all .3s;
     }
-    .profile-btn:hover{transform:scale(1.05);background:#f3f4f6}
+    .profile-btn:hover{transform:scale(1.1);box-shadow:0 0 20px rgba(59,130,246,0.7)}
 
     /* ==== Feed ==== */
-    .container{max-width:var(--maxw);margin:0 auto;padding:0 18px 80px}
-    .feed{margin-top:16px;display:flex;flex-direction:column;gap:18px}
+    .container{max-width:var(--maxw);margin:0 auto;padding:0 20px 80px}
+    .feed{margin-top:20px;display:flex;flex-direction:column;gap:20px}
     .card{
       background:var(--card);
       border-radius:var(--radius);
-      padding:16px;
-      border:1px solid rgba(229,231,235,0.7);
+      padding:18px;
+      border:1px solid rgba(59,130,246,0.3);
       box-shadow:var(--shadow);
-      backdrop-filter: var(--blur);
-      transition:transform .25s,box-shadow .25s;
+      transition:transform .3s,box-shadow .3s,border .3s;
     }
-    .card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,0.1)}
+    .card:hover{
+      transform:translateY(-4px);
+      border-color:#3b82f6;
+      box-shadow:0 0 20px rgba(59,130,246,0.6);
+    }
 
     .post-header{display:flex;gap:12px;align-items:center}
     .uicon{
-      width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+      width:48px;height:48px;border-radius:50%;
+      display:grid;place-items:center;
       font-weight:700;color:#fff;font-size:18px;
-      box-shadow:0 3px 6px rgba(0,0,0,0.15);
+      background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+      box-shadow:0 0 12px rgba(59,130,246,0.7);
     }
     .meta{display:flex;flex-direction:column}
-    .username{font-weight:700;font-size:15px}
+    .username{font-weight:700;font-size:15px;color:#fff}
     .time{font-size:12px;color:var(--muted)}
 
-    .caption{margin-top:12px;white-space:pre-wrap;line-height:1.5;font-size:15px}
+    .caption{margin-top:12px;white-space:pre-wrap;line-height:1.5;font-size:15px;color:#e2e8f0}
     .post-image{
       width:100%;max-height:480px;object-fit:cover;
       margin-top:14px;border-radius:12px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      border:1px solid rgba(59,130,246,0.3);
       transition:all .3s;
     }
-    .post-image:hover{transform:scale(1.02)}
+    .post-image:hover{transform:scale(1.02);box-shadow:0 0 20px rgba(139,92,246,0.6)}
 
     .prompt-block{
       margin-top:14px;padding:12px;
       border-radius:12px;
-      background:linear-gradient(135deg,#f9fafb,#eef2ff);
-      border:1px solid #e5e7eb;
+      background:rgba(15,23,42,0.8);
+      border:1px solid rgba(139,92,246,0.4);
       display:flex;justify-content:space-between;gap:12px;align-items:center;
+      box-shadow:inset 0 0 12px rgba(139,92,246,0.3);
     }
     .prompt-text{
-      font-family:ui-monospace,monospace;
-      font-size:13px;color:#111827;
+      font-family:"Share Tech Mono",monospace;
+      font-size:13px;color:#93c5fd;
       flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
     }
     .btn-copy{
-      padding:7px 14px;border-radius:8px;border:none;
-      background:var(--accent);color:#fff;cursor:pointer;font-size:13px;
-      transition:all .2s;
+      padding:7px 14px;border-radius:6px;border:none;
+      background:linear-gradient(90deg,#3b82f6,#8b5cf6);
+      color:#fff;cursor:pointer;font-size:13px;font-weight:600;
+      transition:all .25s;
+      box-shadow:0 0 12px rgba(59,130,246,0.6);
     }
-    .btn-copy:hover{background:#1e4fc6;transform:scale(1.05)}
+    .btn-copy:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(139,92,246,0.8)}
 
     .actions{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
     .btn-react{
       display:inline-flex;align-items:center;gap:6px;
-      padding:6px 12px;border-radius:20px;border:1px solid #e5e7eb;
-      background:#fff;cursor:pointer;font-size:14px;
-      transition:all .2s;box-shadow:0 2px 6px rgba(0,0,0,0.05);
+      padding:6px 12px;border-radius:20px;
+      border:1px solid rgba(59,130,246,0.3);
+      background:rgba(17,24,39,0.7);cursor:pointer;font-size:14px;
+      transition:all .25s;
+      color:#e2e8f0;
     }
-    .btn-react:hover{background:#f3f4f6;transform:translateY(-2px)}
-    .btn-react.active{background:#e0ecff;border-color:#c7dfff}
-    .btn-react .count{font-weight:600;font-size:13px;color:#374151}
+    .btn-react:hover{background:#1e293b;box-shadow:0 0 12px rgba(59,130,246,0.5)}
+    .btn-react.active{background:#3b82f6;color:#fff;box-shadow:0 0 15px rgba(59,130,246,0.7)}
+    .btn-react .count{font-weight:600;font-size:13px;color:#93c5fd}
 
     /* ==== Ads ==== */
-    .ad-card{padding:0;border:1px solid #e5e7eb;overflow:hidden;position:relative;border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:var(--blur)}
-    .ad-card img{width:100%;height:auto;display:block;transition:transform .3s}
-    .ad-card img:hover{transform:scale(1.05)}
-    .ad-card .sponsored{position:absolute;top:8px;left:10px;background:#00000099;color:#fff;font-size:12px;padding:3px 8px;border-radius:8px}
+    .ad-card{padding:0;border:1px solid rgba(139,92,246,0.5);overflow:hidden;position:relative;border-radius:var(--radius);box-shadow:0 0 20px rgba(139,92,246,0.4)}
+    .ad-card img{width:100%;height:auto;display:block;transition:transform .4s}
+    .ad-card img:hover{transform:scale(1.08)}
+    .ad-card .sponsored{position:absolute;top:8px;left:10px;background:rgba(0,0,0,0.7);color:#fff;font-size:12px;padding:3px 8px;border-radius:8px}
 
     /* ==== States ==== */
     .loading,.empty{padding:20px;text-align:center;color:var(--muted);font-size:14px}
 
     @media(max-width:600px){
-      .brand h1{font-size:20px}
-      .search-box{max-width:160px}
+      .brand h1{font-size:18px}
+      .search-box{max-width:150px}
       .caption{font-size:14px}
     }
   </style>
@@ -138,7 +154,7 @@
   <header id="topbar" class="topbar">
     <div class="brand"><h1>Prompt-Scientist</h1></div>
     <div class="search-box"><input id="searchInput" type="text" placeholder="Search..."></div>
-    <button id="profileBtn" class="profile-btn" title="Profile">👤</button>
+    <button id="profileBtn" class="profile-btn" title="Profile">🤖</button>
   </header>
 
   <main class="container">
@@ -147,6 +163,7 @@
     <div id="endMsg" class="empty" style="display:none">No more posts</div>
   </main>
 
+  <!-- JavaScript অংশ অপরিবর্তিত -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
@@ -175,7 +192,7 @@
     const PAGE_SIZE=6;
     const userCache={};
 
-    const randomColor=()=>["#2563eb","#dc2626","#16a34a","#9333ea","#ea580c","#0d9488"][Math.floor(Math.random()*6)];
+    const randomColor=()=>["#3b82f6","#8b5cf6","#06b6d4","#f43f5e","#22c55e","#eab308"][Math.floor(Math.random()*6)];
     const escapeHtml=(s="")=>s.replace(/[&<>]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]));
     const timeAgo=ts=>{try{const d=ts?.toDate?ts.toDate():new Date(ts);const sec=(Date.now()-d)/1000;
       if(sec<60)return`${Math.floor(sec)}s`;if(sec<3600)return`${Math.floor(sec/60)}m`;
@@ -298,6 +315,7 @@
       lastY=y;
     });
 
+    // === Auth ===
     onAuthStateChanged(auth,u=>{
       if(u){user={uid:u.uid,email:u.email};loadData();}else{location.href="index.html";}
     });
