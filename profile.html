@@ -45,7 +45,7 @@
     .card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,0.08);}
     
     .profile-info h2{margin-bottom:4px;font-size:22px;font-weight:700;}
-    .profile-info p{color:var(--muted);font-size:15px;margin-top:2px;}
+    .profile-info p{color:var(--muted);font-size:15px;margin-top:4px;}
     
     form label{display:block;margin-top:14px;font-weight:600;font-size:14px;}
     form input, form textarea{
@@ -125,7 +125,7 @@
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // ✅ আপনার Firebase Config
+    // ✅ Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
       authDomain: "prompt-scientist.firebaseapp.com",
@@ -227,4 +227,4 @@
     }
   </script>
 </body>
-</html>
+      </html>
