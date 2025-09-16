@@ -242,29 +242,23 @@
 
     // ---------- Improved: Batch-fetch user docs to avoid excessive reads ----------
     async function loadUsersForPosts(uids){
-      // uids: array of unique uids we need
-      const toLoad = uids.filter(uid => uid && !userCache[uid]);
-      if(toLoad.length === 0) return;
-      // fetch each doc in parallel (could optimize with getAll if available)
-      await Promise.all(toLoad.map(async uid=>{
-        try{
-          const snap = await getDoc(doc(db, "users", uid));
-          if(snap.exists()){
-            const data = snap.data();
-            // prefer username then name
-            const name = (data.username && data.username.trim()) ? data.username.trim()
-                        : (data.name && data.name.trim()) ? data.name.trim()
-                        : (data.displayName && data.displayName.trim()) ? data.displayName.trim()
-                        : null;
-            userCache[uid] = name || "Unknown";
-          } else {
-            userCache[uid] = "Unknown";
-          }
-        }catch(err){
-          console.error("loadUsersForPosts error", err);
-          userCache[uid] = "Unknown";
-        }
-      }));
+  const toLoad = uids.filter(uid => uid && !userCache[uid]);
+  if(toLoad.length === 0) return;
+
+  await Promise.all(toLoad.map(async uid=>{
+    try {
+      const snap = await getDoc(doc(db, "users", uid));
+      if(snap.exists()){
+        const data = snap.data();
+        userCache[uid] = data.name || "Unknown";  // ✅ শুধু name ফিল্ড ব্যবহার করুন
+      } else {
+        userCache[uid] = "Unknown";
+      }
+    } catch(err) {
+      console.error("loadUsersForPosts error", err);
+      userCache[uid] = "Unknown";
+    }
+  }));
     }
 
     // ---------- Load posts & ads ----------
