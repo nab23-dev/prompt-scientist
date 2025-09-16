@@ -6,125 +6,79 @@
   <title>Prompt-Scientist — Profile</title>
   <style>
     :root{
-      --bg:#f0f2f5;
-      --card:rgba(255,255,255,0.85);
-      --accent1:#2563eb;
-      --accent2:#9333ea;
+      --bg:#f9fafb;
+      --card:#fff;
+      --accent:#2563eb;
+      --accent-hover:#1e40af;
       --border:#e5e7eb;
       --muted:#6b7280;
-      --shadow:0 8px 32px rgba(0,0,0,0.08);
+      --shadow:0 6px 18px rgba(0,0,0,0.06);
       --radius:16px;
-      --maxw:960px;
+      --maxw:880px;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
       font-family:Inter,system-ui,Roboto,"Noto Sans",sans-serif;
-      background:linear-gradient(135deg,#eef2ff,#fdf2f8);
-      color:#111827;
-      min-height:100vh;
+      background:var(--bg);color:#111827;
+      line-height:1.6;
     }
-
-    /* Header */
     header{
-      position:sticky;top:0;z-index:100;
-      padding:16px 24px;
-      display:flex;justify-content:space-between;align-items:center;
-      background:linear-gradient(90deg,var(--accent1),var(--accent2));
-      color:#fff;
-      box-shadow:0 4px 20px rgba(0,0,0,0.15);
+      position:sticky;top:0;z-index:50;background:#fff;
+      border-bottom:1px solid var(--border);
+      padding:16px 20px;display:flex;justify-content:space-between;align-items:center;
+      box-shadow:0 2px 12px rgba(0,0,0,0.05);
     }
-    header h1{font-size:22px;font-weight:700;}
+    header h1{font-size:24px;font-weight:700;color:var(--accent);letter-spacing:-0.5px;}
     header button{
-      background:#fff;color:var(--accent1);border:none;
-      padding:8px 18px;border-radius:12px;font-weight:600;
-      cursor:pointer;transition:.2s;
+      background:var(--accent);color:#fff;border:none;
+      padding:8px 14px;border-radius:10px;font-size:14px;font-weight:600;
+      cursor:pointer;transition:0.2s;
     }
-    header button:hover{background:#f3f4f6;color:#1e40af;}
-
-    .container{
-      max-width:var(--maxw);
-      margin:32px auto;
-      padding:0 20px;
-      display:grid;
-      gap:28px;
-    }
-
-    /* Card */
+    header button:hover{background:var(--accent-hover);}
+    
+    .container{max-width:var(--maxw);margin:24px auto;padding:0 20px;display:grid;gap:26px;}
+    
     .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:22px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(10px);
-      transition:transform .25s ease,box-shadow .25s ease;
+      background:var(--card);border-radius:var(--radius);padding:22px;
+      box-shadow:var(--shadow);transition:transform .25s ease, box-shadow .25s ease;
     }
-    .card:hover{
-      transform:translateY(-4px);
-      box-shadow:0 12px 32px rgba(0,0,0,0.12);
-    }
-
-    /* Profile */
-    .profile-info{
-      display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-    }
-    .avatar{
-      width:72px;height:72px;border-radius:50%;
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      color:#fff;display:flex;align-items:center;justify-content:center;
-      font-weight:700;font-size:26px;
-      box-shadow:0 4px 20px rgba(0,0,0,0.15);
-    }
-    .profile-info h2{margin:0;font-size:22px}
-    .profile-info p{color:var(--muted);font-size:14px}
-
-    /* Form */
-    form label{display:block;margin-top:14px;font-weight:600;font-size:15px;}
+    .card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,0.08);}
+    
+    .profile-info h2{margin-bottom:4px;font-size:22px;font-weight:700;}
+    .profile-info p{color:var(--muted);font-size:15px;margin-top:2px;}
+    
+    form label{display:block;margin-top:14px;font-weight:600;font-size:14px;}
     form input, form textarea{
-      width:100%;margin-top:6px;padding:12px;
-      border-radius:12px;border:1px solid var(--border);font-size:14px;
-      background:#fff;
+      width:100%;margin-top:6px;padding:12px;border-radius:10px;border:1px solid var(--border);font-size:14px;
+      background:#fff;transition:border-color 0.2s, box-shadow 0.2s;
     }
-    form textarea{min-height:90px;resize:vertical;}
+    form input:focus, form textarea:focus{
+      border-color:var(--accent);outline:none;
+      box-shadow:0 0 0 3px rgba(37,99,235,0.15);
+    }
+    form textarea{min-height:80px;resize:vertical;}
     form button{
-      margin-top:20px;padding:14px 20px;border:none;border-radius:12px;
-      background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;
-      font-weight:600;cursor:pointer;font-size:15px;
-      transition:transform .2s,opacity .2s;
+      margin-top:18px;padding:12px 20px;border:none;border-radius:10px;
+      background:var(--accent);color:#fff;font-weight:600;cursor:pointer;transition:background .2s;
     }
-    form button:hover{opacity:.9;transform:translateY(-2px);}
+    form button:hover{background:var(--accent-hover);}
     .msg{margin-top:10px;font-size:14px;color:var(--muted)}
 
-    /* Posts */
-    .posts{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-      gap:20px;
-    }
-    .post{display:flex;flex-direction:column;gap:10px}
-    .post h3{font-size:16px;font-weight:600;}
-    .post img{
-      width:100%;border-radius:12px;object-fit:cover;
-      box-shadow:0 4px 14px rgba(0,0,0,0.08);
-    }
+    .posts{display:grid;gap:20px;}
+    .post{padding:18px;display:flex;flex-direction:column;gap:12px;}
+    .post h3{font-size:17px;font-weight:600;}
+    .post img{max-width:100%;border-radius:12px;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,0.06);}
     .post .prompt{
-      background:#f9fafb;border:1px solid var(--border);
-      padding:12px;border-radius:10px;
-      font-family:ui-monospace,monospace;font-size:13px;flex:1;
+      background:#f3f4f6;border:1px solid var(--border);
+      padding:12px;border-radius:10px;font-family:ui-monospace,monospace;font-size:13px;color:#1f2937;
     }
     .post button{
-      align-self:flex-end;padding:7px 14px;font-size:13px;
+      align-self:flex-end;padding:6px 14px;font-size:13px;
       background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;
-      transition:.2s;
+      font-weight:600;transition:0.2s;
     }
     .post button:hover{background:#b91c1c;}
-
-    .empty{padding:28px;text-align:center;color:var(--muted)}
-
-    /* Responsive */
-    @media(max-width:600px){
-      header h1{font-size:18px}
-      .avatar{width:60px;height:60px;font-size:20px;}
-    }
+    .empty{padding:30px;text-align:center;color:var(--muted);font-size:15px;}
   </style>
 </head>
 <body>
@@ -136,17 +90,15 @@
   <main class="container">
     <!-- Profile -->
     <section class="card profile-info">
-      <div class="avatar" id="userAvatar">U</div>
-      <div>
-        <h2 id="userName">Loading...</h2>
-        <p id="userEmail"></p>
-      </div>
+      <h2 id="name">Loading...</h2>
+      <p id="username"></p>
+      <p id="userEmail"></p>
     </section>
 
     <!-- New Post Form -->
     <section class="card">
       <h2>নতুন পোস্ট করুন</h2>
-      <p class="msg">ছবি আপলোড করতে <a href="https://postimages.org/" target="_blank">postimages.org</a> ব্যবহার করুন এবং এখানে ডাইরেক্ট লিংক দিন।</p>
+      <p class="msg">ছবি আপলোড করতে <a href="https://postimages.org/" target="_blank">postimages.org</a> ব্যবহার করুন এবং Direct Link দিন।</p>
       <form id="postForm">
         <label>Image URL
           <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..."/>
@@ -185,9 +137,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const userName=document.getElementById("userName");
+    const nameEl=document.getElementById("name");
+    const usernameEl=document.getElementById("username");
     const userEmail=document.getElementById("userEmail");
-    const userAvatar=document.getElementById("userAvatar");
     const postForm=document.getElementById("postForm");
     const myPosts=document.getElementById("myPosts");
     const logoutBtn=document.getElementById("logoutBtn");
@@ -197,9 +149,12 @@
     onAuthStateChanged(auth,async(u)=>{
       if(!u){location.href="index.html";return;}
       currentUser=u;
+
+      // ✅ প্রোফাইল তথ্য
+      nameEl.textContent=u.displayName || "User";
+      usernameEl.textContent="@"+(u.reloadUserInfo?.screenName || u.email.split("@")[0]);
       userEmail.textContent=u.email;
-      userName.textContent=u.displayName||"User";
-      userAvatar.textContent=(u.displayName?.[0]||u.email[0]||"U").toUpperCase();
+
       loadPosts();
     });
 
@@ -222,6 +177,9 @@
           <h3>${d.caption||"(No caption)"}</h3>
           ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
           <div class="prompt">${d.prompt}</div>
+          <p><strong>Name:</strong> ${d.name || "Unknown"}</p>
+          <p><strong>Username:</strong> ${d.username || "Unknown"}</p>
+          <p><strong>Email:</strong> ${d.email || "Unknown"}</p>
           <button data-id="${docSnap.id}">Delete</button>
           <p class="msg">${d.approved?"✅ Approved":"⏳ Pending approval"}</p>
         `;
@@ -236,12 +194,15 @@
       const caption=document.getElementById("caption").value.trim();
       const prompt=document.getElementById("prompt").value.trim();
       if(!prompt){alert("Prompt is required");return;}
+
       await addDoc(collection(db,"posts"),{
-        uid:currentUser.uid,
-        username:currentUser.displayName||currentUser.email,
+        uid: currentUser.uid,
+        name: currentUser.displayName || "User",              // ✅ নাম
+        username: currentUser.reloadUserInfo?.screenName || currentUser.email.split("@")[0], // ✅ ইউজারনেম
+        email: currentUser.email,                             // ✅ ইমেইল
         imageURL,caption,prompt,
-        timestamp:serverTimestamp(),
-        approved:false
+        timestamp: serverTimestamp(),
+        approved: false
       });
       alert("✅ Post submitted! Pending admin approval.");
       postForm.reset();
@@ -256,4 +217,4 @@
     }
   </script>
 </body>
-        </html>
+</html>
