@@ -6,47 +6,89 @@
   <title>Prompt-Scientist — Profile</title>
   <style>
     :root{
-      --bg:#f3f4f6;
+      --bg:#f3f6fb;
       --card:#fff;
-      --accent:#2563eb;
+      --accent1:#2563eb;
+      --accent2:#7c3aed;
       --border:#e5e7eb;
       --muted:#6b7280;
-      --shadow:0 6px 18px rgba(0,0,0,0.06);
+      --shadow:0 8px 24px rgba(0,0,0,0.06);
       --radius:14px;
       --maxw:880px;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter,system-ui,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#111827;}
-    header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border);
-      padding:16px 20px;display:flex;justify-content:space-between;align-items:center;
-      box-shadow:0 2px 10px rgba(0,0,0,0.04);}
-    header h1{font-size:22px;font-weight:700;color:var(--accent)}
-    .container{max-width:var(--maxw);margin:20px auto;padding:0 18px;display:grid;gap:22px;}
-    .card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:transform .25s ease;}
-    .card:hover{transform:translateY(-2px);}
-    .profile-info h2{margin-bottom:6px;font-size:20px}
+    body{
+      font-family:Inter,system-ui,Roboto,"Noto Sans",sans-serif;
+      background:var(--bg);
+      color:#111827;
+    }
+
+    /* Header */
+    header{
+      position:sticky;top:0;z-index:50;
+      padding:16px 24px;
+      display:flex;justify-content:space-between;align-items:center;
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      color:#fff;
+      box-shadow:0 2px 16px rgba(0,0,0,0.1);
+    }
+    header h1{font-size:22px;font-weight:700;}
+    header button{
+      background:#fff;color:var(--accent1);border:none;
+      padding:8px 16px;border-radius:8px;font-weight:600;
+      cursor:pointer;transition:.2s;
+    }
+    header button:hover{background:#f3f4f6;color:#1e40af;}
+
+    .container{max-width:var(--maxw);margin:24px auto;padding:0 18px;display:grid;gap:24px;}
+
+    /* Card */
+    .card{
+      background:var(--card);border-radius:var(--radius);
+      padding:20px;box-shadow:var(--shadow);
+      transition:transform .25s ease;
+    }
+    .card:hover{transform:translateY(-3px);}
+
+    /* Profile */
+    .profile-info{
+      display:flex;align-items:center;gap:18px;
+    }
+    .avatar{
+      width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      color:#fff;display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,0.1);
+    }
+    .profile-info h2{margin:0;font-size:20px}
     .profile-info p{color:var(--muted);font-size:14px}
 
+    /* Form */
     form label{display:block;margin-top:12px;font-weight:600;font-size:14px;}
     form input, form textarea{
-      width:100%;margin-top:6px;padding:10px;border-radius:10px;border:1px solid var(--border);font-size:14px;
+      width:100%;margin-top:6px;padding:10px;
+      border-radius:10px;border:1px solid var(--border);font-size:14px;
     }
     form textarea{min-height:80px;resize:vertical;}
     form button{
-      margin-top:16px;padding:12px 18px;border:none;border-radius:10px;background:var(--accent);color:#fff;
-      font-weight:600;cursor:pointer;transition:background .2s;
+      margin-top:18px;padding:12px 18px;border:none;border-radius:10px;
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;
+      font-weight:600;cursor:pointer;transition:opacity .2s;
     }
-    form button:hover{background:#1e40af;}
+    form button:hover{opacity:0.9;}
     .msg{margin-top:10px;font-size:14px;color:var(--muted)}
 
-    .posts{display:grid;gap:18px;}
-    .post{padding:16px;display:flex;flex-direction:column;gap:10px}
+    /* Posts */
+    .posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
+    .post{display:flex;flex-direction:column;gap:10px}
     .post h3{font-size:16px;font-weight:600;}
-    .post img{max-width:100%;border-radius:10px;object-fit:cover}
+    .post img{width:100%;border-radius:10px;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,0.05);}
     .post .prompt{background:#f9fafb;border:1px solid var(--border);padding:10px;border-radius:8px;
-      font-family:ui-monospace,monospace;font-size:13px}
-    .post button{align-self:flex-end;padding:6px 12px;font-size:13px;background:#ef4444;color:#fff;
-      border:none;border-radius:8px;cursor:pointer;}
+      font-family:ui-monospace,monospace;font-size:13px;flex:1;}
+    .post button{
+      align-self:flex-end;padding:6px 12px;font-size:13px;
+      background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;
+      transition:.2s;
+    }
     .post button:hover{background:#b91c1c;}
 
     .empty{padding:28px;text-align:center;color:var(--muted)}
@@ -61,14 +103,17 @@
   <main class="container">
     <!-- Profile -->
     <section class="card profile-info">
-      <h2 id="userName">Loading...</h2>
-      <p id="userEmail"></p>
+      <div class="avatar" id="userAvatar">U</div>
+      <div>
+        <h2 id="userName">Loading...</h2>
+        <p id="userEmail"></p>
+      </div>
     </section>
 
     <!-- New Post Form -->
     <section class="card">
       <h2>নতুন পোস্ট করুন</h2>
-      <p class="msg">ছবি আপলোড করতে <a href="https://postimages.org/" target="_blank">postimages.org</a> ব্যবহার করুন এবং এখানে ডাইরেক্ট লিঙ্ক দিন।</p>
+      <p class="msg">ছবি আপলোড করতে <a href="https://postimages.org/" target="_blank">postimages.org</a> ব্যবহার করুন এবং এখানে ডাইরেক্ট লিংক দিন।</p>
       <form id="postForm">
         <label>Image URL
           <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..."/>
@@ -109,6 +154,7 @@
 
     const userName=document.getElementById("userName");
     const userEmail=document.getElementById("userEmail");
+    const userAvatar=document.getElementById("userAvatar");
     const postForm=document.getElementById("postForm");
     const myPosts=document.getElementById("myPosts");
     const logoutBtn=document.getElementById("logoutBtn");
@@ -120,6 +166,7 @@
       currentUser=u;
       userEmail.textContent=u.email;
       userName.textContent=u.displayName||"User";
+      userAvatar.textContent=(u.displayName?.[0]||u.email[0]||"U").toUpperCase();
       loadPosts();
     });
 
@@ -129,7 +176,10 @@
       myPosts.innerHTML="Loading...";
       const q=query(collection(db,"posts"),where("uid","==",currentUser.uid));
       const snap=await getDocs(q);
-      if(snap.empty){myPosts.innerHTML='<div class="empty">আপনি এখনও কোনো পোস্ট করেননি।</div>';return;}
+      if(snap.empty){
+        myPosts.innerHTML='<div class="empty">আপনি এখনও কোনো পোস্ট করেননি।</div>';
+        return;
+      }
       myPosts.innerHTML="";
       snap.forEach(docSnap=>{
         const d=docSnap.data();
