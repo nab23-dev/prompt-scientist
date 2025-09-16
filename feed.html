@@ -324,43 +324,49 @@
 
     // ---------- Render single post ----------
     function renderPost(p){
-      const reactions = p.reactions || {};
-      const myReact = user ? reactions[user.uid] : null;
+  const reactions = p.reactions || {};
+  const myReact = user ? reactions[user.uid] : null;
 
-      // compute counts
-      const counts = { like:0, love:0, haha:0, angry:0, wow:0 };
-      Object.values(reactions).forEach(r => { if(counts[r] !== undefined) counts[r]++; });
+  // compute counts
+  const counts = { like:0, love:0, haha:0, angry:0, wow:0 };
+  Object.values(reactions).forEach(r => { 
+    if(counts[r] !== undefined) counts[r]++; 
+  });
 
-      const el = document.createElement("article");
-      el.className = "card post";
-      el.dataset.id = p.id;
-      el.innerHTML = `
-        <div class="post-header">
-          <div class="uicon" style="background:${p.color}">${escapeHtml((p.name||"U")[0]).toUpperCase()}</div>
-          <div class="meta">
-            <div class="username">${escapeHtml(p.name||"Unknown")}</div>
-            <div class="time">${timeAgo(p.timestamp)}</div>
-          </div>
-        </div>
+  const el = document.createElement("article");
+  el.className = "card post";
+  el.dataset.id = p.id;
+  el.innerHTML = `
+    <div class="post-header">
+      <div class="uicon" style="background:${p.color}">
+        ${escapeHtml((userCache[p.uid] || "U")[0])}
+      </div>
+      <div class="meta">
+        <div class="username">${escapeHtml(userCache[p.uid] || "Unknown")}</div>
+        <div class="time">${timeAgo(p.timestamp)}</div>
+      </div>
+    </div>
 
-        <div class="caption">${escapeHtml(p.caption)}</div>
-        ${p.imageURL ? `<img class="post-image" src="${escapeHtml(p.imageURL)}" alt="post image">` : ""}
+    <div class="caption">${escapeHtml(p.caption||"")}</div>
+    ${p.imageURL ? `<img class="post-image" src="${escapeHtml(p.imageURL)}" alt=""/>` : ""}
+    
+    <div class="prompt-block">
+      <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">
+        ${escapeHtml(p.prompt||"")}
+      </div>
+      <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
+    </div>
 
-        <div class="prompt-block">
-          <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">${escapeHtml(p.prompt)}</div>
-          <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
-        </div>
-
-        <div class="actions">
-          ${reactionBtn("like","👍",counts.like,myReact)}
-          ${reactionBtn("love","❤️",counts.love,myReact)}
-          ${reactionBtn("haha","😂",counts.haha,myReact)}
-          ${reactionBtn("angry","😡",counts.angry,myReact)}
-          ${reactionBtn("wow","😮",counts.wow,myReact)}
-        </div>
-      `;
-      return el;
-    }
+    <div class="actions">
+      ${reactionBtn("like","👍",counts.like,myReact)}
+      ${reactionBtn("love","❤️",counts.love,myReact)}
+      ${reactionBtn("haha","😂",counts.haha,myReact)}
+      ${reactionBtn("angry","😡",counts.angry,myReact)}
+      ${reactionBtn("wow","😮",counts.wow,myReact)}
+    </div>
+  `;
+  return el;
+}
 
     const reactionBtn = (type, emoji, count, my) => 
       `<button class="btn-react ${my===type ? "active":""}" data-type="${type}">
