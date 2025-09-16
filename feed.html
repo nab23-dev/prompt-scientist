@@ -252,33 +252,33 @@
     }
 
     // ---------- Load posts & ads ----------
-    async function loadData(){
-      loadingEl.style.display = "block";
-      feedEl.innerHTML = "";
-      endMsgEl.style.display = "none";
-      currentIndex = 0;
-      nextAdAfter = randomAdGap();
+    function subscribeToPosts(){
+  loadingEl.style.display = "block";
+  feedEl.innerHTML = "";
+  endMsgEl.style.display = "none";
 
-      try{
-        const snap = await getDocs(query(collection(db,"posts"), where("approved","==", true)));
-        const fetched = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+  const q = query(collection(db, "posts"), where("approved","==", true));
+  
+  onSnapshot(q, async (snap)=>{
+    const fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
 
-        const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
-        await loadUsersForPosts(uids);
+    const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
+    await loadUsersForPosts(uids);
 
-        posts = fetched.map(p=>({
-          ...p,
-          name: userCache[p.uid] || "Unknown",
-          color: randomColor()
-        }));
+    posts = fetched.map(p=>({
+      ...p,
+      name: userCache[p.uid] || "Unknown",
+      color: randomColor()
+    }));
 
-        const snapAds = await getDocs(collection(db,"ads"));
-        ads = snapAds.docs.map(d=>({id:d.id,...d.data()}));
+    feedEl.innerHTML = "";
+    currentIndex = 0;
+    nextAdAfter = randomAdGap();
+    renderNext();
 
-        renderNext();
-      }catch(e){ console.error(e); }
-      finally{ loadingEl.style.display="none"; }
-    }
+    loadingEl.style.display="none";
+  });
+}
 
     // ---------- Render ----------
     function renderNext(){
