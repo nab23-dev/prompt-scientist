@@ -357,6 +357,21 @@
         setTimeout(()=>copyBtn.textContent="Copy",1200);
       }
     });
+    // ✅ Reaction button click
+const reactBtn = ev.target.closest(".btn-react");
+if(reactBtn){
+  const postEl = reactBtn.closest(".post");
+  const postId = postEl.dataset.id;
+  const type   = reactBtn.dataset.type;
+
+  if(!user) return alert("Please login first!");
+
+  // Firestore এ রিয়েকশন সেভ
+  const ref = doc(db, "posts", postId);
+  await updateDoc(ref, {
+    [`reactions.${user.uid}`]: type
+  });
+    }
     // ✅ Search filter (caption + username)
 searchInput.addEventListener("input", ()=>{
   const term = searchInput.value.trim().toLowerCase();
