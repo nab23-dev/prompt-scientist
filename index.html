@@ -5,28 +5,35 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Prompt-Scientist — Login / Signup</title>
   <style>
-    body{font-family:Inter,system-ui,Roboto; background:#f8f9fb; color:#1a1a1a;
-         display:flex;align-items:center;justify-content:center;height:100vh;}
-    .container{width:100%;max-width:950px;padding:24px;}
-    .brand{font-weight:700;font-size:26px;color:#2563eb;margin-bottom:20px;text-align:left;}
-    .grid{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;}
-    .info h2{font-size:28px;font-weight:600;margin-bottom:8px;}
-    .info p{color:#6b7280;font-size:15px;line-height:1.6}
-    .auth-card{background:#fff;padding:28px;border-radius:12px;
-               box-shadow:0 4px 16px rgba(0,0,0,0.06);border:1px solid #e5e7eb}
+    :root{
+      --bg:#f8f9fb; --fg:#1a1a1a; --card:#fff;
+      --border:#e5e7eb; --accent:#2563eb;
+      --accent-hover:#1e40af; --muted:#6b7280;
+      --error:#dc2626;
+    }
+    body{margin:0;font-family:Inter,system-ui,Roboto,sans-serif;
+      background:var(--bg);color:var(--fg);
+      display:flex;align-items:center;justify-content:center;height:100vh}
+    .container{max-width:920px;width:100%;padding:20px;}
+    .brand{font-weight:700;font-size:24px;color:var(--accent);margin-bottom:18px}
+    .grid{display:grid;grid-template-columns:1fr 400px;gap:32px;align-items:center}
+    .info h2{font-size:28px;margin-bottom:10px}
+    .info p{color:var(--muted);font-size:15px}
+    .auth-card{background:var(--card);padding:28px;border-radius:12px;
+      border:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,0.06)}
     .tabs{display:flex;gap:8px;margin-bottom:16px}
-    .tab{flex:1;text-align:center;padding:10px;border-radius:8px;cursor:pointer;font-weight:500;
-         border:1px solid #e5e7eb;color:#6b7280;background:#fafafa;transition:all .2s}
-    .tab.active{background:#2563eb;color:#fff;border-color:#2563eb}
+    .tab{flex:1;text-align:center;padding:10px;border-radius:8px;cursor:pointer;
+      border:1px solid var(--border);background:#f9fafb;color:var(--muted);font-weight:500}
+    .tab.active{background:var(--accent);color:#fff}
     label{display:block;font-size:14px;margin-top:12px}
-    input{width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;margin-top:6px;font-size:14px;}
-    input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.2)}
-    .btn{display:block;width:100%;padding:12px;background:#2563eb;color:#fff;font-weight:600;border:none;
-         border-radius:10px;margin-top:18px;cursor:pointer;transition:background .2s}
-    .btn:hover{background:#1e40af}
-    .note{font-size:13px;text-align:center;margin-top:12px;color:#6b7280}
-    .note a{color:#2563eb;text-decoration:none;font-weight:500}
-    .error{margin-top:10px;font-size:14px;color:#dc2626}
+    input{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:6px}
+    input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(37,99,235,0.2)}
+    .btn{width:100%;padding:12px;margin-top:18px;border:none;border-radius:10px;
+      background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
+    .btn:hover{background:var(--accent-hover)}
+    .note{font-size:13px;text-align:center;margin-top:10px;color:var(--muted)}
+    .note a{color:var(--accent);text-decoration:none}
+    .error{margin-top:10px;color:var(--error);font-size:14px}
     @media(max-width:860px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
@@ -36,7 +43,7 @@
     <div class="grid">
       <div class="info">
         <h2>AI Prompt Sharing Platform</h2>
-        <p>Signup করে আপনার প্রম্পট শেয়ার করুন এবং অন্যের প্রম্পট দেখতে শিখুন।</p>
+        <p>Signup করে আপনার প্রম্পট শেয়ার করুন, অন্যদের পোস্ট দেখুন এবং AI ইমেজ তৈরি করুন।</p>
       </div>
       <div class="auth-card">
         <div class="tabs">
@@ -48,10 +55,10 @@
 
         <!-- Signup -->
         <div id="signupPane">
-          <label>Full name <input id="su_name" placeholder="Your full name" maxlength="80" /></label>
-          <label>Username <input id="su_username" placeholder="uniqueusername" maxlength="32" /></label>
+          <label>Full name <input id="su_name" placeholder="Your full name" /></label>
+          <label>Username <input id="su_username" placeholder="uniqueusername" /></label>
           <label>Email <input id="su_email" type="email" placeholder="you@example.com" /></label>
-          <label>Password <input id="su_password" type="password" placeholder="Choose a strong password" /></label>
+          <label>Password <input id="su_password" type="password" placeholder="Choose password" /></label>
           <button class="btn" onclick="doSignup()">Create account</button>
           <div class="note">Already have an account? <a href="#" onclick="switchTab('login')">Login</a></div>
         </div>
@@ -70,7 +77,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
@@ -85,9 +92,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const errBox=document.getElementById('errorBox');
-    function showError(msg){errBox.style.display='block';errBox.innerText=msg;}
-    function clearError(){errBox.style.display='none';}
+    const errBox = document.getElementById('errorBox');
+    function showError(msg){ errBox.style.display='block'; errBox.innerText = msg; }
+    function clearError(){ errBox.style.display='none'; errBox.innerText=''; }
 
     function switchTab(t){
       clearError();
@@ -95,63 +102,79 @@
       document.getElementById('tabLogin').classList.remove('active');
       document.getElementById('signupPane').style.display='none';
       document.getElementById('loginPane').style.display='none';
-      if(t==='signup'){document.getElementById('tabSignup').classList.add('active');document.getElementById('signupPane').style.display='block';}
-      else{document.getElementById('tabLogin').classList.add('active');document.getElementById('loginPane').style.display='block';}
+      if(t==='signup'){ document.getElementById('tabSignup').classList.add('active'); document.getElementById('signupPane').style.display='block'; }
+      else { document.getElementById('tabLogin').classList.add('active'); document.getElementById('loginPane').style.display='block'; }
     }
-    window.switchTab=switchTab;
+    window.switchTab = switchTab;
 
-    window.doSignup=async function(){
+    // ✅ Signup
+    window.doSignup = async function(){
       clearError();
-      const name=document.getElementById('su_name').value.trim();
-      const username=document.getElementById('su_username').value.trim().toLowerCase();
-      const email=document.getElementById('su_email').value.trim();
-      const password=document.getElementById('su_password').value;
+      const name = document.getElementById('su_name').value.trim();
+      const username = document.getElementById('su_username').value.trim().toLowerCase();
+      const email = document.getElementById('su_email').value.trim();
+      const password = document.getElementById('su_password').value;
 
-      if(!name||!username||!email||!password){showError('All fields required');return;}
-      if(username.length<4){showError('Username must be at least 4 characters');return;}
+      if(!name || !username || !email || !password){ showError('All fields required'); return; }
 
       try{
-        const usersRef=collection(db,'users');
-        const q=query(usersRef,where('username','==',username));
-        const snap=await getDocs(q);
-        if(!snap.empty){showError('Username already taken');return;}
+        // check username availability
+        const q = query(collection(db,'users'), where('username','==',username));
+        const snap = await getDocs(q);
+        if(!snap.empty){ showError('Username already taken'); return; }
 
-        const cred=await createUserWithEmailAndPassword(auth,email,password);
-        const uid=cred.user.uid;
-        await addDoc(usersRef,{uid,name,username,email,createdAt:serverTimestamp()});
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = cred.user.uid;
 
-        localStorage.setItem('ps_auth',JSON.stringify({uid,name,username,email}));
-        location.href='profile.html';
-      }catch(err){showError(err.message);}
+        // ✅ users/{uid} ডকুমেন্ট তৈরি
+        await setDoc(doc(db,"users",uid),{
+          uid, name, username, email,
+          createdAt: serverTimestamp()
+        });
+
+        localStorage.setItem('ps_auth', JSON.stringify({ uid, email, username, name }));
+        location.href = 'feed.html';
+      }catch(err){ showError(err.message); }
     }
 
-    window.doLogin=async function(){
+    // ✅ Login
+    window.doLogin = async function(){
       clearError();
-      const identifier=document.getElementById('li_identifier').value.trim();
-      const password=document.getElementById('li_password').value;
-      if(!identifier||!password){showError('Please fill all');return;}
+      const identifier = document.getElementById('li_identifier').value.trim();
+      const password = document.getElementById('li_password').value;
+
+      if(!identifier || !password){ showError('Enter all fields'); return; }
+
       try{
-        let email=identifier;
+        let email = identifier;
         if(!identifier.includes('@')){
-          const usersRef=collection(db,'users');
-          const q=query(usersRef,where('username','==',identifier.toLowerCase()));
-          const snap=await getDocs(q);
-          if(snap.empty){showError('No user found');return;}
-          email=snap.docs[0].data().email;
+          // username দিয়ে লগইন
+          const q = query(collection(db,'users'), where('username','==',identifier.toLowerCase()));
+          const snap = await getDocs(q);
+          if(snap.empty){ showError('No user with that username'); return; }
+          email = snap.docs[0].data().email;
         }
-        const cred=await signInWithEmailAndPassword(auth,email,password);
-        const user=cred.user;
 
-        let name='',username='';
-        const q2=query(collection(db,'users'),where('uid','==',user.uid));
-        const snap2=await getDocs(q2);
-        if(!snap2.empty){const d=snap2.docs[0].data();name=d.name;username=d.username;}
-        localStorage.setItem('ps_auth',JSON.stringify({uid:user.uid,name,username,email:user.email}));
-        location.href='profile.html';
-      }catch(err){showError(err.message);}
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const user = cred.user;
+
+        // users থেকে name ও username বের করা
+        const userDoc = await getDoc(doc(db,"users",user.uid));
+        const data = userDoc.exists() ? userDoc.data() : {};
+        
+        localStorage.setItem('ps_auth', JSON.stringify({
+          uid:user.uid, email:user.email,
+          username:data.username||'', name:data.name||''
+        }));
+
+        location.href = 'feed.html';
+      }catch(err){ showError(err.message); }
     }
 
-    onAuthStateChanged(auth,(user)=>{if(user){location.href='profile.html';}});
+    // ✅ যদি আগেই লগইন থাকে
+    onAuthStateChanged(auth,(u)=>{
+      if(u){ location.href = 'feed.html'; }
+    });
   </script>
 </body>
 </html>
