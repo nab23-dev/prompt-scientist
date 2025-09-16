@@ -5,53 +5,38 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Prompt-Scientist — Login / Signup</title>
   <style>
-    :root{
-      --bg:#f8f9fb;
-      --fg:#1a1a1a;
-      --card:#ffffff;
-      --border:#e5e7eb;
-      --accent:#2563eb;
-      --accent-hover:#1e40af;
-      --muted:#6b7280;
-      --error:#dc2626;
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,'Noto Sans',Arial; background:var(--bg); color:var(--fg); display:flex;align-items:center;justify-content:center;height:100vh}
+    body{font-family:Inter,system-ui,Roboto; background:#f8f9fb; color:#1a1a1a;
+         display:flex;align-items:center;justify-content:center;height:100vh;}
     .container{width:100%;max-width:950px;padding:24px;}
-    .topbar{margin-bottom:20px;text-align:left;}
-    .brand{font-weight:700;font-size:22px;color:var(--accent)}
-
+    .brand{font-weight:700;font-size:26px;color:#2563eb;margin-bottom:20px;text-align:left;}
     .grid{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;}
-    .info{padding:20px}
-    .info h2{font-size:28px;font-weight:600;margin-bottom:8px;color:var(--fg)}
-    .info p{color:var(--muted);font-size:15px;line-height:1.6}
-
-    .auth-card{background:var(--card);padding:28px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.06);border:1px solid var(--border)}
+    .info h2{font-size:28px;font-weight:600;margin-bottom:8px;}
+    .info p{color:#6b7280;font-size:15px;line-height:1.6}
+    .auth-card{background:#fff;padding:28px;border-radius:12px;
+               box-shadow:0 4px 16px rgba(0,0,0,0.06);border:1px solid #e5e7eb}
     .tabs{display:flex;gap:8px;margin-bottom:16px}
-    .tab{flex:1;text-align:center;padding:10px;border-radius:8px;cursor:pointer;font-weight:500;border:1px solid var(--border);color:var(--muted);background:#fafafa;transition:all .2s}
-    .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-
-    label{display:block;font-size:14px;margin-top:12px;color:var(--fg);}
-    input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);margin-top:6px;font-size:14px;}
-    input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.2)}
-    .btn{display:block;width:100%;padding:12px;background:var(--accent);color:#fff;font-weight:600;border:none;border-radius:10px;margin-top:18px;cursor:pointer;transition:background .2s,transform .1s}
-    .btn:hover{background:var(--accent-hover)}
-    .btn:active{transform:scale(.98)}
-
-    .note{font-size:13px;text-align:center;margin-top:12px;color:var(--muted)}
-    .note a{color:var(--accent);text-decoration:none;font-weight:500}
-    .error{margin-top:10px;font-size:14px;color:var(--error)}
-
+    .tab{flex:1;text-align:center;padding:10px;border-radius:8px;cursor:pointer;font-weight:500;
+         border:1px solid #e5e7eb;color:#6b7280;background:#fafafa;transition:all .2s}
+    .tab.active{background:#2563eb;color:#fff;border-color:#2563eb}
+    label{display:block;font-size:14px;margin-top:12px}
+    input{width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;margin-top:6px;font-size:14px;}
+    input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.2)}
+    .btn{display:block;width:100%;padding:12px;background:#2563eb;color:#fff;font-weight:600;border:none;
+         border-radius:10px;margin-top:18px;cursor:pointer;transition:background .2s}
+    .btn:hover{background:#1e40af}
+    .note{font-size:13px;text-align:center;margin-top:12px;color:#6b7280}
+    .note a{color:#2563eb;text-decoration:none;font-weight:500}
+    .error{margin-top:10px;font-size:14px;color:#dc2626}
     @media(max-width:860px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="topbar"><div class="brand">Prompt-Scientist</div></div>
+    <div class="brand">Prompt-Scientist</div>
     <div class="grid">
       <div class="info">
         <h2>AI Prompt Sharing Platform</h2>
-        <p>শেয়ার করুন আপনার প্রম্পট, অন্যদের প্রম্পট থেকে শিখুন এবং AI ইমেজ তৈরি করুন।</p>
+        <p>Signup করে আপনার প্রম্পট শেয়ার করুন এবং অন্যের প্রম্পট দেখতে শিখুন।</p>
       </div>
       <div class="auth-card">
         <div class="tabs">
@@ -75,7 +60,7 @@
         <div id="loginPane" style="display:none">
           <label>Username or Email <input id="li_identifier" placeholder="username or email"/></label>
           <label>Password <input id="li_password" type="password" placeholder="Your password"/></label>
-          <button class="btn" onclick="doLogin()">Sign in</button>
+          <button class="btn" onclick="doLogin()">Login</button>
           <div class="note">Don't have an account? <a href="#" onclick="switchTab('signup')">Create one</a></div>
         </div>
       </div>
@@ -100,9 +85,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const errBox = document.getElementById('errorBox');
-    function showError(msg){ errBox.style.display='block'; errBox.innerText = msg; }
-    function clearError(){ errBox.style.display='none'; errBox.innerText=''; }
+    const errBox=document.getElementById('errorBox');
+    function showError(msg){errBox.style.display='block';errBox.innerText=msg;}
+    function clearError(){errBox.style.display='none';}
 
     function switchTab(t){
       clearError();
@@ -110,64 +95,63 @@
       document.getElementById('tabLogin').classList.remove('active');
       document.getElementById('signupPane').style.display='none';
       document.getElementById('loginPane').style.display='none';
-      if(t==='signup'){ document.getElementById('tabSignup').classList.add('active'); document.getElementById('signupPane').style.display='block'; }
-      else { document.getElementById('tabLogin').classList.add('active'); document.getElementById('loginPane').style.display='block'; }
+      if(t==='signup'){document.getElementById('tabSignup').classList.add('active');document.getElementById('signupPane').style.display='block';}
+      else{document.getElementById('tabLogin').classList.add('active');document.getElementById('loginPane').style.display='block';}
     }
-    window.switchTab = switchTab;
+    window.switchTab=switchTab;
 
-    window.doSignup = async function(){
+    window.doSignup=async function(){
       clearError();
-      const name = document.getElementById('su_name').value.trim();
-      const username = document.getElementById('su_username').value.trim().toLowerCase();
-      const email = document.getElementById('su_email').value.trim();
-      const password = document.getElementById('su_password').value;
+      const name=document.getElementById('su_name').value.trim();
+      const username=document.getElementById('su_username').value.trim().toLowerCase();
+      const email=document.getElementById('su_email').value.trim();
+      const password=document.getElementById('su_password').value;
 
-      if(!name || !username || !email || !password){ showError('All fields are required'); return; }
-      if(username.length < 6){ showError('Username must be at least 6 characters'); return; }
+      if(!name||!username||!email||!password){showError('All fields required');return;}
+      if(username.length<4){showError('Username must be at least 4 characters');return;}
 
       try{
-        const usersRef = collection(db,'users');
-        const q = query(usersRef, where('username','==',username));
-        const snap = await getDocs(q);
-        if(!snap.empty){ showError('Username already taken'); return; }
+        const usersRef=collection(db,'users');
+        const q=query(usersRef,where('username','==',username));
+        const snap=await getDocs(q);
+        if(!snap.empty){showError('Username already taken');return;}
 
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = cred.user.uid;
-        await addDoc(usersRef,{ uid, name, username, email, createdAt: serverTimestamp() });
+        const cred=await createUserWithEmailAndPassword(auth,email,password);
+        const uid=cred.user.uid;
+        await addDoc(usersRef,{uid,name,username,email,createdAt:serverTimestamp()});
 
-        localStorage.setItem('ps_auth', JSON.stringify({ uid, email, username, name }));
-        location.href = 'feed.html';
-      }catch(err){ showError(err.message || 'Signup failed'); }
+        localStorage.setItem('ps_auth',JSON.stringify({uid,name,username,email}));
+        location.href='profile.html';
+      }catch(err){showError(err.message);}
     }
 
-    window.doLogin = async function(){
+    window.doLogin=async function(){
       clearError();
-      const identifier = document.getElementById('li_identifier').value.trim();
-      const password = document.getElementById('li_password').value;
-      if(!identifier || !password){ showError('Please enter identifier and password'); return; }
+      const identifier=document.getElementById('li_identifier').value.trim();
+      const password=document.getElementById('li_password').value;
+      if(!identifier||!password){showError('Please fill all');return;}
       try{
-        let email = identifier;
+        let email=identifier;
         if(!identifier.includes('@')){
-          const usersRef = collection(db,'users');
-          const q = query(usersRef, where('username','==', identifier.toLowerCase()));
-          const snap = await getDocs(q);
-          if(snap.empty){ showError('No user with that username'); return; }
-          email = snap.docs[0].data().email;
+          const usersRef=collection(db,'users');
+          const q=query(usersRef,where('username','==',identifier.toLowerCase()));
+          const snap=await getDocs(q);
+          if(snap.empty){showError('No user found');return;}
+          email=snap.docs[0].data().email;
         }
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        const user = cred.user;
-        let username = ''; let name='';
-        const q2 = query(collection(db,'users'), where('uid','==',user.uid));
-        const snap2 = await getDocs(q2);
-        if(!snap2.empty){ const d = snap2.docs[0].data(); username = d.username; name=d.name; }
-        localStorage.setItem('ps_auth', JSON.stringify({ uid:user.uid,email:user.email,username,name }));
-        location.href = 'feed.html';
-      }catch(err){ showError(err.message || 'Login failed'); }
+        const cred=await signInWithEmailAndPassword(auth,email,password);
+        const user=cred.user;
+
+        let name='',username='';
+        const q2=query(collection(db,'users'),where('uid','==',user.uid));
+        const snap2=await getDocs(q2);
+        if(!snap2.empty){const d=snap2.docs[0].data();name=d.name;username=d.username;}
+        localStorage.setItem('ps_auth',JSON.stringify({uid:user.uid,name,username,email:user.email}));
+        location.href='profile.html';
+      }catch(err){showError(err.message);}
     }
 
-    onAuthStateChanged(auth, (user)=>{
-      if(user){ location.href = 'feed.html'; }
-    });
+    onAuthStateChanged(auth,(user)=>{if(user){location.href='profile.html';}});
   </script>
 </body>
 </html>
