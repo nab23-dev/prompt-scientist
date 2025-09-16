@@ -51,6 +51,8 @@
     .note a{color:var(--accent);text-decoration:none;font-weight:500}
     .error{margin-top:10px;font-size:14px;color:var(--error)}
 
+    .small{font-size:13px;color:var(--muted);margin-top:8px}
+
     @media(max-width:860px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
@@ -61,8 +63,8 @@
       <div class="info">
         <h2>AI Prompt Sharing Platform</h2>
         <p>শেয়ার করুন আপনার প্রম্পট, অন্যদের প্রম্পট থেকে শিখুন এবং AI ইমেজ তৈরি করুন।</p>
-      </div>
-      <div class="auth-card">
+        
+        <div class="auth-card">
         <div class="tabs">
           <div id="tabSignup" class="tab active" onclick="switchTab('signup')">Signup</div>
           <div id="tabLogin" class="tab" onclick="switchTab('login')">Login</div>
@@ -76,7 +78,7 @@
           <label>Username <input id="su_username" placeholder="uniqueusername" maxlength="32" /></label>
           <label>Email <input id="su_email" type="email" placeholder="you@example.com" /></label>
           <label>Password <input id="su_password" type="password" placeholder="Choose a strong password" /></label>
-          <button class="btn" onclick="doSignup()">Create account</button>
+          <button id="btnSignup" class="btn" onclick="doSignup()">Create account</button>
           <div class="note">Already have an account? <a href="#" onclick="switchTab('login')">Login</a></div>
         </div>
 
@@ -84,7 +86,7 @@
         <div id="loginPane" style="display:none">
           <label>Username or Email <input id="li_identifier" placeholder="username or email"/></label>
           <label>Password <input id="li_password" type="password" placeholder="Your password"/></label>
-          <button class="btn" onclick="doLogin()">Sign in</button>
+          <button id="btnLogin" class="btn" onclick="doLogin()">Sign in</button>
           <div class="note">Don't have an account? <a href="#" onclick="switchTab('signup')">Create one</a></div>
         </div>
       </div>
@@ -92,14 +94,29 @@
   </div>
 
   <script type="module">
+    // Firebase imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { 
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged 
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      updateProfile
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { 
-      getFirestore, collection, query, where, getDocs, setDoc, doc, serverTimestamp 
+
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs,
+      setDoc,
+      doc,
+      serverTimestamp,
+      getDoc
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+    // --- CONFIG: আপনার firebaseConfig এখানে ঠিক আছে কি দেখুন ---
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
       authDomain: "prompt-scientist.firebaseapp.com",
@@ -113,8 +130,11 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // DOM
     const errBox = document.getElementById('errorBox');
-    function showError(msg){ errBox.style.display='block'; errBox.innerText = msg; }
+    const btnSignup = document.getElementById('btnSignup');
+    const btnLogin = document.getElementById('btnLogin');
+    function showError(msg){ errBox.style.display='block'; errBox.innerText = msg; console.warn("UI error:", msg); }
     function clearError(){ errBox.style.display='none'; errBox.innerText=''; }
 
     function switchTab(t){
@@ -123,81 +143,141 @@
       document.getElementById('tabLogin').classList.remove('active');
       document.getElementById('signupPane').style.display='none';
       document.getElementById('loginPane').style.display='none';
-      if(t==='signup'){ 
-        document.getElementById('tabSignup').classList.add('active'); 
-        document.getElementById('signupPane').style.display='block'; 
-      } else { 
-        document.getElementById('tabLogin').classList.add('active'); 
-        document.getElementById('loginPane').style.display='block'; 
+      if(t==='signup'){
+        document.getElementById('tabSignup').classList.add('active');
+        document.getElementById('signupPane').style.display='block';
+      } else {
+        document.getElementById('tabLogin').classList.add('active');
+        document.getElementById('loginPane').style.display='block';
       }
     }
     window.switchTab = switchTab;
 
-    // ✅ Signup
+    // --- Signup handler (sets users/{uid} doc) ---
     window.doSignup = async function(){
       clearError();
+      btnSignup.disabled = true;
+      btnSignup.textContent = "Creating…";
+
       const name = document.getElementById('su_name').value.trim();
       const username = document.getElementById('su_username').value.trim().toLowerCase();
       const email = document.getElementById('su_email').value.trim();
       const password = document.getElementById('su_password').value;
 
-      if(!name || !username || !email || !password){ showError('All fields are required'); return; }
-      if(username.length < 6){ showError('Username must be at least 6 characters'); return; }
+      if(!name || !username || !email || !password){
+        showError('All fields are required'); btnSignup.disabled=false; btnSignup.textContent="Create account"; return;
+      }
+      if(username.length < 4){ showError('Username must be at least 4 characters'); btnSignup.disabled=false; btnSignup.textContent="Create account"; return; }
 
       try{
-        // check username duplicate
-        const usersRef = collection(db,'users');
-        const q = query(usersRef, where('username','==',username));
+        // 1) check username uniqueness
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('username', '==', username));
         const snap = await getDocs(q);
-        if(!snap.empty){ showError('Username already taken'); return; }
+        if(!snap.empty){ showError('Username already taken'); btnSignup.disabled=false; btnSignup.textContent="Create account"; return; }
 
-        // create auth user
+        // 2) create auth user
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = cred.user.uid;
+        console.log("Auth created uid:", uid);
 
-        // ✅ uid কে documentId বানানো হলো
-        await setDoc(doc(db,"users", uid), {
-          email,
-          name,
-          username,
-          uid,
+        // 3) set user doc with document id = uid (use setDoc)
+        const userDocRef = doc(db, 'users', uid);
+        await setDoc(userDocRef, {
+          email: email,
+          name: name,
+          username: username,
+          uid: uid,
           createdAt: serverTimestamp()
-        });
+        }, { merge: true }); // merge true is safe — won't overwrite unexpected fields
 
+        console.log("User document created at users/" + uid);
+
+        // 4) update firebase auth profile displayName so auth user has name too
+        try{
+          await updateProfile(auth.currentUser, { displayName: name });
+        }catch(upErr){
+          console.warn("updateProfile failed:", upErr);
+        }
+
+        // success -> redirect to feed
         localStorage.setItem('ps_auth', JSON.stringify({ uid, email, username, name }));
         location.href = 'feed.html';
-      }catch(err){ showError(err.message || 'Signup failed'); }
-    }
+      }catch(err){
+        console.error("Signup error:", err);
+        // show friendly message
+        if(err?.code){
+          showError(`${err.code} — ${err.message}`);
+        }else{
+          showError(err.message || 'Signup failed');
+        }
+      }finally{
+        btnSignup.disabled = false;
+        btnSignup.textContent = "Create account";
+      }
+    };
 
-    // ✅ Login
+    // --- Login handler (supports username or email) ---
     window.doLogin = async function(){
       clearError();
+      btnLogin.disabled = true;
+      btnLogin.textContent = "Signing in…";
+
       const identifier = document.getElementById('li_identifier').value.trim();
       const password = document.getElementById('li_password').value;
-      if(!identifier || !password){ showError('Please enter identifier and password'); return; }
+      if(!identifier || !password){ showError('Please enter identifier and password'); btnLogin.disabled=false; btnLogin.textContent="Sign in"; return; }
+
       try{
         let email = identifier;
         if(!identifier.includes('@')){
-          const usersRef = collection(db,'users');
-          const q = query(usersRef, where('username','==', identifier.toLowerCase()));
+          // treat as username -> lookup email from users collection
+          const usersRef = collection(db, 'users');
+          const q = query(usersRef, where('username', '==', identifier.toLowerCase()));
           const snap = await getDocs(q);
-          if(snap.empty){ showError('No user with that username'); return; }
+          if(snap.empty){ showError('No user with that username'); btnLogin.disabled=false; btnLogin.textContent="Sign in"; return; }
           email = snap.docs[0].data().email;
         }
+
         const cred = await signInWithEmailAndPassword(auth, email, password);
         const user = cred.user;
-        let username = ''; let name='';
-        const q2 = query(collection(db,'users'), where('uid','==',user.uid));
-        const snap2 = await getDocs(q2);
-        if(!snap2.empty){ const d = snap2.docs[0].data(); username = d.username; name=d.name; }
-        localStorage.setItem('ps_auth', JSON.stringify({ uid:user.uid,email:user.email,username,name }));
-        location.href = 'feed.html';
-      }catch(err){ showError(err.message || 'Login failed'); }
-    }
+        console.log("Signed in:", user.uid);
 
-    onAuthStateChanged(auth, (user)=>{
-      if(user){ location.href = 'feed.html'; }
+        // load user doc (by doc id uid) to get name/username
+        const ud = await getDoc(doc(db, 'users', user.uid));
+        let name = '', username = '';
+        if(ud.exists()){
+          const d = ud.data();
+          name = d.name || '';
+          username = d.username || '';
+        }
+        localStorage.setItem('ps_auth', JSON.stringify({ uid:user.uid, email:user.email, username, name }));
+        location.href = 'feed.html';
+      }catch(err){
+        console.error("Login error:", err);
+        showError(err.message || 'Login failed');
+      }finally{
+        btnLogin.disabled = false;
+        btnLogin.textContent = "Sign in";
+      }
+    };
+
+    // if already signed-in redirect to feed
+    onAuthStateChanged(auth, (u) => {
+      if(u){
+        // user already signed in — go to feed
+        location.href = 'feed.html';
+      }
     });
+
+    // Helpful note for debugging if writes fail:
+    // - Open browser console (F12) and watch for errors (permission-denied etc).
+    // - If you see permission-denied, update Firestore rules in console to permit writes for new users:
+    //   e.g. for dev only:
+    //   service cloud.firestore { match /databases/{database}/documents {
+    //     match /users/{userId} { allow read, write: if request.auth != null && request.auth.uid == userId; }
+    //     match /posts/{postId} { allow read: if true; allow write: if request.auth != null; }
+    //   } }
+    // - Don't forget to tighten rules for production.
   </script>
 </body>
-                            </html>
+                                     </html>
