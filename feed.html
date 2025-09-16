@@ -341,9 +341,10 @@
       el.dataset.id = p.id;
 
       // Use name from posts[{name}] (which we set from userCache), and ensure we show correct initial
-      const displayName = p.name || (p.uid ? userCache[p.uid] : null) || "Unknown";
-      const initial = (displayName && displayName[0]) ? displayName[0].toUpperCase() : "U";
-
+      const displayName = 
+    (p.username && String(p.username).trim()) ? p.username :   // posts collection এ username থাকলে সেটাই নেবে
+    (p.name && String(p.name).trim()) ? p.name :               // fallback name (userCache থেকে আসতে পারে)
+    (p.uid ? userCache[p.uid] : null) || "Unknown";
       el.innerHTML = `
         <div class="post-header">
           <div class="uicon" style="background:${p.color}">${escapeHtml(initial)}</div>
