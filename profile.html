@@ -6,92 +6,125 @@
   <title>Prompt-Scientist — Profile</title>
   <style>
     :root{
-      --bg:#f3f6fb;
-      --card:#fff;
+      --bg:#f0f2f5;
+      --card:rgba(255,255,255,0.85);
       --accent1:#2563eb;
-      --accent2:#7c3aed;
+      --accent2:#9333ea;
       --border:#e5e7eb;
       --muted:#6b7280;
-      --shadow:0 8px 24px rgba(0,0,0,0.06);
-      --radius:14px;
-      --maxw:880px;
+      --shadow:0 8px 32px rgba(0,0,0,0.08);
+      --radius:16px;
+      --maxw:960px;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
       font-family:Inter,system-ui,Roboto,"Noto Sans",sans-serif;
-      background:var(--bg);
+      background:linear-gradient(135deg,#eef2ff,#fdf2f8);
       color:#111827;
+      min-height:100vh;
     }
 
     /* Header */
     header{
-      position:sticky;top:0;z-index:50;
+      position:sticky;top:0;z-index:100;
       padding:16px 24px;
       display:flex;justify-content:space-between;align-items:center;
       background:linear-gradient(90deg,var(--accent1),var(--accent2));
       color:#fff;
-      box-shadow:0 2px 16px rgba(0,0,0,0.1);
+      box-shadow:0 4px 20px rgba(0,0,0,0.15);
     }
     header h1{font-size:22px;font-weight:700;}
     header button{
       background:#fff;color:var(--accent1);border:none;
-      padding:8px 16px;border-radius:8px;font-weight:600;
+      padding:8px 18px;border-radius:12px;font-weight:600;
       cursor:pointer;transition:.2s;
     }
     header button:hover{background:#f3f4f6;color:#1e40af;}
 
-    .container{max-width:var(--maxw);margin:24px auto;padding:0 18px;display:grid;gap:24px;}
+    .container{
+      max-width:var(--maxw);
+      margin:32px auto;
+      padding:0 20px;
+      display:grid;
+      gap:28px;
+    }
 
     /* Card */
     .card{
-      background:var(--card);border-radius:var(--radius);
-      padding:20px;box-shadow:var(--shadow);
-      transition:transform .25s ease;
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+      transition:transform .25s ease,box-shadow .25s ease;
     }
-    .card:hover{transform:translateY(-3px);}
+    .card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 12px 32px rgba(0,0,0,0.12);
+    }
 
     /* Profile */
     .profile-info{
-      display:flex;align-items:center;gap:18px;
+      display:flex;align-items:center;gap:18px;flex-wrap:wrap;
     }
     .avatar{
-      width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      width:72px;height:72px;border-radius:50%;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
       color:#fff;display:flex;align-items:center;justify-content:center;
-      font-weight:700;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,0.1);
+      font-weight:700;font-size:26px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.15);
     }
-    .profile-info h2{margin:0;font-size:20px}
+    .profile-info h2{margin:0;font-size:22px}
     .profile-info p{color:var(--muted);font-size:14px}
 
     /* Form */
-    form label{display:block;margin-top:12px;font-weight:600;font-size:14px;}
+    form label{display:block;margin-top:14px;font-weight:600;font-size:15px;}
     form input, form textarea{
-      width:100%;margin-top:6px;padding:10px;
-      border-radius:10px;border:1px solid var(--border);font-size:14px;
+      width:100%;margin-top:6px;padding:12px;
+      border-radius:12px;border:1px solid var(--border);font-size:14px;
+      background:#fff;
     }
-    form textarea{min-height:80px;resize:vertical;}
+    form textarea{min-height:90px;resize:vertical;}
     form button{
-      margin-top:18px;padding:12px 18px;border:none;border-radius:10px;
+      margin-top:20px;padding:14px 20px;border:none;border-radius:12px;
       background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;
-      font-weight:600;cursor:pointer;transition:opacity .2s;
+      font-weight:600;cursor:pointer;font-size:15px;
+      transition:transform .2s,opacity .2s;
     }
-    form button:hover{opacity:0.9;}
+    form button:hover{opacity:.9;transform:translateY(-2px);}
     .msg{margin-top:10px;font-size:14px;color:var(--muted)}
 
     /* Posts */
-    .posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
+    .posts{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:20px;
+    }
     .post{display:flex;flex-direction:column;gap:10px}
     .post h3{font-size:16px;font-weight:600;}
-    .post img{width:100%;border-radius:10px;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,0.05);}
-    .post .prompt{background:#f9fafb;border:1px solid var(--border);padding:10px;border-radius:8px;
-      font-family:ui-monospace,monospace;font-size:13px;flex:1;}
+    .post img{
+      width:100%;border-radius:12px;object-fit:cover;
+      box-shadow:0 4px 14px rgba(0,0,0,0.08);
+    }
+    .post .prompt{
+      background:#f9fafb;border:1px solid var(--border);
+      padding:12px;border-radius:10px;
+      font-family:ui-monospace,monospace;font-size:13px;flex:1;
+    }
     .post button{
-      align-self:flex-end;padding:6px 12px;font-size:13px;
+      align-self:flex-end;padding:7px 14px;font-size:13px;
       background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;
       transition:.2s;
     }
     .post button:hover{background:#b91c1c;}
 
     .empty{padding:28px;text-align:center;color:var(--muted)}
+
+    /* Responsive */
+    @media(max-width:600px){
+      header h1{font-size:18px}
+      .avatar{width:60px;height:60px;font-size:20px;}
+    }
   </style>
 </head>
 <body>
@@ -223,4 +256,4 @@
     }
   </script>
 </body>
-</html>
+        </html>
