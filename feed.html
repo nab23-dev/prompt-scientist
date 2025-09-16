@@ -350,6 +350,21 @@
         setTimeout(()=>copyBtn.textContent="Copy",1200);
       }
     });
+    // ✅ Search filter (caption + username)
+searchInput.addEventListener("input", ()=>{
+  const term = searchInput.value.trim().toLowerCase();
+
+  feedEl.querySelectorAll(".post").forEach(p=>{
+    const caption = p.querySelector(".caption")?.textContent?.toLowerCase() || "";
+    const username = p.querySelector(".username")?.textContent?.toLowerCase() || "";
+
+    if(caption.includes(term) || username.includes(term)){
+      p.style.display = "";
+    } else {
+      p.style.display = "none";
+    }
+  });
+});
     profileBtn.addEventListener("click",()=>location.href="profile.html");
     modeBtn.addEventListener("click",()=>{
       document.body.classList.toggle("dark");
