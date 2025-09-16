@@ -378,9 +378,14 @@ searchInput.addEventListener("input", ()=>{
 
     // ---------- Auth ----------
     onAuthStateChanged(auth, async (u)=>{
-      if(u){ user=u; await loadData(); }
-      else{ location.href="index.html"; }
-    });
+  if(u){ 
+    user=u; 
+    subscribeToPosts(); 
+  }
+  else{ 
+    location.href="index.html"; 
+  }
+});
   </script>
 </body>
 </html>
