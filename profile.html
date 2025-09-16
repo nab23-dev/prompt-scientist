@@ -91,8 +91,8 @@
     <!-- Profile -->
     <section class="card profile-info">
       <h2 id="name">Loading...</h2>
-      <p id="username"></p>
-      <p id="userEmail"></p>
+      <p><strong>Username:</strong> <span id="username"></span></p>
+      <p><strong>Email:</strong> <span id="userEmail"></span></p>
     </section>
 
     <!-- New Post Form -->
@@ -150,7 +150,7 @@
       if(!u){location.href="index.html";return;}
       currentUser=u;
 
-      // ✅ প্রোফাইল তথ্য
+      // ✅ প্রোফাইল তথ্য দেখানো
       nameEl.textContent=u.displayName || "User";
       usernameEl.textContent="@"+(u.reloadUserInfo?.screenName || u.email.split("@")[0]);
       userEmail.textContent=u.email;
@@ -197,9 +197,9 @@
 
       await addDoc(collection(db,"posts"),{
         uid: currentUser.uid,
-        name: currentUser.displayName || "User",              // ✅ নাম
-        username: currentUser.reloadUserInfo?.screenName || currentUser.email.split("@")[0], // ✅ ইউজারনেম
-        email: currentUser.email,                             // ✅ ইমেইল
+        name: currentUser.displayName || "User",              
+        username: currentUser.reloadUserInfo?.screenName || currentUser.email.split("@")[0], 
+        email: currentUser.email,                             
         imageURL,caption,prompt,
         timestamp: serverTimestamp(),
         approved: false
