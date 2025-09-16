@@ -83,7 +83,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
@@ -106,6 +106,7 @@
 
     let posts=[];let ads=[];let user=null;let currentIndex=0;
     const PAGE_SIZE=6;
+    const userCache={}; // ইউজার নাম ক্যাশ
 
     function getLocalAuth(){try{return JSON.parse(localStorage.getItem('ps_auth')||'null');}catch{return null;}}
     function ensureAuth(){
@@ -121,11 +122,29 @@
       if(sec<86400)return Math.floor(sec/3600)+'h';return Math.floor(sec/86400)+'d';}catch{return '';}};
     function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
+    async function loadUserName(uid){
+      if(userCache[uid]) return userCache[uid];
+      try{
+        const q=query(collection(db,'users'),where('uid','==',uid));
+        const snap=await getDocs(q);
+        if(!snap.empty){
+          const name=snap.docs[0].data().name||'Unknown';
+          userCache[uid]=name;
+          return name;
+        }
+      }catch{}
+      return 'Unknown';
+    }
+
     async function loadData(){
       loadingEl.style.display='block';feedEl.innerHTML='';endMsgEl.style.display='none';currentIndex=0;posts=[];
       try{
         const snap=await getDocs(query(collection(db,'posts'),where('approved','==',true)));
-        posts=shuffle(snap.docs.map(d=>({id:d.id,...d.data()})));
+        posts=shuffle(await Promise.all(snap.docs.map(async d=>{
+          const data=d.data();
+          const name=await loadUserName(data.uid);
+          return {id:d.id,...data,name};
+        })));
         const snapAds=await getDocs(collection(db,'ads'));ads=snapAds.docs.map(d=>({id:d.id,...d.data()}));
         if(!posts.length){feedEl.innerHTML='<div class="empty">No approved posts yet.</div>';return;}
         renderNext();
