@@ -109,7 +109,6 @@
     const PAGE_SIZE=6;
     const userCache={};
 
-    // ইউজারের নাম লোড
     async function loadUserName(uid){
       if(userCache[uid]) return userCache[uid];
       try{
@@ -205,15 +204,39 @@
       return el;
     }
 
+    // 🆕 Reaction UI update (no reload)
+    function updateReactionUI(postEl, type){
+      const buttons=postEl.querySelectorAll('.btn-react');
+      buttons.forEach(btn=>{
+        const countEl=btn.querySelector('.count');
+        let count=parseInt(countEl.innerText)||0;
+        if(btn.classList.contains('active')){ // remove old
+          btn.classList.remove('active');
+          count=Math.max(0,count-1);
+        }
+        if(btn.dataset.type===type){ // add new
+          btn.classList.add('active');
+          count++;
+        }
+        countEl.innerText=count;
+      });
+    }
+
     feedEl.addEventListener('click',async e=>{
-      const c=e.target.closest('.btn-copy');if(c){try{await navigator.clipboard.writeText(c.dataset.prompt);
-        c.innerText='Copied!';setTimeout(()=>c.innerText='Copy',1200);}catch{alert('Copy failed');}}
-      const r=e.target.closest('.btn-react');if(r){
+      const c=e.target.closest('.btn-copy');
+      if(c){
+        try{await navigator.clipboard.writeText(c.dataset.prompt);
+          c.innerText='Copied!';setTimeout(()=>c.innerText='Copy',1200);}
+        catch{alert('Copy failed');}
+      }
+
+      const r=e.target.closest('.btn-react');
+      if(r){
         const postEl=r.closest('.post');const id=postEl.dataset.id;const type=r.dataset.type;
         if(!user){alert('Login required');return;}
         try{
           await updateDoc(doc(db,'posts',id),{[`reactions.${user.uid}`]:type});
-          loadData();
+          updateReactionUI(postEl,type); // ✅ শুধু UI আপডেট হবে
         }catch(err){console.error(err);alert('Reaction failed');}
       }
     });
