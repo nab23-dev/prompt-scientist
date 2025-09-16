@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Prompt-Scientist — Feed</title>
 
-  <!-- Font (system + subtle monospace for prompts) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
-  <style>
+    <style>
     :root{
       --maxw: 920px;
       --radius: 12px;
@@ -161,7 +160,6 @@
   </style>
 </head>
 <body class="">
-
   <div class="wrap">
     <header class="topbar" id="topbar">
       <div class="brand">
@@ -171,11 +169,9 @@
           <div style="font-size:12px;color:var(--muted);margin-top:2px">Feed • Latest prompts & examples</div>
         </div>
       </div>
-
       <div class="search-box">
         <input id="searchInput" placeholder="Search by text or author..." type="search" />
       </div>
-
       <div class="controls">
         <button class="icon-btn mode-toggle" id="modeBtn" title="Toggle theme">🌗</button>
         <button class="icon-btn profile-btn" id="profileBtn" title="Profile">👤</button>
@@ -192,9 +188,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // ---------- Firebase config (keep yours) ----------
     const firebaseConfig = {
       apiKey:"AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
       authDomain:"prompt-scientist.firebaseapp.com",
@@ -218,14 +213,15 @@
     const modeBtn     = document.getElementById("modeBtn");
 
     // ---------- State ----------
-    let posts = [];     // loaded posts array
+    let posts = [];
     let ads = [];
     let user = null;
     let currentIndex = 0;
     const PAGE_SIZE = 6;
-    const userCache = {}; // uid -> name
+    const userCache = {}; 
+    let nextAdAfter = randomAdGap();
 
-    // Utility helpers
+    // ---------- Helpers ----------
     const randomColor = ()=> ["#2563eb","#dc2626","#16a34a","#9333ea","#ea580c","#0d9488"][Math.floor(Math.random()*6)];
     const escapeHtml = (s="") => String(s).replace(/[&<>]/g, ch=> ({"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]));
     const timeAgo = ts=>{
@@ -238,29 +234,19 @@
         return `${Math.floor(sec/86400)}d`;
       }catch{return "";}
     };
-    const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; };
+    function randomAdGap(){ return Math.floor(Math.random()*6) + 2; } // 2–7
 
-    // ---------- Load users: prefer `name` field ----------
+    // ---------- Load user names ----------
     async function loadUsersForPosts(uids){
       const toLoad = uids.filter(uid => uid && !userCache[uid]);
-      if(toLoad.length === 0) return;
       await Promise.all(toLoad.map(async uid=>{
         try{
           const snap = await getDoc(doc(db, "users", uid));
           if(snap.exists()){
-            const data = snap.data();
-            // Prefer `name` field (as you requested). fallback to username then Unknown.
-            const name = (data.name && String(data.name).trim()) ? String(data.name).trim()
-                        : (data.username && String(data.username).trim()) ? String(data.username).trim()
-                        : null;
-            userCache[uid] = name || "Unknown";
-          } else {
-            userCache[uid] = "Unknown";
-          }
-        }catch(err){
-          console.error("loadUsersForPosts error", err);
-          userCache[uid] = "Unknown";
-        }
+            const d = snap.data();
+            userCache[uid] = d.name?.trim() || d.username?.trim() || "Unknown";
+          }else userCache[uid] = "Unknown";
+        }catch{ userCache[uid] = "Unknown"; }
       }));
     }
 
@@ -270,82 +256,58 @@
       feedEl.innerHTML = "";
       endMsgEl.style.display = "none";
       currentIndex = 0;
+      nextAdAfter = randomAdGap();
 
       try{
-        // fetch posts approved == true
         const snap = await getDocs(query(collection(db,"posts"), where("approved","==", true)));
-        const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const fetched = snap.docs.map(d => ({ id:d.id, ...d.data() }));
 
-        // Determine uid field robustly (support uid, userId, author)
-        const uids = Array.from(new Set(fetched.map(p => (p.uid || p.userId || p.author || null)).filter(Boolean)));
-        await loadUsersForPosts(uids); // fills userCache for those uids
+        const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
+        await loadUsersForPosts(uids);
 
-        posts = shuffle(fetched.map(p=>{
-          const uidField = p.uid || p.userId || p.author || null;
-          return {
-            id: p.id,
-            caption: p.caption || "",
-            prompt: p.prompt || "",
-            imageURL: p.imageURL || "",
-            timestamp: p.timestamp || null,
-            uid: uidField,
-            reactions: p.reactions || {},
-            // fill name from userCache (we loaded above)
-            name: (uidField ? userCache[uidField] : null) || "Unknown",
-            color: randomColor()
-          };
+        posts = fetched.map(p=>({
+          ...p,
+          name: userCache[p.uid] || "Unknown",
+          color: randomColor()
         }));
 
-        // load ads (optional)
         const snapAds = await getDocs(collection(db,"ads"));
-        ads = snapAds.docs.map(d => ({ id: d.id, ...d.data() }));
+        ads = snapAds.docs.map(d=>({id:d.id,...d.data()}));
 
         renderNext();
-      }catch(err){
-        console.error("loadData error", err);
-      }finally{
-        loadingEl.style.display = "none";
-      }
+      }catch(e){ console.error(e); }
+      finally{ loadingEl.style.display="none"; }
     }
 
-    // ---------- Render pagination ----------
+    // ---------- Render ----------
     function renderNext(){
       if(currentIndex >= posts.length){
-        endMsgEl.style.display = "block";
-        return;
+        endMsgEl.style.display="block"; return;
       }
       const frag = document.createDocumentFragment();
       const end = Math.min(currentIndex + PAGE_SIZE, posts.length);
-      for(let i = currentIndex; i < end; i++){
+      for(let i=currentIndex;i<end;i++){
         frag.appendChild(renderPost(posts[i]));
-      }
-      // occasionally insert an ad (random)
-      if(ads.length && Math.random() < 0.35){
-        frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
+        if(ads.length && ( (i+1-currentIndex) % nextAdAfter === 0 )){
+          frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
+          nextAdAfter = randomAdGap();
+        }
       }
       feedEl.appendChild(frag);
-      currentIndex = end;
+      currentIndex=end;
     }
 
-    // ---------- Render single post ----------
     function renderPost(p){
-      const reactions = p.reactions || {};
-      const myReact = user ? reactions[user.uid] : null;
+      const counts = {like:0,love:0,haha:0,angry:0,wow:0};
+      Object.values(p.reactions||{}).forEach(r=>{ if(counts[r]!==undefined) counts[r]++; });
 
-      // compute counts
-      const counts = { like:0, love:0, haha:0, angry:0, wow:0 };
-      Object.values(reactions).forEach(r => { if(counts[r] !== undefined) counts[r]++; });
+      const displayName = p.name || "Unknown";
+      const initial = displayName[0]?.toUpperCase() || "U";
 
       const el = document.createElement("article");
-      el.className = "card post";
-      el.dataset.id = p.id;
-
-      // Use name from posts[{name}] (which we set from userCache), and ensure we show correct initial
-      const displayName = 
-    (p.username && String(p.username).trim()) ? p.username :   // posts collection এ username থাকলে সেটাই নেবে
-    (p.name && String(p.name).trim()) ? p.name :               // fallback name (userCache থেকে আসতে পারে)
-    (p.uid ? userCache[p.uid] : null) || "Unknown";
-      el.innerHTML = `
+      el.className="card post";
+      el.dataset.id=p.id;
+      el.innerHTML=`
         <div class="post-header">
           <div class="uicon" style="background:${p.color}">${escapeHtml(initial)}</div>
           <div class="meta">
@@ -353,153 +315,56 @@
             <div class="time">${timeAgo(p.timestamp)}</div>
           </div>
         </div>
-
-        <div class="caption">${escapeHtml(p.caption)}</div>
-        ${p.imageURL ? `<img class="post-image" src="${escapeHtml(p.imageURL)}" alt="post image">` : ""}
-
+        <div class="caption">${escapeHtml(p.caption||"")}</div>
+        ${p.imageURL?`<img class="post-image" src="${escapeHtml(p.imageURL)}">`:""}
         <div class="prompt-block">
-          <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">${escapeHtml(p.prompt)}</div>
+          <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">${escapeHtml(p.prompt||"")}</div>
           <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
         </div>
-
         <div class="actions">
-          ${reactionBtn("like","👍",counts.like,myReact)}
-          ${reactionBtn("love","❤️",counts.love,myReact)}
-          ${reactionBtn("haha","😂",counts.haha,myReact)}
-          ${reactionBtn("angry","😡",counts.angry,myReact)}
-          ${reactionBtn("wow","😮",counts.wow,myReact)}
-        </div>
-      `;
+          ${reactionBtn("like","👍",counts.like)}
+          ${reactionBtn("love","❤️",counts.love)}
+          ${reactionBtn("haha","😂",counts.haha)}
+          ${reactionBtn("angry","😡",counts.angry)}
+          ${reactionBtn("wow","😮",counts.wow)}
+        </div>`;
       return el;
     }
-
-    const reactionBtn = (type, emoji, count, my) => 
-      `<button class="btn-react ${my===type ? "active":""}" data-type="${type}">
-        <span>${emoji}</span> <span class="count">${count}</span>
-      </button>`;
-
+    const reactionBtn=(t,e,c)=>`<button class="btn-react" data-type="${t}"><span>${e}</span><span class="count">${c}</span></button>`;
     function renderAd(a){
-      const el = document.createElement("div");
-      el.className = "card ad-card";
-      el.innerHTML = `
-        <div style="padding:12px 14px">
-          <div class="sponsored" style="color:var(--muted);font-size:12px;margin-bottom:8px">Sponsored</div>
-          <a href="${escapeHtml(a.link||"#")}" target="_blank" rel="noopener" style="display:block">
-            <img src="${escapeHtml(a.imageURL||"")}" alt="ad">
-          </a>
-        </div>
-      `;
+      const el=document.createElement("div");
+      el.className="card ad-card";
+      el.innerHTML=`<div style="padding:12px">
+        <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Sponsored</div>
+        <a href="${escapeHtml(a.link||"#")}" target="_blank"><img src="${escapeHtml(a.imageURL||"")}"></a>
+      </div>`;
       return el;
     }
 
-    // ---------- Event handling ----------
-    feedEl.addEventListener("click", async (ev) => {
-      const copyBtn = ev.target.closest(".btn-copy");
+    // ---------- Events ----------
+    feedEl.addEventListener("click",async ev=>{
+      const copyBtn=ev.target.closest(".btn-copy");
       if(copyBtn){
-        try{
-          await navigator.clipboard.writeText(copyBtn.dataset.prompt || "");
-          copyBtn.textContent = "Copied!";
-          setTimeout(()=> copyBtn.textContent = "Copy", 1200);
-        }catch(err){
-          alert("Copy failed");
-        }
-        return;
-      }
-
-      const reactBtn = ev.target.closest(".btn-react");
-      if(reactBtn){
-        if(!user){
-          alert("Login required");
-          return;
-        }
-        const postEl = reactBtn.closest(".post");
-        const postId = postEl.dataset.id;
-        const chosen = reactBtn.dataset.type;
-
-        try{
-          // update DB
-          await updateDoc(doc(db, "posts", postId), { [`reactions.${user.uid}`]: chosen });
-
-          // update local model (posts array) to keep UI consistent and update counts properly
-          const p = posts.find(x => x.id === postId);
-          if(p){
-            p.reactions = p.reactions || {};
-            p.reactions[user.uid] = chosen;
-            // re-render counts in DOM for this post only
-            updateReactionUI(postEl, p.reactions, user.uid);
-          }
-        }catch(err){
-          console.error("Reaction update error", err);
-        }
+        await navigator.clipboard.writeText(copyBtn.dataset.prompt||"");
+        copyBtn.textContent="Copied!";
+        setTimeout(()=>copyBtn.textContent="Copy",1200);
       }
     });
-
-    // Update reaction counts/UI from a reactions object
-    function updateReactionUI(postEl, reactionsObj, myUid){
-      const counts = { like:0, love:0, haha:0, angry:0, wow:0 };
-      Object.values(reactionsObj || {}).forEach(r => { if(counts[r] !== undefined) counts[r]++; });
-
-      postEl.querySelectorAll(".btn-react").forEach(btn=>{
-        const type = btn.dataset.type;
-        btn.classList.toggle("active", reactionsObj && reactionsObj[myUid] === type);
-        const cntSpan = btn.querySelector(".count");
-        if(cntSpan) cntSpan.textContent = counts[type] || 0;
-      });
-    }
-
-    // Search filter
-    searchInput.addEventListener("input", ()=>{
-      const t = searchInput.value.trim().toLowerCase();
-      feedEl.querySelectorAll(".post").forEach(p=>{
-        const caption = p.querySelector(".caption")?.textContent?.toLowerCase() || "";
-        const username = p.querySelector(".username")?.textContent?.toLowerCase() || "";
-        p.style.display = (caption.includes(t) || username.includes(t)) ? "" : "none";
-      });
-    });
-
-    // Infinite scroll & topbar hide
-    window.addEventListener("scroll", ()=>{
-      if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 260){
-        renderNext();
-      }
-    });
-
-    let lastY = 0;
-    window.addEventListener("scroll", ()=>{
-      const y = window.scrollY;
-      if(y > lastY && y > 80) topbar.style.transform = "translateY(-18px)";
-      else topbar.style.transform = "translateY(0)";
-      lastY = y;
-    });
-
-    profileBtn.addEventListener("click", ()=> location.href = "profile.html");
-
-    // theme toggle
-    modeBtn.addEventListener("click", ()=>{
+    profileBtn.addEventListener("click",()=>location.href="profile.html");
+    modeBtn.addEventListener("click",()=>{
       document.body.classList.toggle("dark");
-      const isDark = document.body.classList.contains("dark");
-      try{ localStorage.setItem("ps_theme_dark", isDark ? "1" : "0"); }catch(e){}
+      localStorage.setItem("ps_theme_dark", document.body.classList.contains("dark")?"1":"0");
+    });
+    (function(){ if(localStorage.getItem("ps_theme_dark")==="1") document.body.classList.add("dark"); })();
+    window.addEventListener("scroll",()=>{
+      if(window.innerHeight+window.scrollY>=document.body.offsetHeight-260) renderNext();
     });
 
-    // load stored theme on init
-    (function initTheme(){
-      try{
-        const prefer = localStorage.getItem("ps_theme_dark");
-        if(prefer === "1") document.body.classList.add("dark");
-      }catch(e){}
-    })();
-
-    // ---------- Auth & start ----------
-    onAuthStateChanged(auth, async (u) => {
-      if(u){
-        user = { uid: u.uid, email: u.email };
-        await loadData();
-      }else{
-        // if you want public feed even without login, keep loadData
-        await loadData();
-      }
+    // ---------- Auth ----------
+    onAuthStateChanged(auth, async (u)=>{
+      if(u){ user=u; await loadData(); }
+      else{ location.href="index.html"; }
     });
-
   </script>
 </body>
-  </html>
+</html>
