@@ -155,9 +155,13 @@
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = cred.user.uid;
 
-        // ✅ setDoc দিয়ে uid কে documentId বানালাম
+        // ✅ uid কে documentId বানানো হলো
         await setDoc(doc(db,"users", uid), {
-          uid, name, username, email, createdAt: serverTimestamp()
+          email,
+          name,
+          username,
+          uid,
+          createdAt: serverTimestamp()
         });
 
         localStorage.setItem('ps_auth', JSON.stringify({ uid, email, username, name }));
@@ -196,4 +200,4 @@
     });
   </script>
 </body>
-</html>
+                            </html>
