@@ -223,7 +223,7 @@
     let user = null;
     let currentIndex = 0;
     const PAGE_SIZE = 6;
-    const userCache = {}; // uid -> name (username pref)
+    const userCache = {}; // uid -> name
 
     // Utility helpers
     const randomColor = ()=> ["#2563eb","#dc2626","#16a34a","#9333ea","#ea580c","#0d9488"][Math.floor(Math.random()*6)];
@@ -240,25 +240,28 @@
     };
     const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; };
 
-    // ---------- Improved: Batch-fetch user docs to avoid excessive reads ----------
+    // ---------- Load users: prefer `name` field ----------
     async function loadUsersForPosts(uids){
-  const toLoad = uids.filter(uid => uid && !userCache[uid]);
-  if(toLoad.length === 0) return;
-
-  await Promise.all(toLoad.map(async uid=>{
-    try {
-      const snap = await getDoc(doc(db, "users", uid));
-      if(snap.exists()){
-        const data = snap.data();
-        userCache[uid] = data.name || "Unknown";  // ✅ শুধু name ফিল্ড ব্যবহার করুন
-      } else {
-        userCache[uid] = "Unknown";
-      }
-    } catch(err) {
-      console.error("loadUsersForPosts error", err);
-      userCache[uid] = "Unknown";
-    }
-  }));
+      const toLoad = uids.filter(uid => uid && !userCache[uid]);
+      if(toLoad.length === 0) return;
+      await Promise.all(toLoad.map(async uid=>{
+        try{
+          const snap = await getDoc(doc(db, "users", uid));
+          if(snap.exists()){
+            const data = snap.data();
+            // Prefer `name` field (as you requested). fallback to username then Unknown.
+            const name = (data.name && String(data.name).trim()) ? String(data.name).trim()
+                        : (data.username && String(data.username).trim()) ? String(data.username).trim()
+                        : null;
+            userCache[uid] = name || "Unknown";
+          } else {
+            userCache[uid] = "Unknown";
+          }
+        }catch(err){
+          console.error("loadUsersForPosts error", err);
+          userCache[uid] = "Unknown";
+        }
+      }));
     }
 
     // ---------- Load posts & ads ----------
@@ -273,20 +276,22 @@
         const snap = await getDocs(query(collection(db,"posts"), where("approved","==", true)));
         const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-        // collect unique uids
-        const uids = Array.from(new Set(fetched.map(p => p.uid).filter(Boolean)));
+        // Determine uid field robustly (support uid, userId, author)
+        const uids = Array.from(new Set(fetched.map(p => (p.uid || p.userId || p.author || null)).filter(Boolean)));
         await loadUsersForPosts(uids); // fills userCache for those uids
 
         posts = shuffle(fetched.map(p=>{
+          const uidField = p.uid || p.userId || p.author || null;
           return {
             id: p.id,
             caption: p.caption || "",
             prompt: p.prompt || "",
             imageURL: p.imageURL || "",
             timestamp: p.timestamp || null,
-            uid: p.uid || null,
+            uid: uidField,
             reactions: p.reactions || {},
-            name: userCache[p.uid] || "Unknown",
+            // fill name from userCache (we loaded above)
+            name: (uidField ? userCache[uidField] : null) || "Unknown",
             color: randomColor()
           };
         }));
@@ -314,7 +319,7 @@
       for(let i = currentIndex; i < end; i++){
         frag.appendChild(renderPost(posts[i]));
       }
-      // occasionally insert an ad
+      // occasionally insert an ad (random)
       if(ads.length && Math.random() < 0.35){
         frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
       }
@@ -324,49 +329,48 @@
 
     // ---------- Render single post ----------
     function renderPost(p){
-  const reactions = p.reactions || {};
-  const myReact = user ? reactions[user.uid] : null;
+      const reactions = p.reactions || {};
+      const myReact = user ? reactions[user.uid] : null;
 
-  // compute counts
-  const counts = { like:0, love:0, haha:0, angry:0, wow:0 };
-  Object.values(reactions).forEach(r => { 
-    if(counts[r] !== undefined) counts[r]++; 
-  });
+      // compute counts
+      const counts = { like:0, love:0, haha:0, angry:0, wow:0 };
+      Object.values(reactions).forEach(r => { if(counts[r] !== undefined) counts[r]++; });
 
-  const el = document.createElement("article");
-  el.className = "card post";
-  el.dataset.id = p.id;
-  el.innerHTML = `
-    <div class="post-header">
-      <div class="uicon" style="background:${p.color}">
-        ${escapeHtml((userCache[p.uid] || "U")[0])}
-      </div>
-      <div class="meta">
-        <div class="username">${escapeHtml(userCache[p.uid] || "Unknown")}</div>
-        <div class="time">${timeAgo(p.timestamp)}</div>
-      </div>
-    </div>
+      const el = document.createElement("article");
+      el.className = "card post";
+      el.dataset.id = p.id;
 
-    <div class="caption">${escapeHtml(p.caption||"")}</div>
-    ${p.imageURL ? `<img class="post-image" src="${escapeHtml(p.imageURL)}" alt=""/>` : ""}
-    
-    <div class="prompt-block">
-      <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">
-        ${escapeHtml(p.prompt||"")}
-      </div>
-      <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
-    </div>
+      // Use name from posts[{name}] (which we set from userCache), and ensure we show correct initial
+      const displayName = p.name || (p.uid ? userCache[p.uid] : null) || "Unknown";
+      const initial = (displayName && displayName[0]) ? displayName[0].toUpperCase() : "U";
 
-    <div class="actions">
-      ${reactionBtn("like","👍",counts.like,myReact)}
-      ${reactionBtn("love","❤️",counts.love,myReact)}
-      ${reactionBtn("haha","😂",counts.haha,myReact)}
-      ${reactionBtn("angry","😡",counts.angry,myReact)}
-      ${reactionBtn("wow","😮",counts.wow,myReact)}
-    </div>
-  `;
-  return el;
-}
+      el.innerHTML = `
+        <div class="post-header">
+          <div class="uicon" style="background:${p.color}">${escapeHtml(initial)}</div>
+          <div class="meta">
+            <div class="username">${escapeHtml(displayName)}</div>
+            <div class="time">${timeAgo(p.timestamp)}</div>
+          </div>
+        </div>
+
+        <div class="caption">${escapeHtml(p.caption)}</div>
+        ${p.imageURL ? `<img class="post-image" src="${escapeHtml(p.imageURL)}" alt="post image">` : ""}
+
+        <div class="prompt-block">
+          <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">${escapeHtml(p.prompt)}</div>
+          <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
+        </div>
+
+        <div class="actions">
+          ${reactionBtn("like","👍",counts.like,myReact)}
+          ${reactionBtn("love","❤️",counts.love,myReact)}
+          ${reactionBtn("haha","😂",counts.haha,myReact)}
+          ${reactionBtn("angry","😡",counts.angry,myReact)}
+          ${reactionBtn("wow","😮",counts.wow,myReact)}
+        </div>
+      `;
+      return el;
+    }
 
     const reactionBtn = (type, emoji, count, my) => 
       `<button class="btn-react ${my===type ? "active":""}" data-type="${type}">
@@ -472,7 +476,6 @@
     // theme toggle
     modeBtn.addEventListener("click", ()=>{
       document.body.classList.toggle("dark");
-      // small hint: store choice
       const isDark = document.body.classList.contains("dark");
       try{ localStorage.setItem("ps_theme_dark", isDark ? "1" : "0"); }catch(e){}
     });
@@ -482,7 +485,6 @@
       try{
         const prefer = localStorage.getItem("ps_theme_dark");
         if(prefer === "1") document.body.classList.add("dark");
-        // default to no class (light) if not set
       }catch(e){}
     })();
 
@@ -492,13 +494,11 @@
         user = { uid: u.uid, email: u.email };
         await loadData();
       }else{
-        // If your app requires login, redirect; otherwise you can call loadData() to show public posts
-        // location.href = "index.html";
-        // For now, try loading public posts even if not logged in:
+        // if you want public feed even without login, keep loadData
         await loadData();
       }
     });
 
   </script>
 </body>
-    </html>
+  </html>
