@@ -259,6 +259,12 @@
 
   const q = query(collection(db, "posts"), where("approved","==", true));
   
+  // 🔹 Ads লোড
+  onSnapshot(collection(db, "ads"), (snapAds)=>{
+    ads = snapAds.docs.map(d=>({id:d.id,...d.data()}));
+  });
+
+  // 🔹 Posts লোড
   onSnapshot(q, async (snap)=>{
     const fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
 
