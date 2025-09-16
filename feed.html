@@ -272,10 +272,10 @@
     await loadUsersForPosts(uids);
 
     posts = fetched.map(p=>({
-      ...p,
-      name: userCache[p.uid] || "Unknown",
-      color: randomColor()
-    }));
+  ...p,
+  name: p.username || userCache[p.uid] || "Unknown",
+  color: randomColor()
+}));
 
     feedEl.innerHTML = "";
     currentIndex = 0;
