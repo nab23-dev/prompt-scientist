@@ -138,9 +138,12 @@
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = cred.user.uid;
 
-        // ✅ save user data
+        // ✅ নিশ্চিতভাবে users collection তৈরি হবে
         await setDoc(doc(db,"users",uid),{
-          uid, name, username, email,
+          uid: uid,
+          name: name,
+          username: username,
+          email: email,
           createdAt: serverTimestamp()
         });
 
