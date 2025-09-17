@@ -1,91 +1,215 @@
-<!doctype html>
-<html lang="bn">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Prompt-Scientist — Login / Signup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt-Scientist | Auth</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#f8f9fb;
-      --fg:#1a1a1a;
-      --card:#ffffff;
-      --border:#e5e7eb;
-      --accent:#2563eb;
-      --accent-hover:#1e40af;
-      --muted:#6b7280;
-      --error:#dc2626;
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f2f5;
     }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,'Noto Sans',Arial; background:var(--bg); color:var(--fg); display:flex;align-items:center;justify-content:center;height:100vh}
-    .container{width:100%;max-width:950px;padding:24px;}
-    .topbar{margin-bottom:20px;text-align:left;}
-    .brand{font-weight:700;font-size:22px;color:var(--accent)}
 
-    .grid{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;}
-    .info{padding:20px}
-    .info h2{font-size:28px;font-weight:600;margin-bottom:8px;color:var(--fg)}
-    .info p{color:var(--muted);font-size:15px;line-height:1.6}
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 15px;
+    }
 
-    .auth-card{background:var(--card);padding:28px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.06);border:1px solid var(--border)}
-    .tabs{display:flex;gap:8px;margin-bottom:16px}
-    .tab{flex:1;text-align:center;padding:10px;border-radius:8px;cursor:pointer;font-weight:500;border:1px solid var(--border);color:var(--muted);background:#fafafa;transition:all .2s}
-    .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    /* Branding top */
+    .branding {
+      text-align: left;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+    .branding h1 {
+      font-size: 22px;
+      color: #1877f2;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+    }
+    .branding h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #111827;
+      margin: 0 0 8px 0;
+    }
+    .branding p {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.5;
+      margin: 0;
+    }
 
-    label{display:block;font-size:14px;margin-top:12px;color:var(--fg);}
-    input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);margin-top:6px;font-size:14px;}
-    input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.2)}
-    .btn{display:block;width:100%;padding:12px;background:var(--accent);color:#fff;font-weight:600;border:none;border-radius:10px;margin-top:18px;cursor:pointer;transition:background .2s,transform .1s}
-    .btn:hover{background:var(--accent-hover)}
-    .btn:active{transform:scale(.98)}
+    /* Card */
+    .auth-box {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
 
-    .note{font-size:13px;text-align:center;margin-top:12px;color:var(--muted)}
-    .note a{color:var(--accent);text-decoration:none;font-weight:500}
-    .error{margin-top:10px;font-size:14px;color:var(--error)}
+    /* Tabs */
+    .toggle {
+      display: flex;
+      border-radius: 6px;
+      background: #f3f4f6;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .toggle button {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      background: transparent;
+      font-size: 15px;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .toggle button.active {
+      background: #1877f2;
+      color: #fff;
+    }
 
-    @media(max-width:860px){.grid{grid-template-columns:1fr}}
+    /* Form */
+    .form-container {
+      display: none;
+    }
+    .form-container.active {
+      display: block;
+    }
+    .form-group {
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #fff;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    input:focus {
+      border-color: #1877f2;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(24,119,242,0.15);
+    }
+
+    button.submit {
+      width: 100%;
+      padding: 12px;
+      background: #1877f2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    button.submit:hover {
+      background: #1664c2;
+    }
+
+    .footer-text {
+      font-size: 13px;
+      color: #4b5563;
+      text-align: center;
+      margin-top: 12px;
+    }
+    .footer-text a {
+      color: #1877f2;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    @media (max-width: 480px) {
+      .branding h2 { font-size: 20px; }
+      .auth-box { padding: 16px; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="topbar"><div class="brand">Prompt-Scientist</div></div>
-    <div class="grid">
-      <div class="info">
-        <h2>AI Prompt Sharing Platform</h2>
-        <p>শেয়ার করুন আপনার প্রম্পট, অন্যদের প্রম্পট থেকে শিখুন এবং AI ইমেজ তৈরি করুন।</p>
+  <div class="wrapper">
+    <!-- Branding -->
+    <div class="branding">
+      <h1>Prompt-Scientist</h1>
+      <h2>AI Prompt Sharing Platform</h2>
+      <p>শেয়ার করুন আপনার প্রম্পট, অন্যদের প্রম্পট থেকে শিখুন এবং AI ইমেজ তৈরি করুন।</p>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="auth-box">
+      <div class="toggle">
+        <button id="signupToggle" class="active">Signup</button>
+        <button id="loginToggle">Login</button>
       </div>
-      <div class="auth-card">
-        <div class="tabs">
-          <div id="tabSignup" class="tab active" onclick="switchTab('signup')">Signup</div>
-          <div id="tabLogin" class="tab" onclick="switchTab('login')">Login</div>
+
+      <!-- Signup -->
+      <div class="form-container active" id="signupForm">
+        <div class="form-group">
+          <label for="signupName">Full name</label>
+          <input type="text" id="signupName" placeholder="Your full name" required>
         </div>
-
-        <div id="errorBox" class="error" style="display:none"></div>
-
-        <!-- Signup -->
-        <div id="signupPane">
-          <label>Full name <input id="su_name" placeholder="Your full name" maxlength="80" /></label>
-          <label>Username <input id="su_username" placeholder="uniqueusername" maxlength="32" /></label>
-          <label>Email <input id="su_email" type="email" placeholder="you@example.com" /></label>
-          <label>Password <input id="su_password" type="password" placeholder="Choose a strong password" /></label>
-          <button class="btn" onclick="doSignup()">Create account</button>
-          <div class="note">Already have an account? <a href="#" onclick="switchTab('login')">Login</a></div>
+        <div class="form-group">
+          <label for="signupUsername">Username</label>
+          <input type="text" id="signupUsername" placeholder="uniqueusername" required>
         </div>
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" placeholder="Choose a strong password" required>
+        </div>
+        <button class="submit" id="signupBtn">Create account</button>
+        <div class="footer-text">
+          Already have an account? <a href="#" id="switchToLogin">Login</a>
+        </div>
+      </div>
 
-        <!-- Login -->
-        <div id="loginPane" style="display:none">
-          <label>Username or Email <input id="li_identifier" placeholder="username or email"/></label>
-          <label>Password <input id="li_password" type="password" placeholder="Your password"/></label>
-          <button class="btn" onclick="doLogin()">Sign in</button>
-          <div class="note">Don't have an account? <a href="#" onclick="switchTab('signup')">Create one</a></div>
+      <!-- Login -->
+      <div class="form-container" id="loginForm">
+        <div class="form-group">
+          <label for="loginIdentifier">Email or Username</label>
+          <input type="text" id="loginIdentifier" placeholder="Enter email or username" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter password" required>
+        </div>
+        <button class="submit" id="loginBtn">Login</button>
+        <div class="footer-text">
+          Don’t have an account? <a href="#" id="switchToSignup">Signup</a>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Firebase + Logic -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, setDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
@@ -100,99 +224,100 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const errBox = document.getElementById('errorBox');
-    function showError(msg){ errBox.style.display='block'; errBox.innerText = msg; }
-    function clearError(){ errBox.style.display='none'; errBox.innerText=''; }
+    // Tab Switch
+    const signupToggle = document.getElementById("signupToggle");
+    const loginToggle = document.getElementById("loginToggle");
+    const signupForm = document.getElementById("signupForm");
+    const loginForm = document.getElementById("loginForm");
+    const switchToLogin = document.getElementById("switchToLogin");
+    const switchToSignup = document.getElementById("switchToSignup");
 
-    function switchTab(t){
-      clearError();
-      document.getElementById('tabSignup').classList.remove('active');
-      document.getElementById('tabLogin').classList.remove('active');
-      document.getElementById('signupPane').style.display='none';
-      document.getElementById('loginPane').style.display='none';
-      if(t==='signup'){ 
-        document.getElementById('tabSignup').classList.add('active'); 
-        document.getElementById('signupPane').style.display='block'; 
-      }
-      else { 
-        document.getElementById('tabLogin').classList.add('active'); 
-        document.getElementById('loginPane').style.display='block'; 
-      }
-    }
-    window.switchTab = switchTab;
+    signupToggle.addEventListener("click", () => {
+      signupToggle.classList.add("active");
+      loginToggle.classList.remove("active");
+      signupForm.classList.add("active");
+      loginForm.classList.remove("active");
+    });
 
-    // ✅ Signup
-    window.doSignup = async function(){
-      clearError();
-      const name = document.getElementById('su_name').value.trim();
-      const username = document.getElementById('su_username').value.trim().toLowerCase();
-      const email = document.getElementById('su_email').value.trim();
-      const password = document.getElementById('su_password').value;
+    loginToggle.addEventListener("click", () => {
+      loginToggle.classList.add("active");
+      signupToggle.classList.remove("active");
+      loginForm.classList.add("active");
+      signupForm.classList.remove("active");
+    });
 
-      if(!name || !username || !email || !password){ showError('All fields are required'); return; }
-      if(username.length < 6){ showError('Username must be at least 6 characters'); return; }
+    switchToLogin.addEventListener("click", (e) => {
+      e.preventDefault();
+      loginToggle.click();
+    });
+    switchToSignup.addEventListener("click", (e) => {
+      e.preventDefault();
+      signupToggle.click();
+    });
 
-      try{
-        // 🔹 Check username uniqueness
-        const usersRef = collection(db,'users');
-        const q = query(usersRef, where('username','==',username));
-        const snap = await getDocs(q);
-        if(!snap.empty){ showError('Username already taken'); return; }
+    // Signup
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      const name = document.getElementById("signupName").value;
+      const username = document.getElementById("signupUsername").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
 
-        // 🔹 Create Auth User
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = cred.user.uid;
+      try {
+        const q = query(collection(db, "users"), where("username", "==", username));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          alert("⚠️ Username already taken.");
+          return;
+        }
 
-        // 🔹 Save in Firestore users collection
-        await setDoc(doc(db,"users",uid), {
-          uid,
-          name,
-          username,
-          email,
-          password, // ✅ এখানে নতুন ফিল্ড যোগ করা হলো
-          createdAt: serverTimestamp()
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await addDoc(collection(db, "users"), {
+          uid: user.uid,
+          name: name,
+          username: username,
+          email: email
         });
 
-        // 🔹 Store in localStorage
-        localStorage.setItem('ps_auth', JSON.stringify({ uid, email, username, name }));
+        window.location.href = "feed.html";
 
-        // Redirect
-        location.href = 'feed.html';
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    });
 
-      }catch(err){ showError(err.message || 'Signup failed'); }
-    }
+    // Login
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const identifier = document.getElementById("loginIdentifier").value;
+      const password = document.getElementById("loginPassword").value;
 
-    // ✅ Login
-    window.doLogin = async function(){
-      clearError();
-      const identifier = document.getElementById('li_identifier').value.trim();
-      const password = document.getElementById('li_password').value;
-      if(!identifier || !password){ showError('Please enter identifier and password'); return; }
-      try{
-        let email = identifier;
-        if(!identifier.includes('@')){
-          const usersRef = collection(db,'users');
-          const q = query(usersRef, where('username','==', identifier.toLowerCase()));
-          const snap = await getDocs(q);
-          if(snap.empty){ showError('No user with that username'); return; }
-          email = snap.docs[0].data().email;
+      try {
+        let emailToLogin = identifier;
+        if (!identifier.includes("@")) {
+          const q = query(collection(db, "users"), where("username", "==", identifier));
+          const querySnapshot = await getDocs(q);
+          if (querySnapshot.empty) {
+            alert("⚠️ Username not found.");
+            return;
+          }
+          emailToLogin = querySnapshot.docs[0].data().email;
         }
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        const user = cred.user;
 
-        let username = ''; let name='';
-        const userDoc = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
-        if(!userDoc.empty){ const d = userDoc.docs[0].data(); username = d.username; name=d.name; }
+        await signInWithEmailAndPassword(auth, emailToLogin, password);
+        window.location.href = "feed.html";
 
-        localStorage.setItem('ps_auth', JSON.stringify({ uid:user.uid,email:user.email,username,name }));
-        location.href = 'feed.html';
-      }catch(err){ showError(err.message || 'Login failed'); }
-    }
+      } catch (error) {
+        alert("Login Error: " + error.message);
+      }
+    });
 
-    // ✅ If already logged in, redirect
-    onAuthStateChanged(auth, (user)=>{
-      if(user){ location.href = 'feed.html'; }
+    // Auto Login
+    onAuthStateChanged(auth, (user) => {
+      if (user && window.location.pathname.endsWith("index.html")) {
+        window.location.href = "feed.html";
+      }
     });
   </script>
 </body>
-</html>
+  </html>
