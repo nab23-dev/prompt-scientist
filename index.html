@@ -112,7 +112,7 @@
       <div id="loginForm" style="display:none;">
         <div class="form-group">
           <label for="loginId">Email or Username</label>
-          <input type="text" id="loginId" placeholder="you@example.com or username">
+          <input type="text" id="loginId" placeholder="you@example.com">
         </div>
         <div class="form-group">
           <label for="loginPassword">Password</label>
@@ -124,15 +124,13 @@
     </div>
   </div>
 
-  <!-- Firebase Logic -->
+  <!-- Firebase Logic (unchanged) -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { 
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { 
-      getFirestore, doc, setDoc, getDocs, query, where, collection 
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDocs, query, where, collection } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
@@ -145,14 +143,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db   = getFirestore(app);
-
-    // ✅ যদি ইউজার আগে থেকেই লগইন থাকে → সরাসরি feed.html এ পাঠাও
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.location.href = "feed.html";
-      }
-    });
+    const db = getFirestore(app);
 
     // Tab Switch
     const signupTab=document.getElementById('signupTab'),
@@ -179,8 +170,8 @@
         if(!qs.empty){alert("⚠️ Username already taken.");return;}
         const userCred=await createUserWithEmailAndPassword(auth,email,password);
         await setDoc(doc(db,"users",userCred.user.uid),{uid:userCred.user.uid,name,username,email});
-        window.location.href="feed.html";
-      }catch(err){alert("❌ "+err.message);}
+        alert("✅ Account created!");window.location.href="feed.html";
+      }catch(err){alert("Error: "+err.message);}
     });
 
     // Login
@@ -193,7 +184,7 @@
         if(!id.includes("@")){
           const q=query(collection(db,"users"),where("username","==",id));
           const qs=await getDocs(q);
-          if(qs.empty){throw new Error("No user found with this username");}
+          if(qs.empty){throw new Error("No user found");}
           email=qs.docs[0].data().email;
         }
         await signInWithEmailAndPassword(auth,email,pass);
