@@ -85,7 +85,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, setDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
@@ -132,9 +132,14 @@
         if(!snap.empty){ showError('Username already taken'); return; }
 
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = cred.user.uid;
-        await addDoc(usersRef,{ uid, name, username, email, createdAt: serverTimestamp() });
-
+const uid = cred.user.uid;
+await setDoc(doc(db,"users",uid), {
+  uid,
+  name,
+  username,
+  email,
+  createdAt: serverTimestamp()
+});
         localStorage.setItem('ps_auth', JSON.stringify({ uid, email, username, name }));
         location.href = 'feed.html';
       }catch(err){ showError(err.message || 'Signup failed'); }
