@@ -85,7 +85,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, setDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, setDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
@@ -115,6 +115,7 @@
     }
     window.switchTab = switchTab;
 
+    // ✅ Signup
     window.doSignup = async function(){
       clearError();
       const name = document.getElementById('su_name').value.trim();
@@ -123,48 +124,57 @@
       const password = document.getElementById('su_password').value;
 
       if(!name || !username || !email || !password){ showError('All fields are required'); return; }
-      if(username.length < 6){ showError('Username must be at least 6 characters'); return; }
+      if(username.length < 4){ showError('Username must be at least 4 characters'); return; }
 
       try{
-        const usersRef = collection(db,'users');
-        const q = query(usersRef, where('username','==',username));
+        // check duplicate username
+        const q = query(collection(db,'users'), where('username','==',username));
         const snap = await getDocs(q);
-        if(!snap.empty){ showError('Username already taken'); return; }
+        if(!snap.empty){ showError('⚠️ Username already taken'); return; }
 
+        // create auth account
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-const uid = cred.user.uid;
-await setDoc(doc(db,"users",uid), {
-  uid,
-  name,
-  username,
-  email,
-  createdAt: serverTimestamp()
-});
+        const uid = cred.user.uid;
+
+        // create Firestore user profile
+        await setDoc(doc(db,"users",uid), {
+          uid,
+          name,
+          username,
+          email,
+          createdAt: serverTimestamp()
+        });
+
+        // save locally
         localStorage.setItem('ps_auth', JSON.stringify({ uid, email, username, name }));
         location.href = 'feed.html';
       }catch(err){ showError(err.message || 'Signup failed'); }
     }
 
+    // ✅ Login
     window.doLogin = async function(){
       clearError();
       const identifier = document.getElementById('li_identifier').value.trim();
       const password = document.getElementById('li_password').value;
       if(!identifier || !password){ showError('Please enter identifier and password'); return; }
+
       try{
         let email = identifier;
         if(!identifier.includes('@')){
-          const usersRef = collection(db,'users');
-          const q = query(usersRef, where('username','==', identifier.toLowerCase()));
+          const q = query(collection(db,'users'), where('username','==', identifier.toLowerCase()));
           const snap = await getDocs(q);
           if(snap.empty){ showError('No user with that username'); return; }
           email = snap.docs[0].data().email;
         }
+
         const cred = await signInWithEmailAndPassword(auth, email, password);
         const user = cred.user;
-        let username = ''; let name='';
-        const q2 = query(collection(db,'users'), where('uid','==',user.uid));
-        const snap2 = await getDocs(q2);
-        if(!snap2.empty){ const d = snap2.docs[0].data(); username = d.username; name=d.name; }
+
+        // fetch profile
+        let username='', name='';
+        const snap2 = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
+        if(!snap2.empty){ const d = snap2.docs[0].data(); username=d.username; name=d.name; }
+
         localStorage.setItem('ps_auth', JSON.stringify({ uid:user.uid,email:user.email,username,name }));
         location.href = 'feed.html';
       }catch(err){ showError(err.message || 'Login failed'); }
