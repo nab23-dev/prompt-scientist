@@ -273,7 +273,7 @@
 
     posts = fetched.map(p=>({
   ...p,
-  name: p.uid || userCache[p.uid] || "Unknown",
+  name: userCache[p.uid] || "Unknown",
   color: randomColor()
 }));
 
