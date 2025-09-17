@@ -112,7 +112,7 @@
       <div id="loginForm" style="display:none;">
         <div class="form-group">
           <label for="loginId">Email or Username</label>
-          <input type="text" id="loginId" placeholder="you@example.com">
+          <input type="text" id="loginId" placeholder="you@example.com or username">
         </div>
         <div class="form-group">
           <label for="loginPassword">Password</label>
@@ -124,85 +124,82 @@
     </div>
   </div>
 
-  <!-- Firebase Logic (unchanged) -->
+  <!-- Firebase Logic -->
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { 
-    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged 
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import { 
-    getFirestore, setDoc, doc, collection, query, where, getDocs 
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { 
+      getFirestore, doc, setDoc, getDocs, query, where, collection 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey:"AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
-    authDomain:"prompt-scientist.firebaseapp.com",
-    projectId:"prompt-scientist",
-    storageBucket:"prompt-scientist.firebasestorage.app",
-    messagingSenderId:"240705146800",
-    appId:"1:240705146800:web:e7f05107761f4d3007d075"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+      authDomain: "prompt-scientist.firebaseapp.com",
+      projectId: "prompt-scientist",
+      storageBucket: "prompt-scientist.firebasestorage.app",
+      messagingSenderId: "240705146800",
+      appId: "1:240705146800:web:e7f05107761f4d3007d075"
+    };
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
 
-  // ✅ Redirect if already logged in
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      window.location.href = "feed.html";
-    }
-  });
-
-  // ---------- SIGNUP ----------
-  document.getElementById("signupBtn").addEventListener("click", async () => {
-    const name = document.getElementById("signupName").value.trim();
-    const username = document.getElementById("signupUsername").value.trim();
-    const email = document.getElementById("signupEmail").value.trim();
-    const password = document.getElementById("signupPassword").value;
-
-    try {
-      // Check if username already exists
-      const q = query(collection(db, "users"), where("username", "==", username));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        alert("⚠️ Username already taken.");
-        return;
+    // ✅ যদি ইউজার আগে থেকেই লগইন থাকে → সরাসরি feed.html এ পাঠাও
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "feed.html";
       }
+    });
 
-      // Create user
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+    // Tab Switch
+    const signupTab=document.getElementById('signupTab'),
+          loginTab=document.getElementById('loginTab'),
+          signupForm=document.getElementById('signupForm'),
+          loginForm=document.getElementById('loginForm'),
+          toLogin=document.getElementById('toLogin'),
+          toSignup=document.getElementById('toSignup');
+    signupTab.addEventListener('click',()=>{signupTab.classList.add('active');loginTab.classList.remove('active');signupForm.style.display='block';loginForm.style.display='none';});
+    loginTab.addEventListener('click',()=>{loginTab.classList.add('active');signupTab.classList.remove('active');loginForm.style.display='block';signupForm.style.display='none';});
+    toLogin.addEventListener('click',e=>{e.preventDefault();loginTab.click();});
+    toSignup.addEventListener('click',e=>{e.preventDefault();signupTab.click();});
 
-      // Save user profile in Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        name: name,
-        username: username,
-        email: email
-      });
+    // Signup
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      const name=document.getElementById("signupName").value.trim();
+      const username=document.getElementById("signupUsername").value.trim();
+      const email=document.getElementById("signupEmail").value.trim();
+      const password=document.getElementById("signupPassword").value;
+      if(!name||!username||!email||!password){alert("⚠️ সব ফিল্ড পূরণ করুন");return;}
+      try{
+        const q=query(collection(db,"users"),where("username","==",username));
+        const qs=await getDocs(q);
+        if(!qs.empty){alert("⚠️ Username already taken.");return;}
+        const userCred=await createUserWithEmailAndPassword(auth,email,password);
+        await setDoc(doc(db,"users",userCred.user.uid),{uid:userCred.user.uid,name,username,email});
+        window.location.href="feed.html";
+      }catch(err){alert("❌ "+err.message);}
+    });
 
-      alert("✅ Account created successfully!");
-      window.location.href = "feed.html";
-
-    } catch (error) {
-      alert("Error: " + error.message);
-    }
-  });
-
-  // ---------- LOGIN ----------
-  document.getElementById("loginBtn").addEventListener("click", async () => {
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert("✅ Login successful!");
-      window.location.href = "feed.html";
-    } catch (error) {
-      alert("Error: " + error.message);
-    }
-  });
+    // Login
+    document.getElementById("loginBtn").addEventListener("click",async()=>{
+      const id=document.getElementById("loginId").value.trim();
+      const pass=document.getElementById("loginPassword").value;
+      if(!id||!pass){alert("⚠️ Fill all fields");return;}
+      try{
+        let email=id;
+        if(!id.includes("@")){
+          const q=query(collection(db,"users"),where("username","==",id));
+          const qs=await getDocs(q);
+          if(qs.empty){throw new Error("No user found with this username");}
+          email=qs.docs[0].data().email;
+        }
+        await signInWithEmailAndPassword(auth,email,pass);
+        window.location.href="feed.html";
+      }catch(e){alert("❌ "+e.message);}
+    });
   </script>
 </body>
 </html>
