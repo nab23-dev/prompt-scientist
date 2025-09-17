@@ -15,7 +15,7 @@
       background:var(--bg);color:var(--fg);
       display:flex;align-items:center;justify-content:center;height:100vh}
     .container{max-width:920px;width:100%;padding:20px;}
-    .brand{font-weight:700;font-size:24px;color:var(--accent);margin-bottom:18px}
+    .brand{font-weight:700;font-size:26px;color:var(--accent);margin-bottom:20px}
     .grid{display:grid;grid-template-columns:1fr 400px;gap:32px;align-items:center}
     .info h2{font-size:28px;margin-bottom:10px}
     .info p{color:var(--muted);font-size:15px}
@@ -76,9 +76,16 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { 
+      getFirestore, doc, setDoc, getDoc, collection, 
+      query, where, getDocs, serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+    // ✅ Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
       authDomain: "prompt-scientist.firebaseapp.com",
@@ -87,7 +94,6 @@
       messagingSenderId: "240705146800",
       appId: "1:240705146800:web:e7f05107761f4d3007d075"
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -96,14 +102,20 @@
     function showError(msg){ errBox.style.display='block'; errBox.innerText = msg; }
     function clearError(){ errBox.style.display='none'; errBox.innerText=''; }
 
+    // ✅ Tab switch
     function switchTab(t){
       clearError();
       document.getElementById('tabSignup').classList.remove('active');
       document.getElementById('tabLogin').classList.remove('active');
       document.getElementById('signupPane').style.display='none';
       document.getElementById('loginPane').style.display='none';
-      if(t==='signup'){ document.getElementById('tabSignup').classList.add('active'); document.getElementById('signupPane').style.display='block'; }
-      else { document.getElementById('tabLogin').classList.add('active'); document.getElementById('loginPane').style.display='block'; }
+      if(t==='signup'){ 
+        document.getElementById('tabSignup').classList.add('active'); 
+        document.getElementById('signupPane').style.display='block'; 
+      } else { 
+        document.getElementById('tabLogin').classList.add('active'); 
+        document.getElementById('loginPane').style.display='block'; 
+      }
     }
     window.switchTab = switchTab;
 
@@ -126,7 +138,7 @@
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = cred.user.uid;
 
-        // ✅ users/{uid} ডকুমেন্ট তৈরি
+        // ✅ save user data
         await setDoc(doc(db,"users",uid),{
           uid, name, username, email,
           createdAt: serverTimestamp()
@@ -158,7 +170,6 @@
         const cred = await signInWithEmailAndPassword(auth, email, password);
         const user = cred.user;
 
-        // users থেকে name ও username বের করা
         const userDoc = await getDoc(doc(db,"users",user.uid));
         const data = userDoc.exists() ? userDoc.data() : {};
         
@@ -171,7 +182,7 @@
       }catch(err){ showError(err.message); }
     }
 
-    // ✅ যদি আগেই লগইন থাকে
+    // ✅ Already logged in? redirect to feed
     onAuthStateChanged(auth,(u)=>{
       if(u){ location.href = 'feed.html'; }
     });
