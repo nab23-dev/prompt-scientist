@@ -349,30 +349,44 @@
     }
 
     // ---------- Events ----------
-    feedEl.addEventListener("click", async ev=>{
+    feedEl.addEventListener("click", async (ev) => {
   // --- Copy button ---
   const copyBtn = ev.target.closest(".btn-copy");
-  if(copyBtn){
-    await navigator.clipboard.writeText(copyBtn.dataset.prompt||"");
-    copyBtn.textContent="Copied!";
-    setTimeout(()=>copyBtn.textContent="Copy",1200);
-    return; // এখানে return করলে নিচে যাবে না
+  if (copyBtn) {
+    // টেক্সট বের করুন – dataset না থাকলেও fallback নেবে
+    const text =
+      copyBtn.getAttribute("data-prompt") ||
+      copyBtn.previousElementSibling.textContent.trim();
+
+    try {
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = "Copied!";
+    } catch (err) {
+      // Clipboard কাজ না করলে ফোলব্যাক
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      copyBtn.textContent = "Copied!";
+    }
+
+    setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+    return;
   }
 
   // --- Reaction button ---
   const reactBtn = ev.target.closest(".btn-react");
-  if(reactBtn){
+  if (reactBtn) {
     const postEl = reactBtn.closest(".post");
     const postId = postEl.dataset.id;
-    const type   = reactBtn.dataset.type;
+    const type = reactBtn.dataset.type;
 
-    if(!user) return alert("Please login first!");
+    if (!user) return alert("Please login first!");
 
-    // Firestore এ রিয়েকশন আপডেট
     const ref = doc(db, "posts", postId);
-    await updateDoc(ref, {
-      [`reactions.${user.uid}`]: type
-    });
+    await updateDoc(ref, { [`reactions.${user.uid}`]: type });
   }
 });
     // ✅ Search filter (caption + username)
