@@ -379,6 +379,8 @@
   // --- Reaction button ---
   const reactBtn = ev.target.closest(".btn-react");
   if (reactBtn) {
+    if (reactBtn) {
+  ev.preventDefault();  // ✅ Reload বন্ধ
     const postEl = reactBtn.closest(".post");
     const postId = postEl.dataset.id;
     const type = reactBtn.dataset.type;
