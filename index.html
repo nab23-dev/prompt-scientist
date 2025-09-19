@@ -144,15 +144,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    import { onAuthStateChanged } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-// যদি ইউজার আগেই লগইন করা থাকে, তাহলে সরাসরি feed.html এ যাবে
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    window.location.href = "feed.html";
-  }
-});
+    
     // Tab Switch
     const signupTab=document.getElementById('signupTab'),
           loginTab=document.getElementById('loginTab'),
