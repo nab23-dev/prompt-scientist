@@ -413,7 +413,13 @@ searchInput.addEventListener("input", ()=>{
     window.addEventListener("scroll",()=>{
       if(window.innerHeight+window.scrollY>=document.body.offsetHeight-260) renderNext();
     });
-
+// 🔹 লোকালস্টোরেজে আগে সেভ থাকা পোস্ট থাকলে দেখাও
+const cached = localStorage.getItem("ps_posts");
+if (cached) {
+  posts = JSON.parse(cached);
+  renderNext();
+  loadingEl.style.display = "none";
+    }
     // ---------- Auth ----------
     onAuthStateChanged(auth, async (u)=>{
   if(u){ 
