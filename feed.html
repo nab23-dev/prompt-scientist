@@ -276,7 +276,7 @@
   name: userCache[p.uid] || "Unknown",
   color: randomColor()
 }));
-
+localStorage.setItem("ps_posts", JSON.stringify(posts));
     feedEl.innerHTML = "";
     currentIndex = 0;
     nextAdAfter = randomAdGap();
