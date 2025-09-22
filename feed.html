@@ -332,7 +332,7 @@ function shuffleArray(arr) {
           </div>
         </div>
         <div class="caption">${escapeHtml(p.caption||"")}</div>
-        ${p.imageURL?`<img class="post-image" src="${escapeHtml(p.imageURL)}">`:""}
+        ${p.imageURL?`<img class="post-image" src="${escapeHtml(p.imageURL)}" loading="lazy">`:""}
         <div class="prompt-block">
           <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">${escapeHtml(p.prompt||"")}</div>
           <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
