@@ -236,7 +236,13 @@
       }catch{return "";}
     };
     function randomAdGap(){ return Math.floor(Math.random()*6) + 2; } // 2–7
-
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+    }
     // ---------- Load user names ----------
     async function loadUsersForPosts(uids){
       const toLoad = uids.filter(uid => uid && !userCache[uid]);
