@@ -264,7 +264,7 @@ function shuffleArray(arr) {
   endMsgEl.style.display = "none";
 
   const q = query(collection(db, "posts"), where("approved","==", true));
-  
+
   // 🔹 Ads লোড
   onSnapshot(collection(db, "ads"), (snapAds)=>{
     ads = snapAds.docs.map(d=>({id:d.id,...d.data()}));
@@ -272,16 +272,19 @@ function shuffleArray(arr) {
 
   // 🔹 Posts লোড
   onSnapshot(q, async (snap)=>{
-    const fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+    let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+
+    // 🔀 Random order
+    fetched = shuffleArray(fetched);
 
     const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
     await loadUsersForPosts(uids);
 
     posts = fetched.map(p=>({
-  ...p,
-  name: userCache[p.uid] || "Unknown",
-  color: randomColor()
-}));
+      ...p,
+      name: userCache[p.uid] || "Unknown",
+      color: randomColor()
+    }));
 
     feedEl.innerHTML = "";
     currentIndex = 0;
