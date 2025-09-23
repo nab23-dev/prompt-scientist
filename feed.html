@@ -315,7 +315,6 @@ function renderNext(){
   feedEl.appendChild(frag);
   currentIndex=end;
 }
-
 function renderPost(p){
   const counts = {like:0,love:0,haha:0,angry:0,wow:0};
   Object.values(p.reactions||{}).forEach(r=>{ if(counts[r]!==undefined) counts[r]++; });
@@ -331,7 +330,7 @@ function renderPost(p){
       <div class="uicon" style="background:${p.color}">${escapeHtml(initial)}</div>
       <div class="meta">
         <div class="username">${escapeHtml(displayName)}</div>
-        <div class="time">${timeAgo(p.timestamp)}</div>
+        <div class="time">${p.timestamp ? timeAgo(p.timestamp) : ""}</div>
       </div>
     </div>
     <div class="caption">${escapeHtml(p.caption||"")}</div>
@@ -349,16 +348,6 @@ function renderPost(p){
       <button class="btn-react btn-share" data-id="${p.id}">🔗 Share</button>
     </div>
   `;
-  return el;
-}
-
-function renderAd(a){
-  const el=document.createElement("div");
-  el.className="card ad-card";
-  el.innerHTML=`<div style="padding:12px">
-    <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Sponsored</div>
-    <a href="${escapeHtml(a.link||"#")}" target="_blank"><img src="${escapeHtml(a.imageURL||"")}"></a>
-  </div>`;
   return el;
     }
 
