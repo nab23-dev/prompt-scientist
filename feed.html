@@ -313,41 +313,42 @@ function shuffleArray(arr) {
       feedEl.appendChild(frag);
       currentIndex=end;
     }
+function renderPost(p){
+  const counts = {like:0,love:0,haha:0,angry:0,wow:0};
+  Object.values(p.reactions||{}).forEach(r=>{ if(counts[r]!==undefined) counts[r]++; });
 
-    function renderPost(p){
-      const counts = {like:0,love:0,haha:0,angry:0,wow:0};
-      Object.values(p.reactions||{}).forEach(r=>{ if(counts[r]!==undefined) counts[r]++; });
+  const displayName = p.name || "Unknown";
+  const initial = displayName[0]?.toUpperCase() || "U";
 
-      const displayName = p.name || "Unknown";
-      const initial = displayName[0]?.toUpperCase() || "U";
-
-      const el = document.createElement("article");
-      el.className="card post";
-      el.dataset.id=p.id;
-      el.innerHTML=`
-        <div class="post-header">
-          <div class="uicon" style="background:${p.color}">${escapeHtml(initial)}</div>
-          <div class="meta">
-            <div class="username">${escapeHtml(displayName)}</div>
-            <div class="time">${timeAgo(p.timestamp)}</div>
-          </div>
-        </div>
-        <div class="caption">${escapeHtml(p.caption||"")}</div>
-        ${p.imageURL?`<img class="post-image" src="${escapeHtml(p.imageURL)}" loading="lazy">`:""}
-        <div class="prompt-block">
-          <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">${escapeHtml(p.prompt||"")}</div>
-          <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
-        </div>
-        <div class="actions">
-  ${reactionBtn("like","👍",counts.like)}
-  ${reactionBtn("love","❤️",counts.love)}
-  ${reactionBtn("haha","😂",counts.haha)}
-  ${reactionBtn("angry","😡",counts.angry)}
-  ${reactionBtn("wow","😮",counts.wow)}
-  <button class="btn-react btn-share" data-id="${p.id}">🔗 Share</button>
-</div>
-      return el;
+  const el = document.createElement("article");
+  el.className="card post";
+  el.dataset.id=p.id;
+  el.innerHTML=`
+    <div class="post-header">
+      <div class="uicon" style="background:${p.color}">${escapeHtml(initial)}</div>
+      <div class="meta">
+        <div class="username">${escapeHtml(displayName)}</div>
+        <div class="time">${timeAgo(p.timestamp)}</div>
+      </div>
+    </div>
+    <div class="caption">${escapeHtml(p.caption||"")}</div>
+    ${p.imageURL?`<img class="post-image" src="${escapeHtml(p.imageURL)}" loading="lazy">`:""}
+    <div class="prompt-block">
+      <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">${escapeHtml(p.prompt||"")}</div>
+      <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
+    </div>
+    <div class="actions">
+      ${reactionBtn("like","👍",counts.like)}
+      ${reactionBtn("love","❤️",counts.love)}
+      ${reactionBtn("haha","😂",counts.haha)}
+      ${reactionBtn("angry","😡",counts.angry)}
+      ${reactionBtn("wow","😮",counts.wow)}
+      <button class="btn-react btn-share" data-id="${p.id}">🔗 Share</button>
+    </div>
+  `;
+  return el;   // ✅ এটা আলাদা লাইনে থাকবে, innerHTML-এর বাইরে
     }
+    
     const reactionBtn=(t,e,c)=>`<button class="btn-react" data-type="${t}"><span>${e}</span><span class="count">${c}</span></button>`;
     function renderAd(a){
       const el=document.createElement("div");
