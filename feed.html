@@ -259,7 +259,7 @@ function shuffleArray(arr) {
     }
 
     // ---------- Load posts & ads ----------
-    function subscribeToPosts(){
+function subscribeToPosts(){
   loadingEl.style.display = "block";
   feedEl.innerHTML = "";
   endMsgEl.style.display = "none";
@@ -273,47 +273,49 @@ function shuffleArray(arr) {
 
   // 🔹 Posts লোড
   onSnapshot(q, async (snap)=>{
-  let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+    let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
 
-  // ✅ শুধু প্রথমবার random order
-  if (posts.length === 0) {
-    fetched = shuffleArray(fetched);
-  }
-
-  const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
-  await loadUsersForPosts(uids);
-
-  posts = fetched.map(p=>({
-    ...p,
-    name: userCache[p.uid] || "Unknown",
-    color: randomColor()
-  }));
-
-  feedEl.innerHTML = "";
-  currentIndex = 0;
-  nextAdAfter = randomAdGap();
-  renderNext();
-
-  loadingEl.style.display="none";
-});
-    
-    // ---------- Render ----------
-    function renderNext(){
-      if(currentIndex >= posts.length){
-        endMsgEl.style.display="block"; return;
-      }
-      const frag = document.createDocumentFragment();
-      const end = Math.min(currentIndex + PAGE_SIZE, posts.length);
-      for(let i=currentIndex;i<end;i++){
-        frag.appendChild(renderPost(posts[i]));
-        if(ads.length && ( (i+1-currentIndex) % nextAdAfter === 0 )){
-          frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
-          nextAdAfter = randomAdGap();
-        }
-      }
-      feedEl.appendChild(frag);
-      currentIndex=end;
+    // ✅ শুধু প্রথমবার random order
+    if (posts.length === 0) {
+      fetched = shuffleArray(fetched);
     }
+
+    const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
+    await loadUsersForPosts(uids);
+
+    posts = fetched.map(p=>({
+      ...p,
+      name: userCache[p.uid] || "Unknown",
+      color: randomColor()
+    }));
+
+    feedEl.innerHTML = "";
+    currentIndex = 0;
+    nextAdAfter = randomAdGap();
+    renderNext();   // ✅ এখন কাজ করবে
+
+    loadingEl.style.display="none";
+  });
+}
+
+// ---------- Render ----------   ✅ এখন ফাংশনগুলো বাইরে
+function renderNext(){
+  if(currentIndex >= posts.length){
+    endMsgEl.style.display="block"; return;
+  }
+  const frag = document.createDocumentFragment();
+  const end = Math.min(currentIndex + PAGE_SIZE, posts.length);
+  for(let i=currentIndex;i<end;i++){
+    frag.appendChild(renderPost(posts[i]));
+    if(ads.length && ( (i+1-currentIndex) % nextAdAfter === 0 )){
+      frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
+      nextAdAfter = randomAdGap();
+    }
+  }
+  feedEl.appendChild(frag);
+  currentIndex=end;
+}
+
 function renderPost(p){
   const counts = {like:0,love:0,haha:0,angry:0,wow:0};
   Object.values(p.reactions||{}).forEach(r=>{ if(counts[r]!==undefined) counts[r]++; });
@@ -347,18 +349,17 @@ function renderPost(p){
       <button class="btn-react btn-share" data-id="${p.id}">🔗 Share</button>
     </div>
   `;
-  return el;   // ✅ এটা আলাদা লাইনে থাকবে, innerHTML-এর বাইরে
-    }
-    
-    const reactionBtn=(t,e,c)=>`<button class="btn-react" data-type="${t}"><span>${e}</span><span class="count">${c}</span></button>`;
-    function renderAd(a){
-      const el=document.createElement("div");
-      el.className="card ad-card";
-      el.innerHTML=`<div style="padding:12px">
-        <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Sponsored</div>
-        <a href="${escapeHtml(a.link||"#")}" target="_blank"><img src="${escapeHtml(a.imageURL||"")}"></a>
-      </div>`;
-      return el;
+  return el;
+}
+
+function renderAd(a){
+  const el=document.createElement("div");
+  el.className="card ad-card";
+  el.innerHTML=`<div style="padding:12px">
+    <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Sponsored</div>
+    <a href="${escapeHtml(a.link||"#")}" target="_blank"><img src="${escapeHtml(a.imageURL||"")}"></a>
+  </div>`;
+  return el;
     }
 
     // ---------- Events ----------
