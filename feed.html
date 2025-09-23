@@ -386,7 +386,26 @@ function shuffleArray(arr) {
     setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
     return;
   }
-
+// --- Share button ---
+const shareBtn = ev.target.closest(".btn-share");
+if (shareBtn) {
+  const postId = shareBtn.dataset.id;
+  const url = `${window.location.origin}${window.location.pathname}?id=${postId}`;
+  try {
+    await navigator.clipboard.writeText(url);
+    alert("Link copied: " + url);
+  } catch {
+    // fallback
+    const ta = document.createElement("textarea");
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    alert("Link copied: " + url);
+  }
+  return;
+    }
   // --- Reaction button ---
   const reactBtn = ev.target.closest(".btn-react");
   if (reactBtn) {
