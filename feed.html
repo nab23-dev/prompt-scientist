@@ -445,15 +445,47 @@ searchInput.addEventListener("input", ()=>{
     });
 
     // ---------- Auth ----------
-    onAuthStateChanged(auth, async (u)=>{
-  if(u){ 
-    user=u; 
-    subscribeToPosts(); 
+    // ---------- Single post view from URL ----------
+const urlParams = new URLSearchParams(window.location.search);
+const postIdFromUrl = urlParams.get("id");
+
+if (postIdFromUrl) {
+  // শুধু ওই পোস্ট লোড করবো
+  async function loadSinglePost(id){
+    const snap = await getDoc(doc(db, "posts", id));
+    if (snap.exists()) {
+      const p = { id: snap.id, ...snap.data() };
+      await loadUsersForPosts([p.uid]); // ইউজার নাম লোড
+      p.name = userCache[p.uid] || "Unknown";
+      p.color = randomColor();
+      feedEl.innerHTML = "";
+      feedEl.appendChild(renderPost(p));
+      loadingEl.style.display = "none";
+    } else {
+      feedEl.innerHTML = `<div class="empty">Post not found!</div>`;
+    }
   }
-  else{ 
-    location.href="index.html"; 
-  }
-});
+  onAuthStateChanged(auth, async (u)=>{
+    if(u){ 
+      user=u; 
+      loadSinglePost(postIdFromUrl); 
+    }
+    else{ 
+      location.href="index.html"; 
+    }
+  });
+} else {
+  // নরমাল feed লোড হবে
+  onAuthStateChanged(auth, async (u)=>{
+    if(u){ 
+      user=u; 
+      subscribeToPosts(); 
+    }
+    else{ 
+      location.href="index.html"; 
+    }
+  });
+    }
   </script>
 </body>
 </html>
