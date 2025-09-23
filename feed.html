@@ -273,28 +273,29 @@ function shuffleArray(arr) {
 
   // 🔹 Posts লোড
   onSnapshot(q, async (snap)=>{
-    let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+  let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
 
-    // 🔀 Random order
+  // ✅ শুধু প্রথমবার random order
+  if (posts.length === 0) {
     fetched = shuffleArray(fetched);
+  }
 
-    const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
-    await loadUsersForPosts(uids);
+  const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
+  await loadUsersForPosts(uids);
 
-    posts = fetched.map(p=>({
-      ...p,
-      name: userCache[p.uid] || "Unknown",
-      color: randomColor()
-    }));
+  posts = fetched.map(p=>({
+    ...p,
+    name: userCache[p.uid] || "Unknown",
+    color: randomColor()
+  }));
 
-    feedEl.innerHTML = "";
-    currentIndex = 0;
-    nextAdAfter = randomAdGap();
-    renderNext();
+  feedEl.innerHTML = "";
+  currentIndex = 0;
+  nextAdAfter = randomAdGap();
+  renderNext();
 
-    loadingEl.style.display="none";
-  });
-    }
+  loadingEl.style.display="none";
+});
     
     // ---------- Render ----------
     function renderNext(){
