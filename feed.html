@@ -144,7 +144,11 @@
       background:transparent;cursor:pointer;font-weight:600;
     }
     .btn-react.active{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#fff;border-color:transparent;box-shadow:0 10px 28px rgba(124,58,237,0.08)}
-
+/* dark mode fix for reactions */
+body.dark .btn-react,
+body.dark .btn-react .count {
+  color: #fff;
+}
     /* ad */
     .ad-card{padding:0;border-radius:10px;overflow:hidden;border:1px solid rgba(11,18,28,0.04)}
     .ad-card img{width:100%;display:block;height:auto}
