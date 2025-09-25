@@ -454,20 +454,40 @@ const postIdFromUrl = urlParams.get("id");
 
 if (postIdFromUrl) {
   // শুধু ওই পোস্ট লোড করবো
-  async function loadSinglePost(id){
-    const snap = await getDoc(doc(db, "posts", id));
-    if (snap.exists()) {
-      const p = { id: snap.id, ...snap.data() };
-      await loadUsersForPosts([p.uid]); // ইউজার নাম লোড
-      p.name = userCache[p.uid] || "Unknown";
-      p.color = randomColor();
-      feedEl.innerHTML = "";
-      feedEl.appendChild(renderPost(p));
-      loadingEl.style.display = "none";
-    } else {
-      feedEl.innerHTML = `<div class="empty">Post not found!</div>`;
+  async function loadSinglePost(id, isGuest=false){
+  const snap = await getDoc(doc(db, "posts", id));
+  if (snap.exists()) {
+    const p = { id: snap.id, ...snap.data() };
+    await loadUsersForPosts([p.uid]); 
+    p.name = userCache[p.uid] || "Unknown";
+    p.color = randomColor();
+
+    feedEl.innerHTML = "";
+    feedEl.appendChild(renderPost(p));
+
+    // 👇 যদি গেস্ট হয় তাহলে সাইনআপ মেসেজ দেখাও
+    if(isGuest){
+      const msg = document.createElement("div");
+      msg.className = "card";
+      msg.style.textAlign = "center";
+      msg.style.marginTop = "16px";
+      msg.innerHTML = `
+        <p style="font-size:15px; margin-bottom:12px;">
+          Want to see more trending prompts? <br> Sign up now!
+        </p>
+        <button id="signupBtn" class="btn-copy" style="font-size:14px;">Sign Up</button>
+      `;
+      feedEl.appendChild(msg);
+      document.getElementById("signupBtn").addEventListener("click", ()=>{
+        location.href = "index.html";
+      });
     }
+
+    loadingEl.style.display = "none";
+  } else {
+    feedEl.innerHTML = `<div class="empty">Post not found!</div>`;
   }
+      }
   onAuthStateChanged(auth, async (u)=>{
     if(u){ 
       user=u; 
