@@ -485,8 +485,9 @@ if (postIdFromUrl) {
       subscribeToPosts(); 
     }
     else{ 
-      location.href="index.html"; 
-    }
+  // লগইন ছাড়া হলেও পোস্ট দেখাবে + সাইনআপ মেসেজ দেখাবে
+  loadSinglePost(postIdFromUrl, true); 
+      }
   });
 }
   </script>
