@@ -181,15 +181,24 @@
       const prompt=document.getElementById("prompt").value.trim();
       if(!prompt){alert("⚠️ Prompt is required");return;}
 
-      await addDoc(collection(db,"posts"),{
-        uid:currentUser.uid,
-        name:userData?.name || "",
-        username:userData?.username || "",
-        email:userData?.email || currentUser.email,
-        imageURL,caption,prompt,
-        timestamp:serverTimestamp(),
-        approved:false
-      });
+      // 🔹 প্রথমে global settings থেকে autoApprove মানটা আনুন
+const settingsRef = doc(db, "settings", "global");
+const settingsSnap = await getDoc(settingsRef);
+let autoApprove = false;
+if (settingsSnap.exists()) {
+  autoApprove = settingsSnap.data().autoApprove === true;
+}
+
+// 🔹 এবার পোস্ট add করুন
+await addDoc(collection(db,"posts"),{
+  uid: currentUser.uid,
+  name: userData?.name || "",
+  username: userData?.username || "",
+  email: userData?.email || currentUser.email,
+  imageURL, caption, prompt,
+  timestamp: serverTimestamp(),
+  approved: autoApprove   // ✅ autoApprove true হলে অটো approve হবে
+});
 
       alert("✅ Post submitted! Pending admin approval.");
       postForm.reset();
