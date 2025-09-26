@@ -277,12 +277,11 @@ function shuffleArray(arr) {
 
   // 🔹 Posts লোড
   onSnapshot(q, async (snap)=>{
-    let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+  let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
 
-// ✅ শুধু প্রথমবার randomize করবো
-if (posts.length === 0) {
-  fetched = shuffleArray(fetched);
-}
+  if (posts.length === 0) {
+    // প্রথমবার shuffle হবে
+    fetched = shuffleArray(fetched);
 
     const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
     await loadUsersForPosts(uids);
@@ -293,14 +292,29 @@ if (posts.length === 0) {
       color: randomColor()
     }));
 
+    // শুধু প্রথমবার পুরো feed render হবে
     feedEl.innerHTML = "";
     currentIndex = 0;
     nextAdAfter = randomAdGap();
     renderNext();
-
     loadingEl.style.display="none";
-  });
-    }
+  } else {
+    // পরেরবার শুধু update হওয়া post replace করবো
+    snap.docChanges().forEach(change => {
+      if (change.type === "modified") {
+        const updated = { id: change.doc.id, ...change.doc.data() };
+        const idx = posts.findIndex(p => p.id === updated.id);
+        if (idx !== -1) {
+          posts[idx] = { ...posts[idx], ...updated };
+          const oldEl = feedEl.querySelector(`[data-id="${updated.id}"]`);
+          if (oldEl) {
+            oldEl.replaceWith(renderPost(posts[idx]));
+          }
+        }
+      }
+    });
+  }
+});
     
     // ---------- Render ----------
     function renderNext(){
