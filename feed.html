@@ -342,18 +342,44 @@ function shuffleArray(arr) {
       feedEl.appendChild(frag);
       currentIndex=end;
     }
-
-    function renderPost(p){
-  const counts = {like:0,love:0,haha:0,angry:0,wow:0};
-  Object.values(p.reactions||{}).forEach(r=>{ if(counts[r]!==undefined) counts[r]++; });
+function renderPost(p) {
+  const counts = { like: 0, love: 0, haha: 0, angry: 0, wow: 0 };
+  Object.values(p.reactions || {}).forEach(r => { if (counts[r] !== undefined) counts[r]++; });
 
   const displayName = p.name || "Unknown";
   const initial = displayName[0]?.toUpperCase() || "U";
 
+  // ✅ Google Drive লিংক কনভার্ট করা
+  let mediaURL = p.imageURL || "";
+  if (mediaURL.includes("drive.google.com")) {
+    const match = mediaURL.match(/\/d\/(.*?)(\/|$)/);
+    if (match && match[1]) {
+      mediaURL = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    }
+  }
+
+  // ✅ মিডিয়া (ইমেজ / ভিডিও) রেন্ডার
+  let mediaHTML = "";
+  if (mediaURL) {
+    if (/\.(mp4|webm|ogg)$/i.test(mediaURL)) {
+      // যদি ভিডিও ফাইল হয়
+      mediaHTML = `
+        <video class="post-video" controls preload="metadata" width="100%" style="border-radius:10px;">
+          <source src="${escapeHtml(mediaURL)}" type="video/mp4">
+          আপনার ব্রাউজার ভিডিও সাপোর্ট করে না।
+        </video>
+      `;
+    } else {
+      // ডিফল্ট → ইমেজ
+      mediaHTML = `<img class="post-image" src="${escapeHtml(mediaURL)}" loading="lazy" style="border-radius:10px;">`;
+    }
+  }
+
+  // ✅ পোস্ট HTML
   const el = document.createElement("article");
-  el.className="card post";
-  el.dataset.id=p.id;
-  el.innerHTML=`
+  el.className = "card post";
+  el.dataset.id = p.id;
+  el.innerHTML = `
     <div class="post-header">
       <div class="uicon" style="background:${p.color}">${escapeHtml(initial)}</div>
       <div class="meta">
@@ -361,23 +387,24 @@ function shuffleArray(arr) {
         <div class="time">${timeAgo(p.timestamp)}</div>
       </div>
     </div>
-    <div class="caption">${escapeHtml(p.caption||"")}</div>
-    ${p.imageURL?`<img class="post-image" src="${escapeHtml(p.imageURL)}" loading="lazy">`:""}
+    <div class="caption">${escapeHtml(p.caption || "")}</div>
+    ${mediaHTML}
     <div class="prompt-block">
-      <div class="prompt-text" title="${escapeHtml(p.prompt||"")}">${escapeHtml(p.prompt||"")}</div>
-      <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
+      <div class="prompt-text" title="${escapeHtml(p.prompt || "")}">${escapeHtml(p.prompt || "")}</div>
+      <button class="btn-copy" data-prompt="${escapeHtml(p.prompt || "")}">Copy</button>
     </div>
     <div class="actions">
-      ${reactionBtn("like","👍",counts.like)}
-      ${reactionBtn("love","❤️",counts.love)}
-      ${reactionBtn("haha","😂",counts.haha)}
-      ${reactionBtn("angry","😡",counts.angry)}
-      ${reactionBtn("wow","😮",counts.wow)}
+      ${reactionBtn("like", "👍", counts.like)}
+      ${reactionBtn("love", "❤️", counts.love)}
+      ${reactionBtn("haha", "😂", counts.haha)}
+      ${reactionBtn("angry", "😡", counts.angry)}
+      ${reactionBtn("wow", "😮", counts.wow)}
       <button class="btn-react btn-share" data-id="${p.id}">🔗 Share</button>
     </div>
   `;
-  return el;   // ✅ এটা আলাদা লাইনে থাকবে, innerHTML-এর বাইরে
-}
+  return el;
+    }
+    
     const reactionBtn=(t,e,c)=>`<button class="btn-react" data-type="${t}"><span>${e}</span><span class="count">${c}</span></button>`;
     function renderAd(a){
       const el=document.createElement("div");
