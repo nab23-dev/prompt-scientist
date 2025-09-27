@@ -1,0 +1,22 @@
+{
+  "name": "Prompt Scientist",
+  "short_name": "PromptSci",
+  "start_url": "/prompt-scientist/feed.html",
+  "scope": "/prompt-scientist/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "prompticon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "prompticon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
