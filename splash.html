@@ -1,60 +1,72 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Loading...</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt-Scientist</title>
   <style>
     body {
       margin: 0;
       height: 100vh;
-      background: #000;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
+      align-items: center;
+      background: #000;
+      color: #fff;
+      font-family: "Inter", sans-serif;
       overflow: hidden;
     }
 
-    .logo-text {
-      font-family: "Inter", sans-serif;
-      font-size: 28px;
-      font-weight: 700;
-      color: #fff;
+    /* লোগো fade-in */
+    .logo {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
       opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 1.5s ease forwards;
+      animation: fadeIn 2s ease forwards;
     }
 
-    @keyframes fadeInUp {
+    @keyframes fadeIn {
       to {
         opacity: 1;
-        transform: translateY(0);
       }
     }
 
-    /* Smooth transition to next page */
-    .fade-out {
-      animation: fadeOut 1s ease forwards;
+    /* Prompt-Scientist লেখা typing animation */
+    .title {
+      margin-top: 20px;
+      font-size: 26px;
+      font-weight: 700;
+      white-space: nowrap;
+      border-right: 2px solid #fff;
+      width: 0;
+      overflow: hidden;
+      animation: typing 3s steps(20, end) forwards, blink 0.7s infinite;
     }
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        transform: scale(0.95);
-      }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 15ch; } /* Prompt-Scientist = 15 characters */
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent; }
     }
   </style>
 </head>
 <body>
-  <div class="logo-text">Prompt-Scientist</div>
+  <!-- 🔹 আপনার লোগো -->
+  <img src="prompticon.png" alt="Prompt Scientist Logo" class="logo">
+  
+  <!-- 🔹 লেখা -->
+  <div class="title">Prompt-Scientist</div>
 
   <script>
-    // ⏳ 2 সেকেন্ড পর মেইন অ্যাপে যাবে
+    // ৩ সেকেন্ড পর ফিডে redirect
     setTimeout(() => {
-      document.body.classList.add("fade-out");
-      setTimeout(() => {
-        window.location.href = "feed.html";
-      }, 1000);
-    }, 2000);
+      window.location.href = "feed.html";
+    }, 3500);
   </script>
 </body>
 </html>
