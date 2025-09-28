@@ -1,6 +1,6 @@
 {
   "name": "Prompt Scientist",
-  "short_name": "PromptSci",
+  "short_name": "Prompt Scientist",
   "start_url": "/prompt-scientist/splash.html",
   "scope": "/prompt-scientist/",
   "display": "standalone",
