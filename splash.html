@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prompt-Scientist</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Prompt-Scientist — Splash</title>
   <style>
     body {
       margin: 0;
@@ -12,61 +12,99 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: #000;
+      background: linear-gradient(135deg, #000, #111, #000);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
       color: #fff;
-      font-family: "Inter", sans-serif;
       overflow: hidden;
+      font-family: "Inter", sans-serif;
     }
 
-    /* লোগো fade-in */
-    .logo {
-      width: 120px;
-      height: 120px;
-      object-fit: contain;
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .splash-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
       opacity: 0;
-      animation: fadeIn 2s ease forwards;
+      transform: scale(0.9);
+      animation: fadeInUp 1.8s ease forwards;
     }
 
-    @keyframes fadeIn {
+    @keyframes fadeInUp {
       to {
         opacity: 1;
+        transform: scale(1);
       }
     }
 
-    /* Prompt-Scientist লেখা typing animation */
+    .logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+    }
+
     .title {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+
+    .loading-dots {
       margin-top: 20px;
-      font-size: 26px;
-      font-weight: 700;
-      white-space: nowrap;
-      border-right: 2px solid #fff;
-      width: 0;
-      overflow: hidden;
-      animation: typing 3s steps(20, end) forwards, blink 0.7s infinite;
+      display: flex;
+      gap: 6px;
     }
 
-    @keyframes typing {
-      from { width: 0; }
-      to { width: 15ch; } /* Prompt-Scientist = 15 characters */
+    .loading-dots span {
+      width: 8px; height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      display: inline-block;
+      animation: bounce 1.2s infinite;
     }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
-    @keyframes blink {
-      50% { border-color: transparent; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1.2); opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <!-- 🔹 আপনার লোগো -->
-  <img src="prompticon.png" alt="Prompt Scientist Logo" class="logo">
-  
-  <!-- 🔹 লেখা -->
-  <div class="title">Prompt-Scientist</div>
+  <div class="splash-container">
+    <div class="logo">PS</div>
+    <div class="title">Prompt-Scientist</div>
+    <div class="loading-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
 
   <script>
-    // ৩ সেকেন্ড পর ফিডে redirect
-    setTimeout(() => {
-      window.location.href = "feed.html";
-    }, 3500);
+    // ৩.৫ সেকেন্ড পর feed.html এ যাবে
+    setTimeout(()=>{
+      document.body.style.transition = "opacity 0.8s ease";
+      document.body.style.opacity = "0";
+      setTimeout(()=>location.href="feed.html", 800);
+    },3500);
   </script>
 </body>
 </html>
