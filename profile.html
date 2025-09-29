@@ -158,39 +158,47 @@
 
     logoutBtn.addEventListener("click",()=>signOut(auth));
 
-    // 🔹 Load posts (সর্বশেষ আগে দেখাবে)
+    // 🔹 Load posts (latest first)
     async function loadPosts(){
       myPosts.innerHTML="⏳ Loading...";
-      const q=query(
-        collection(db,"posts"),
-        where("uid","==",currentUser.uid),
-        orderBy("timestamp","desc")   // ✅ রিসেন্ট পোস্ট উপরে
-      );
-      const snap=await getDocs(q);
-      if(snap.empty){myPosts.innerHTML='<div class="empty">❌ আপনি এখনও কোনো পোস্ট করেননি।</div>';return;}
-      myPosts.innerHTML="";
-      snap.forEach(docSnap=>{
-        const d=docSnap.data();
-        const div=document.createElement("div");
-        div.className="post";
-        const shareLink=`https://nab23-dev.github.io/prompt-scientist/feed.html?postId=${docSnap.id}`;
-        div.innerHTML=`
-          <h3>${d.caption||"(No caption)"}</h3>
-          ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
-          <div class="prompt">${d.prompt}</div>
-          <div class="post-actions">
-            <button class="deleteBtn" data-id="${docSnap.id}">🗑️ Delete</button>
-            <button class="shareBtn" data-link="${shareLink}">🔗 Share</button>
-          </div>
-          <p class="msg">${d.approved?"✅ Approved":"⏳ Pending approval"}</p>
-        `;
-        div.querySelector(".deleteBtn").addEventListener("click",()=>deletePost(docSnap.id));
-        div.querySelector(".shareBtn").addEventListener("click",()=>{
-          navigator.clipboard.writeText(shareLink);
-          alert("🔗 লিংক কপি হয়েছে:\n"+shareLink);
+      try {
+        const q=query(
+          collection(db,"posts"),
+          where("uid","==",currentUser.uid),
+          orderBy("timestamp","desc")
+        );
+        const snap=await getDocs(q);
+        if(snap.empty){
+          myPosts.innerHTML='<div class="empty">❌ আপনি এখনও কোনো পোস্ট করেননি।</div>';
+          return;
+        }
+        myPosts.innerHTML="";
+        snap.forEach(docSnap=>{
+          const d=docSnap.data();
+          const div=document.createElement("div");
+          div.className="post";
+          const shareLink=`https://nab23-dev.github.io/prompt-scientist/feed.html?postId=${docSnap.id}`;
+          div.innerHTML=`
+            <h3>${d.caption||"(No caption)"}</h3>
+            ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
+            <div class="prompt">${d.prompt}</div>
+            <div class="post-actions">
+              <button class="deleteBtn" data-id="${docSnap.id}">🗑️ Delete</button>
+              <button class="shareBtn" data-link="${shareLink}">🔗 Share</button>
+            </div>
+            <p class="msg">${d.approved?"✅ Approved":"⏳ Pending approval"}</p>
+          `;
+          div.querySelector(".deleteBtn").addEventListener("click",()=>deletePost(docSnap.id));
+          div.querySelector(".shareBtn").addEventListener("click",()=>{
+            navigator.clipboard.writeText(shareLink);
+            alert("🔗 লিংক কপি হয়েছে:\n"+shareLink);
+          });
+          myPosts.appendChild(div);
         });
-        myPosts.appendChild(div);
-      });
+      } catch (err) {
+        console.error("Load posts error:", err);
+        myPosts.innerHTML='<div class="empty">⚠️ পোস্ট লোড করতে সমস্যা হয়েছে।</div>';
+      }
     }
 
     // 🔹 New post
