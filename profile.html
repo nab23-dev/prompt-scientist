@@ -48,14 +48,19 @@
     .msg{margin-top:10px;font-size:14px;color:var(--muted)}
 
     .posts{display:grid;gap:18px;}
-    .post{padding:16px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);border-radius:12px;background:#fff;}
+    .post{padding:16px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);border-radius:12px;background:#fff;box-shadow:var(--shadow);}
     .post h3{font-size:16px;font-weight:600;}
     .post img{max-width:100%;border-radius:10px;object-fit:cover}
     .post .prompt{background:#f9fafb;border:1px solid var(--border);padding:10px;border-radius:8px;
       font-family:ui-monospace,monospace;font-size:13px}
-    .post button{align-self:flex-end;padding:6px 12px;font-size:13px;background:#ef4444;color:#fff;
-      border:none;border-radius:8px;cursor:pointer;}
-    .post button:hover{background:#b91c1c;}
+    .post-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+    .post-actions button{
+      padding:6px 12px;font-size:13px;border:none;border-radius:8px;cursor:pointer;font-weight:500;
+    }
+    .post-actions .deleteBtn{background:#ef4444;color:#fff;}
+    .post-actions .deleteBtn:hover{background:#b91c1c;}
+    .post-actions .shareBtn{background:#2563eb;color:#fff;}
+    .post-actions .shareBtn:hover{background:#1e40af;}
 
     .empty{padding:28px;text-align:center;color:var(--muted)}
   </style>
@@ -102,7 +107,10 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { 
+      getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, 
+      doc, deleteDoc, getDoc, orderBy 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
@@ -150,10 +158,14 @@
 
     logoutBtn.addEventListener("click",()=>signOut(auth));
 
-    // 🔹 Load posts
+    // 🔹 Load posts (সর্বশেষ আগে দেখাবে)
     async function loadPosts(){
       myPosts.innerHTML="⏳ Loading...";
-      const q=query(collection(db,"posts"),where("uid","==",currentUser.uid));
+      const q=query(
+        collection(db,"posts"),
+        where("uid","==",currentUser.uid),
+        orderBy("timestamp","desc")   // ✅ রিসেন্ট পোস্ট উপরে
+      );
       const snap=await getDocs(q);
       if(snap.empty){myPosts.innerHTML='<div class="empty">❌ আপনি এখনও কোনো পোস্ট করেননি।</div>';return;}
       myPosts.innerHTML="";
@@ -161,14 +173,22 @@
         const d=docSnap.data();
         const div=document.createElement("div");
         div.className="post";
+        const shareLink=`https://nab23-dev.github.io/prompt-scientist/feed.html?postId=${docSnap.id}`;
         div.innerHTML=`
           <h3>${d.caption||"(No caption)"}</h3>
           ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
           <div class="prompt">${d.prompt}</div>
-          <button data-id="${docSnap.id}">Delete</button>
+          <div class="post-actions">
+            <button class="deleteBtn" data-id="${docSnap.id}">🗑️ Delete</button>
+            <button class="shareBtn" data-link="${shareLink}">🔗 Share</button>
+          </div>
           <p class="msg">${d.approved?"✅ Approved":"⏳ Pending approval"}</p>
         `;
-        div.querySelector("button").addEventListener("click",()=>deletePost(docSnap.id));
+        div.querySelector(".deleteBtn").addEventListener("click",()=>deletePost(docSnap.id));
+        div.querySelector(".shareBtn").addEventListener("click",()=>{
+          navigator.clipboard.writeText(shareLink);
+          alert("🔗 লিংক কপি হয়েছে:\n"+shareLink);
+        });
         myPosts.appendChild(div);
       });
     }
@@ -181,24 +201,22 @@
       const prompt=document.getElementById("prompt").value.trim();
       if(!prompt){alert("⚠️ Prompt is required");return;}
 
-      // 🔹 প্রথমে global settings থেকে autoApprove মানটা আনুন
-const settingsRef = doc(db, "settings", "global");
-const settingsSnap = await getDoc(settingsRef);
-let autoApprove = false;
-if (settingsSnap.exists()) {
-  autoApprove = settingsSnap.data().autoApprove === true;
-}
+      const settingsRef = doc(db, "settings", "global");
+      const settingsSnap = await getDoc(settingsRef);
+      let autoApprove = false;
+      if (settingsSnap.exists()) {
+        autoApprove = settingsSnap.data().autoApprove === true;
+      }
 
-// 🔹 এবার পোস্ট add করুন
-await addDoc(collection(db,"posts"),{
-  uid: currentUser.uid,
-  name: userData?.name || "",
-  username: userData?.username || "",
-  email: userData?.email || currentUser.email,
-  imageURL, caption, prompt,
-  timestamp: serverTimestamp(),
-  approved: autoApprove   // ✅ autoApprove true হলে অটো approve হবে
-});
+      await addDoc(collection(db,"posts"),{
+        uid: currentUser.uid,
+        name: userData?.name || "",
+        username: userData?.username || "",
+        email: userData?.email || currentUser.email,
+        imageURL, caption, prompt,
+        timestamp: serverTimestamp(),
+        approved: autoApprove
+      });
 
       alert("✅ Post submitted! Pending admin approval.");
       postForm.reset();
@@ -214,4 +232,4 @@ await addDoc(collection(db,"posts"),{
     }
   </script>
 </body>
-</html>
+  </html>
