@@ -368,13 +368,14 @@ function shuffleArray(arr) {
       <button class="btn-copy" data-prompt="${escapeHtml(p.prompt||"")}">Copy</button>
     </div>
     <div class="actions">
-      ${reactionBtn("like","👍",counts.like)}
-      ${reactionBtn("love","❤️",counts.love)}
-      ${reactionBtn("haha","😂",counts.haha)}
-      ${reactionBtn("angry","😡",counts.angry)}
-      ${reactionBtn("wow","😮",counts.wow)}
-      <button class="btn-react btn-share" data-id="${p.id}">🔗 Share</button>
-    </div>
+  ${reactionBtn("like","👍",counts.like)}
+  ${reactionBtn("love","❤️",counts.love)}
+  ${reactionBtn("haha","😂",counts.haha)}
+  ${reactionBtn("angry","😡",counts.angry)}
+  ${reactionBtn("wow","😮",counts.wow)}
+  <button class="btn-react btn-share" data-id="${p.id}">🔗 Share</button>
+  <button class="btn-react btn-save" data-id="${p.id}">💾 Save</button>   <!-- ✅ Save button -->
+</div>
   `;
   return el;   // ✅ এটা আলাদা লাইনে থাকবে, innerHTML-এর বাইরে
 }
