@@ -553,7 +553,7 @@ if (postIdFromUrl) {
 
       feedEl.innerHTML = "";
       feedEl.appendChild(renderPost(p));
-
+      updateSEOMeta(p);
       // guest হলে signup মেসেজ দেখাবে
       if (isGuest) {
         const msg = document.createElement("div");
