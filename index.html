@@ -225,22 +225,7 @@ signupBtn.addEventListener("click", async () => {
     signupBtn.textContent = "Create account";
   }
 });
-      const name=document.getElementById("signupName").value.trim();
-      const username=document.getElementById("signupUsername").value.trim();
-      const email=document.getElementById("signupEmail").value.trim();
-      const password=document.getElementById("signupPassword").value;
-      if(!name||!username||!email||!password){alert("⚠️ সব ফিল্ড পূরণ করুন");return;}
-      try{
-        const q=query(collection(db,"users"),where("username","==",username));
-        const qs=await getDocs(q);
-        if(!qs.empty){alert("⚠️ Username already taken.");return;}
-        const userCred=await createUserWithEmailAndPassword(auth,email,password);
-        await setDoc(doc(db,"users",userCred.user.uid),{uid:userCred.user.uid,name,username,email});
-        alert("✅ Account created!");window.location.href="feed.html";
-      }catch(err){alert("Error: "+err.message);}
-    });
-
-    // Login
+   // Login
     document.getElementById("loginBtn").addEventListener("click",async()=>{
       const id=document.getElementById("loginId").value.trim();
       const pass=document.getElementById("loginPassword").value;
