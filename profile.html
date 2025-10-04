@@ -170,7 +170,9 @@
     });
 
     logoutBtn.addEventListener("click",()=>signOut(auth));
-
+    manageAccountBtn.addEventListener("click", ()=>{
+    location.href = "account-manage.html";
+   });
     // 🔹 Load posts
     async function loadPosts(){
       myPosts.innerHTML="⏳ Loading...";
