@@ -176,7 +176,55 @@ footer a:hover {
     toSignup.addEventListener('click',e=>{e.preventDefault();signupTab.click();});
 
     // Signup
-    document.getElementById("signupBtn").addEventListener("click", async () => {
+const signupBtn = document.getElementById("signupBtn");
+signupBtn.addEventListener("click", async () => {
+  const name = document.getElementById("signupName").value.trim();
+  const username = document.getElementById("signupUsername").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value;
+
+  if (!name || !username || !email || !password) {
+    alert("⚠️ সব ফিল্ড পূরণ করুন");
+    return;
+  }
+
+  // 🔒 একাধিক ক্লিক প্রতিরোধ
+  signupBtn.disabled = true;
+  signupBtn.style.opacity = "0.6";
+  signupBtn.textContent = "Creating account...";
+
+  try {
+    // 🔹 ইউজারনেম চেক
+    const q = query(collection(db, "users"), where("username", "==", username));
+    const qs = await getDocs(q);
+    if (!qs.empty) {
+      alert("⚠️ Username already taken.");
+      return;
+    }
+
+    // 🔹 একাউন্ট তৈরি
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+    // 🔹 Firestore এ ইউজার তথ্য সংরক্ষণ
+    await setDoc(doc(db, "users", userCred.user.uid), {
+      uid: userCred.user.uid,
+      name,
+      username,
+      email,
+      createdAt: new Date().toISOString()
+    });
+
+    alert("✅ Account created!");
+    window.location.href = "feed.html";
+  } catch (err) {
+    alert("❌ Error: " + err.message);
+  } finally {
+    // 🔁 কাজ শেষে বাটন আবার enable
+    signupBtn.disabled = false;
+    signupBtn.style.opacity = "1";
+    signupBtn.textContent = "Create account";
+  }
+});
       const name=document.getElementById("signupName").value.trim();
       const username=document.getElementById("signupUsername").value.trim();
       const email=document.getElementById("signupEmail").value.trim();
