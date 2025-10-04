@@ -316,16 +316,30 @@
     cancelDelete.addEventListener("click", ()=> modal.classList.remove("active"));
 
     confirmDelete.addEventListener("click", async ()=>{
-      deleteMsg.textContent = "Deleting account...";
-      try{
-        await deleteUser(currentUser);
-        modal.classList.remove("active");
-        deleteMsg.textContent = "✅ Account deleted successfully!";
-        setTimeout(()=>location.href="index.html", 1500);
-      } catch(err){
-        deleteMsg.textContent = "❌ " + err.message;
-      }
+  deleteMsg.textContent = "Deleting account...";
+
+  try {
+    // 🔹 প্রথমে Firestore থেকে ইউজারের ডেটা ডিলিট করো
+    const userRef = doc(db, "users", currentUser.uid);
+    await updateDoc(userRef, { deleting: true }); // optional flag if you want
+    await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js").then(async ({ deleteDoc }) => {
+      await deleteDoc(userRef);
     });
+
+    // 🔹 এবার Auth থেকে ইউজার ডিলিট করো
+    await deleteUser(currentUser);
+
+    modal.classList.remove("active");
+    deleteMsg.textContent = "✅ Account deleted successfully!";
+
+    // 🔹 রিডাইরেক্ট index.html এ
+    setTimeout(() => location.href = "index.html", 1500);
+
+  } catch (err) {
+    console.error(err);
+    deleteMsg.textContent = "❌ " + (err.message || "Failed to delete account");
+  }
+});
   </script>
 </body>
 </html>
