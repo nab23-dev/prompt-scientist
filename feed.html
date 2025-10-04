@@ -295,7 +295,6 @@ function setMeta(name, content) {
   }
   tag.content = content;
 }
-
 function setOg(property, content) {
   let tag = document.querySelector(`meta[property='${property}']`);
   if (!tag) {
@@ -304,7 +303,8 @@ function setOg(property, content) {
     document.head.appendChild(tag);
   }
   tag.content = content;
-      }
+    }
+
     // ---------- DOM ----------
     const feedEl    = document.getElementById("feed");
     const loadingEl = document.getElementById("loading");
