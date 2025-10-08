@@ -1,140 +1,266 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prompt-Scientist | Signup & Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+    }
+
     body {
-  background: linear-gradient(135deg, #f9fbff, #eef3f8);
-  color: #333;
-  min-height: 100vh;
-  padding: 0 20px;
-  display: block; /* পরিবর্তন */
-    }
-    .container{
-      max-width:1100px;width:100%;display:flex;justify-content:space-between;
-      align-items:center;gap:60px
-    }
-    /* Left Info Section */
-    .info{flex:1}
-    .info h1{
-      color:#1877f2;font-size:40px;font-weight:700;margin-bottom:14px;
-      text-align:left
-    }
-    .info h2{
-      font-size:22px;color:#333;margin-bottom:8px;text-align:left
-    }
-    .info p{
-      font-size:16px;line-height:1.6;color:#555;max-width:420px;
-      text-align:left
+      background: linear-gradient(135deg, #f9fbff, #eef3f8);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
 
-    /* Form Section */
-    .form-card{
-      flex:1;background:#fff;padding:35px 30px;border-radius:12px;
-      box-shadow:0 8px 28px rgba(0,0,0,0.08);
-      max-width:380px
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      background: #fff;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 40px 30px;
+      flex-wrap: wrap;
+      text-align: center;
     }
-    .tabs{
-      display:flex;margin-bottom:22px;border-radius:8px;overflow:hidden
-    }
-    .tabs button{
-      flex:1;padding:12px 0;background:#f1f4f9;border:none;
-      font-size:15px;font-weight:600;color:#555;cursor:pointer;
-      transition:.3s
-    }
-    .tabs button.active{background:#1877f2;color:#fff}
-    .form-group{margin-bottom:15px;text-align:left}
-    label{font-size:13px;font-weight:600;margin-bottom:5px;display:block;color:#333}
-    input{
-      width:100%;padding:11px 12px;border:1px solid #d0d6e0;border-radius:7px;
-      font-size:14px;background:#fafbfc;transition:.3s
-    }
-    input:focus{
-      border-color:#1877f2;background:#fff;outline:none;
-      box-shadow:0 0 0 2px rgba(24,119,242,0.15)
-    }
-    .btn{
-      width:100%;background:#1877f2;color:#fff;padding:12px;
-      font-size:15px;font-weight:600;border:none;border-radius:7px;
-      cursor:pointer;transition:.3s;margin-top:6px
-    }
-    .btn:hover{background:#0f63c8}
-    .alt-link{margin-top:14px;font-size:13px;text-align:center;color:#555}
-    .alt-link a{color:#1877f2;text-decoration:none;font-weight:600}
-    .alt-link a:hover{text-decoration:underline}
 
-    /* Responsive */
-    @media(max-width:900px){
-      .container{flex-direction:column;align-items:center;gap:40px;margin-top:40px}
-      .info{text-align:center}
-      .info h1,.info h2,.info p{text-align:center;margin:0 auto}
+    .info {
+      flex: 1;
+      min-width: 280px;
+      text-align: center;
     }
-footer {
-  text-align: center;
-  font-size: 13px;
-  color: #666;
-  padding: 20px 10px;
-  margin-top: 40px; /* উপরের কনটেন্ট থেকে একটু দূরে রাখবে */
-}
 
-footer a {
-  color: #1877f2;
-  text-decoration: none;
-}
+    .info h1 {
+      color: #1877f2;
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
 
-footer a:hover {
-  text-decoration: underline;
-}
+    .info h2 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .info p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #555;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .form-card {
+      flex: 1;
+      background: #fff;
+      border-radius: 12px;
+      max-width: 380px;
+      text-align: left;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .tabs button {
+      flex: 1;
+      padding: 12px 0;
+      background: #f1f4f9;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: #555;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .tabs button.active {
+      background: #1877f2;
+      color: #fff;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+      position: relative;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 38px 11px 12px;
+      border: 1px solid #d0d6e0;
+      border-radius: 7px;
+      font-size: 14px;
+      background: #fafbfc;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #1877f2;
+      background: #fff;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 12px;
+      top: 36px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #1877f2;
+      user-select: none;
+      background: #fff;
+      padding: 0 4px;
+    }
+
+    .btn {
+      width: 100%;
+      background: #1877f2;
+      color: #fff;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 6px;
+    }
+
+    .btn:hover {
+      background: #0f63c8;
+    }
+
+    .alt-link {
+      margin-top: 14px;
+      font-size: 13px;
+      text-align: center;
+      color: #555;
+    }
+
+    .alt-link a {
+      color: #1877f2;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .alt-link a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      padding: 20px 10px;
+      margin-top: 30px;
+    }
+
+    footer a {
+      color: #1877f2;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        gap: 35px;
+        padding: 30px 20px;
+      }
+
+      .info h1 {
+        font-size: 28px;
+      }
+
+      .info h2 {
+        font-size: 16px;
+      }
+
+      .info p {
+        font-size: 13px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Left Info -->
     <div class="info">
       <h1>Prompt-Scientist</h1>
       <h2>AI Prompt Sharing Platform</h2>
-      <p>শেয়ার করুন আপনার প্রম্পট, অন্যদের প্রম্পট থেকে শিখুন এবং AI ইমেজ তৈরি করুন।</p>
+      <p>Share your prompts, learn from others, and create AI-powered content together.</p>
     </div>
 
-    <!-- Right Form -->
     <div class="form-card">
       <div class="tabs">
         <button id="signupTab" class="active">Signup</button>
         <button id="loginTab">Login</button>
       </div>
 
+      <!-- Signup -->
       <div id="signupForm">
         <div class="form-group">
           <label for="signupName">Full Name</label>
-          <input type="text" id="signupName" placeholder="Your full name">
+          <input type="text" id="signupName" placeholder="Your full name" />
         </div>
         <div class="form-group">
           <label for="signupUsername">Username</label>
-          <input type="text" id="signupUsername" placeholder="uniqueusername">
+          <input type="text" id="signupUsername" placeholder="uniqueusername" />
         </div>
         <div class="form-group">
-          <label for="signupEmail">Email</label>
-          <input type="email" id="signupEmail" placeholder="you@example.com">
+          <label for="signupEmail">Gmail</label>
+          <input type="email" id="signupEmail" placeholder="you@gmail.com" />
         </div>
         <div class="form-group">
           <label for="signupPassword">Password</label>
-          <input type="password" id="signupPassword" placeholder="Choose a strong password">
+          <input type="password" id="signupPassword" placeholder="Choose a strong password" />
+          <span class="toggle-pass" id="toggleSignupPass">Show</span>
         </div>
         <button class="btn" id="signupBtn">Create account</button>
         <div class="alt-link">Already have an account? <a href="#" id="toLogin">Login</a></div>
       </div>
 
+      <!-- Login -->
       <div id="loginForm" style="display:none;">
         <div class="form-group">
           <label for="loginId">Email or Username</label>
-          <input type="text" id="loginId" placeholder="you@example.com">
+          <input type="text" id="loginId" placeholder="you@gmail.com" />
         </div>
         <div class="form-group">
           <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="Your password">
+          <input type="password" id="loginPassword" placeholder="Your password" />
+          <span class="toggle-pass" id="toggleLoginPass">Show</span>
         </div>
         <button class="btn" id="loginBtn">Login</button>
         <div class="alt-link">Don’t have an account? <a href="#" id="toSignup">Signup</a></div>
@@ -142,7 +268,11 @@ footer a:hover {
     </div>
   </div>
 
-  <!-- Firebase Logic (unchanged) -->
+  <footer>
+    <p>© 2025 Prompt-Scientist • <a href="privacy-policy.html">Privacy Policy</a></p>
+  </footer>
+
+  <!-- Firebase Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
@@ -162,92 +292,115 @@ footer a:hover {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    
-    // Tab Switch
+
+    // Tabs
     const signupTab=document.getElementById('signupTab'),
           loginTab=document.getElementById('loginTab'),
           signupForm=document.getElementById('signupForm'),
           loginForm=document.getElementById('loginForm'),
           toLogin=document.getElementById('toLogin'),
           toSignup=document.getElementById('toSignup');
+
     signupTab.addEventListener('click',()=>{signupTab.classList.add('active');loginTab.classList.remove('active');signupForm.style.display='block';loginForm.style.display='none';});
     loginTab.addEventListener('click',()=>{loginTab.classList.add('active');signupTab.classList.remove('active');loginForm.style.display='block';signupForm.style.display='none';});
     toLogin.addEventListener('click',e=>{e.preventDefault();loginTab.click();});
     toSignup.addEventListener('click',e=>{e.preventDefault();signupTab.click();});
 
+    // Password Toggle
+    const togglePass=(id,toggleId)=>{
+      const input=document.getElementById(id);
+      const toggle=document.getElementById(toggleId);
+      toggle.addEventListener("click",()=>{
+        if(input.type==="password"){input.type="text";toggle.textContent="Hide";}
+        else{input.type="password";toggle.textContent="Show";}
+      });
+    };
+    togglePass("signupPassword","toggleSignupPass");
+    togglePass("loginPassword","toggleLoginPass");
+
+    // Gmail validation only
+    const validGmail=(email)=> /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+
+    const firebaseError=(code)=>{
+      switch(code){
+        case "auth/email-already-in-use":return "This Gmail is already registered.";
+        case "auth/invalid-email":return "Please enter a valid Gmail address.";
+        case "auth/weak-password":return "Password must be at least 6 characters.";
+        case "auth/user-not-found":return "No account found with this Gmail/username.";
+        case "auth/wrong-password":return "Incorrect password.";
+        default:return "Something went wrong. Please try again.";
+      }
+    };
+
     // Signup
-const signupBtn = document.getElementById("signupBtn");
-signupBtn.addEventListener("click", async () => {
-  const name = document.getElementById("signupName").value.trim();
-  const username = document.getElementById("signupUsername").value.trim();
-  const email = document.getElementById("signupEmail").value.trim();
-  const password = document.getElementById("signupPassword").value;
+    const signupBtn=document.getElementById("signupBtn");
+    signupBtn.addEventListener("click",async()=>{
+      const name=document.getElementById("signupName").value.trim();
+      const username=document.getElementById("signupUsername").value.trim();
+      const email=document.getElementById("signupEmail").value.trim();
+      const password=document.getElementById("signupPassword").value;
 
-  if (!name || !username || !email || !password) {
-    alert("⚠️ সব ফিল্ড পূরণ করুন");
-    return;
-  }
+      if(!name||!username||!email||!password)
+        return Swal.fire("Warning","Please fill in all fields.","warning");
 
-  // 🔒 একাধিক ক্লিক প্রতিরোধ
-  signupBtn.disabled = true;
-  signupBtn.style.opacity = "0.6";
-  signupBtn.textContent = "Creating account...";
+      if(username.length<4)
+        return Swal.fire("Warning","Username must be at least 4 characters.","warning");
 
-  try {
-    // 🔹 ইউজারনেম চেক
-    const q = query(collection(db, "users"), where("username", "==", username));
-    const qs = await getDocs(q);
-    if (!qs.empty) {
-      alert("⚠️ Username already taken.");
-      return;
-    }
+      if(!validGmail(email))
+        return Swal.fire("Invalid Gmail","Please use a valid Gmail address only.","error");
 
-    // 🔹 একাউন্ট তৈরি
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      if(password.length<6)
+        return Swal.fire("Weak Password","Password must be at least 6 characters.","warning");
 
-    // 🔹 Firestore এ ইউজার তথ্য সংরক্ষণ
-    await setDoc(doc(db, "users", userCred.user.uid), {
-      uid: userCred.user.uid,
-      name,
-      username,
-      email,
-      createdAt: new Date().toISOString()
+      signupBtn.disabled=true;
+      signupBtn.style.opacity="0.6";
+      signupBtn.textContent="Creating account...";
+
+      try{
+        const q=query(collection(db,"users"),where("username","==",username));
+        const qs=await getDocs(q);
+        if(!qs.empty) throw new Error("Username already taken.");
+
+        const userCred=await createUserWithEmailAndPassword(auth,email,password);
+        await setDoc(doc(db,"users",userCred.user.uid),{
+          uid:userCred.user.uid,
+          name,username,email,createdAt:new Date().toISOString()
+        });
+
+        Swal.fire({icon:"success",title:"Account Created!",text:"Redirecting...",timer:1500,showConfirmButton:false});
+        setTimeout(()=>window.location.href="feed.html",1500);
+      }catch(err){
+        Swal.fire("Error",err.code?firebaseError(err.code):err.message,"error");
+      }finally{
+        signupBtn.disabled=false;
+        signupBtn.style.opacity="1";
+        signupBtn.textContent="Create account";
+      }
     });
 
-    alert("✅ Account created!");
-    window.location.href = "feed.html";
-  } catch (err) {
-    alert("❌ Error: " + err.message);
-  } finally {
-    // 🔁 কাজ শেষে বাটন আবার enable
-    signupBtn.disabled = false;
-    signupBtn.style.opacity = "1";
-    signupBtn.textContent = "Create account";
-  }
-});
-   // Login
+    // Login
     document.getElementById("loginBtn").addEventListener("click",async()=>{
       const id=document.getElementById("loginId").value.trim();
       const pass=document.getElementById("loginPassword").value;
-      if(!id||!pass){alert("⚠️ Fill all fields");return;}
+
+      if(!id||!pass)
+        return Swal.fire("Warning","Please fill in all fields.","warning");
+
       try{
         let email=id;
         if(!id.includes("@")){
           const q=query(collection(db,"users"),where("username","==",id));
           const qs=await getDocs(q);
-          if(qs.empty){throw new Error("No user found");}
+          if(qs.empty) throw new Error("No user found with this username.");
           email=qs.docs[0].data().email;
         }
         await signInWithEmailAndPassword(auth,email,pass);
-        window.location.href="feed.html";
-      }catch(e){alert("❌ "+e.message);}
+        Swal.fire({icon:"success",title:"Login Successful!",text:"Redirecting...",timer:1200,showConfirmButton:false});
+        setTimeout(()=>window.location.href="feed.html",1200);
+      }catch(e){
+        Swal.fire("Error",e.code?firebaseError(e.code):e.message,"error");
+      }
     });
   </script>
-<!-- Footer -->
-  <footer>
-    <p>© 2025 Prompt-Scientist • 
-      <a href="privacy-policy.html">Privacy Policy</a>
-    </p>
-  </footer>
 </body>
-</html>
+  </html>
