@@ -1,334 +1,501 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Prompt Scientist — Profile</title>
-<style>
-:root{
-  --bg:linear-gradient(135deg,#e0e7ff,#f9fafb);
-  --card:rgba(255,255,255,0.75);
-  --accent:#2563eb;
-  --accent-hover:#1e40af;
-  --border:rgba(255,255,255,0.4);
-  --muted:#6b7280;
-  --shadow:0 8px 28px rgba(37,99,235,0.15);
-  --radius:18px;
-  --maxw:880px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:"Inter",system-ui,Roboto,"Noto Sans",sans-serif;
-  background:var(--bg);
-  color:#111827;
-  -webkit-font-smoothing:antialiased;
-  min-height:100vh;
-}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Prompt Scientist — Profile</title>
 
-/* Header */
-header{
-  position:fixed;top:0;left:0;right:0;
-  z-index:100;
-  backdrop-filter:blur(12px);
-  background:rgba(255,255,255,0.7);
-  border-bottom:1px solid var(--border);
-  padding:14px 22px;
-  display:flex;justify-content:space-between;align-items:center;
-  box-shadow:0 2px 10px rgba(0,0,0,0.04);
-}
-header h1{font-size:22px;font-weight:700;color:var(--accent);}
-header a{
-  color:var(--accent);
-  font-weight:600;
-  text-decoration:none;
-  font-size:15px;
-  transition:color .2s;
-}
-header a:hover{color:var(--accent-hover);}
+  <style>
+    :root{
+      --bg-gradient: linear-gradient(135deg,#eef2ff,#f8fafc);
+      --glass: rgba(255,255,255,0.72);
+      --accent: #204ecf;
+      --accent-600:#163ea0;
+      --muted: #6b7280;
+      --card-radius:14px;
+      --shadow-lg: 0 12px 30px rgba(17,24,39,0.08);
+      --maxw:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg-gradient);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
 
-/* Layout */
-.container{
-  max-width:var(--maxw);
-  margin:110px auto 60px;
-  padding:0 20px;
-  display:grid;
-  gap:28px;
-}
+    /* fixed header */
+    header{
+      position:fixed; top:0; left:0; right:0;
+      height:72px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(15,23,42,0.05);
+      z-index:100;
+    }
+    header .brand{display:flex;align-items:center;gap:12px}
+    header .brand h1{
+      font-size:20px;margin:0;color:var(--accent);font-weight:700;
+      letter-spacing:-0.2px;
+    }
+    header .page-label{
+      font-size:14px;color:var(--muted);font-weight:600;
+    }
 
-/* Cards */
-.card, .profile-info{
-  background:var(--card);
-  backdrop-filter:blur(16px);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:26px;
-}
+    /* layout */
+    main.wrapper{
+      max-width:var(--maxw);
+      margin:96px auto 60px;
+      padding:0 24px;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:28px;
+      align-items:start;
+    }
 
-/* Profile */
-.profile-info h2{font-size:22px;font-weight:700;margin-bottom:8px;}
-.profile-info p{color:var(--muted);font-size:14px;margin:4px 0;}
-.profile-buttons{margin-top:18px;display:flex;gap:12px;}
-button{cursor:pointer;transition:all .25s ease;}
-.manage-btn,.logout-btn{
-  padding:10px 18px;border:none;border-radius:10px;
-  font-weight:600;font-size:14px;
-}
-.manage-btn{background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;}
-.manage-btn:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(37,99,235,0.35);}
-.logout-btn{background:#ef4444;color:#fff;}
-.logout-btn:hover{background:#b91c1c;}
+    /* left column: posts + form */
+    .left-col{display:flex;flex-direction:column;gap:20px}
 
-/* Form */
-form{display:flex;flex-direction:column;}
-form h2{font-size:18px;font-weight:700;margin-bottom:8px;}
-form .note{font-size:13px;color:var(--muted);margin-bottom:14px;}
-form .note a{color:var(--accent);font-weight:600;text-decoration:none;}
-form label{font-weight:600;margin-top:10px;font-size:14px;}
-form input,form textarea{
-  width:100%;margin-top:6px;padding:12px;border-radius:10px;
-  border:1px solid var(--border);font-size:14px;background:rgba(255,255,255,0.85);
-}
-form textarea{min-height:90px;resize:vertical;}
-form button{
-  margin-top:18px;padding:12px 18px;border:none;border-radius:10px;
-  background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;font-weight:600;
-}
-form button:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(30,64,175,0.3);}
+    /* profile card (right column) */
+    .profile-card{
+      background:var(--glass);
+      border-radius:var(--card-radius);
+      padding:22px;
+      box-shadow:var(--shadow-lg);
+      border: 1px solid rgba(15,23,42,0.04);
+      display:flex;flex-direction:column;gap:14px;
+      position:sticky; top:96px;
+    }
+    .profile-top{display:flex;gap:14px;align-items:center}
+    .avatar{
+      width:76px;height:76px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:#fff;color:var(--accent);font-weight:700;font-size:28px;
+      box-shadow:0 6px 16px rgba(15,23,42,0.06);
+    }
+    .profile-meta h2{margin:0;font-size:18px}
+    .profile-meta p{margin:4px 0;color:var(--muted);font-size:14px}
+    .profile-actions{display:flex;gap:10px;margin-top:8px}
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 14px;border-radius:10px;border:none;cursor:pointer;
+      font-weight:600;font-size:14px;
+    }
+    .btn-manage{background:linear-gradient(135deg,var(--accent),var(--accent-600));color:#fff;box-shadow:0 8px 20px rgba(32,78,207,0.14)}
+    .btn-logout{background:#fff;border:1px solid rgba(15,23,42,0.06);color:var(--accent);}
 
-/* Posts */
-.posts{display:grid;gap:18px;}
-.post{
-  background:rgba(255,255,255,0.85);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  box-shadow:var(--shadow);
-}
-.post h3{font-size:16px;font-weight:600;}
-.post img{max-width:100%;border-radius:10px;object-fit:cover}
-.post .prompt{
-  background:rgba(249,250,251,0.9);
-  border:1px solid var(--border);
-  padding:10px;
-  border-radius:8px;
-  font-family:ui-monospace,monospace;
-  font-size:13px;
-}
-.post button{
-  align-self:flex-end;
-  padding:6px 12px;
-  font-size:13px;
-  background:#ef4444;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-}
-.post button:hover{background:#b91c1c;}
-.empty{padding:28px;text-align:center;color:var(--muted)}
-.loader{
-  width:32px;height:32px;border:4px solid #ccc;
-  border-top:4px solid var(--accent);
-  border-radius:50%;margin:20px auto;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
+    /* post form (card) */
+    .card{
+      background:var(--glass);
+      border-radius:var(--card-radius);
+      padding:20px;
+      box-shadow:var(--shadow-lg);
+      border:1px solid rgba(15,23,42,0.04);
+    }
+    .card h3{margin:0 0 8px 0;font-size:18px}
+    .note{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .field{display:flex;flex-direction:column;margin-top:12px}
+    label{font-size:13px;font-weight:600;color:#0f172a;margin-bottom:8px}
+    input[type="url"], textarea{
+      padding:12px 14px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:#fff;
+      font-size:14px;color:#0f172a;
+      outline:none;transition:box-shadow .15s,border-color .15s;
+    }
+    input:focus,textarea:focus{box-shadow:0 6px 18px rgba(32,78,207,0.08);border-color:rgba(32,78,207,0.18)}
+    textarea{min-height:120px;resize:vertical}
 
-/* Popup */
-.popup-bg{
-  position:fixed;inset:0;display:none;
-  align-items:center;justify-content:center;
-  background:rgba(0,0,0,0.4);
-  backdrop-filter:blur(4px);
-  z-index:999;
-}
-.popup{
-  background:#fff;
-  padding:24px 28px;
-  border-radius:14px;
-  box-shadow:0 8px 28px rgba(0,0,0,0.15);
-  text-align:center;
-  max-width:320px;width:90%;
-  animation:fadeIn .25s ease;
-}
-.popup h3{font-size:18px;margin-bottom:12px;}
-.popup p{font-size:14px;color:#444;margin-bottom:20px;}
-.popup .actions{display:flex;justify-content:center;gap:10px;}
-.popup button{padding:8px 16px;border:none;border-radius:8px;font-weight:600;}
-.popup .yes{background:#2563eb;color:#fff;}
-.popup .no{background:#e5e7eb;}
-@keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-</style>
+    .submit-row{margin-top:18px;display:flex;gap:12px;align-items:center}
+    .btn-submit{background:var(--accent);color:#fff;padding:12px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .btn-submit[disabled]{opacity:0.6;cursor:not-allowed}
+
+    /* posts list */
+    .posts-list{display:flex;flex-direction:column;gap:18px}
+    .post-card{
+      background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(15,23,42,0.04);
+      box-shadow:0 6px 18px rgba(15,23,42,0.04);display:flex;flex-direction:column;gap:10px;
+      transition:transform .12s, box-shadow .12s;
+    }
+    .post-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(15,23,42,0.08)}
+    .post-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .post-time{font-size:13px;color:var(--muted)}
+    .post-caption{font-size:16px;font-weight:600;margin:0}
+    .post-image{width:100%;max-height:420px;object-fit:cover;border-radius:10px;border:1px solid rgba(15,23,42,0.03)}
+    .post-prompt{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; background:#f7fafc;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.03);font-size:13px;color:#0f172a}
+    .post-actions{display:flex;justify-content:flex-end;gap:10px}
+    .btn-delete{background:#f44336;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .btn-delete:hover{background:#c62828}
+
+    /* loader & empty */
+    .loader{width:36px;height:36px;border-radius:50%;border:4px solid #e6eefc;border-top:4px solid var(--accent);animation:spin 1s linear infinite;margin:18px auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .empty{padding:28px;text-align:center;color:var(--muted)}
+
+    /* popup modal */
+    .modal-backdrop{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:200;
+    }
+    .modal{
+      background:#fff;border-radius:12px;padding:20px 22px;max-width:420px;width:92%;box-shadow:0 20px 60px rgba(2,6,23,0.18);
+    }
+    .modal h4{margin:0 0 8px 0;font-size:17px}
+    .modal p{margin:0 0 16px 0;color:var(--muted)}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+    /* responsive */
+    @media (max-width:980px){
+      main.wrapper{grid-template-columns:1fr; margin-top:86px}
+      .profile-card{position:relative;top:0}
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1>Prompt Scientist</h1>
-  <a href="#profile">My Profile</a>
-</header>
-
-<main class="container">
-  <section id="profile" class="profile-info">
-    <h2 id="userName">Loading...</h2>
-    <p><strong>Username:</strong> <span id="userUsername"></span></p>
-    <p><strong>Email:</strong> <span id="userEmail"></span></p>
-    <div class="profile-buttons">
-      <button id="manageAccountBtn" class="manage-btn">Manage Account</button>
-      <button id="logoutBtn" class="logout-btn">Logout</button>
+  <header>
+    <div class="brand">
+      <h1>Prompt Scientist</h1>
     </div>
-  </section>
+    <div class="page-label">My Profile</div>
+  </header>
 
-  <section class="card">
-    <form id="postForm">
-      <h2>Create a New Post</h2>
-      <p class="note">Use <a href="https://postimages.org/" target="_blank">postimages.org</a> to upload your image and paste the <strong>Direct link</strong> below.</p>
-      <label>Image URL
-        <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..."/>
-      </label>
-      <label>Caption (optional)
-        <textarea id="caption" placeholder="Write your caption..."></textarea>
-      </label>
-      <label>Prompt (required)
-        <textarea id="prompt" required placeholder="Write your AI prompt..."></textarea>
-      </label>
-      <button type="submit">Submit Post</button>
-    </form>
-  </section>
+  <main class="wrapper" role="main">
+    <div class="left-col">
+      <!-- post form -->
+      <section class="card" aria-labelledby="create-post-heading">
+        <h3 id="create-post-heading">Create a new post</h3>
+        <div class="note">Use <a href="https://postimages.org/" target="_blank" rel="noopener">postimages.org</a> to upload an image and paste the <strong>Direct link</strong> below.</div>
 
-  <section class="card">
-    <h2>My Posts</h2>
-    <div id="myPosts" class="posts"><div class="loader"></div></div>
-  </section>
-</main>
+        <form id="postForm" novalidate>
+          <div class="field">
+            <label for="imageURL">Image URL (Direct link)</label>
+            <input id="imageURL" type="url" inputmode="url" placeholder="https://i.postimg.cc/..." />
+          </div>
 
-<div class="popup-bg" id="popupBg">
-  <div class="popup" id="popupBox">
-    <h3 id="popupTitle">Message</h3>
-    <p id="popupMsg"></p>
-    <div class="actions" id="popupActions"></div>
+          <div class="field">
+            <label for="caption">Caption (optional)</label>
+            <input id="caption" type="text" placeholder="Short caption (optional)" />
+          </div>
+
+          <div class="field">
+            <label for="prompt">Prompt (required)</label>
+            <textarea id="prompt" required placeholder="Write your AI prompt..." ></textarea>
+          </div>
+
+          <div class="submit-row">
+            <button type="submit" id="submitBtn" class="btn-submit">Submit Post</button>
+            <div id="submitNote" style="color:var(--muted);font-size:13px">Your post will appear above after submission.</div>
+          </div>
+        </form>
+      </section>
+
+      <!-- posts list -->
+      <section class="card">
+        <h3 style="margin:0 0 10px 0">My posts</h3>
+        <div id="postsContainer" class="posts-list">
+          <div class="loader" aria-hidden="true"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- right column: profile -->
+    <aside class="profile-card" aria-labelledby="profile-heading">
+      <div class="profile-top">
+        <div class="avatar" id="avatar">P</div>
+        <div class="profile-meta">
+          <h2 id="userName">Loading...</h2>
+          <p id="userHandle" class="muted">@username</p>
+          <p id="userEmail" class="muted">email@example.com</p>
+        </div>
+      </div>
+
+      <div style="margin-top:6px;color:var(--muted);font-size:13px">Member since: <span id="userSince">—</span></div>
+
+      <div class="profile-actions" style="margin-top:14px">
+        <button id="manageAccountBtn" class="btn btn-manage" type="button">Manage account</button>
+        <button id="logoutBtn" class="btn btn-logout" type="button" aria-haspopup="dialog">
+          <!-- simple exit icon -->
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:block" aria-hidden="true">
+            <path d="M16 17l5-5-5-5" stroke="#163ea0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12H9" stroke="#163ea0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 19H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" stroke="#163ea0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- modal (custom popup) -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h4 id="modalTitle">Title</h4>
+      <p id="modalMessage">Message</p>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
   </div>
-</div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  <!-- Firebase + app logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
-  authDomain: "prompt-scientist.firebaseapp.com",
-  projectId: "prompt-scientist",
-  storageBucket: "prompt-scientist.firebasestorage.app",
-  messagingSenderId: "240705146800",
-  appId: "1:240705146800:web:e7f05107761f4d3007d075"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    // ---------- CONFIG ----------
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+      authDomain: "prompt-scientist.firebaseapp.com",
+      projectId: "prompt-scientist",
+      storageBucket: "prompt-scientist.firebasestorage.app",
+      messagingSenderId: "240705146800",
+      appId: "1:240705146800:web:e7f05107761f4d3007d075"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-const userName=document.getElementById("userName");
-const userUsername=document.getElementById("userUsername");
-const userEmail=document.getElementById("userEmail");
-const postForm=document.getElementById("postForm");
-const myPosts=document.getElementById("myPosts");
-const logoutBtn=document.getElementById("logoutBtn");
-const manageAccountBtn=document.getElementById("manageAccountBtn");
+    // ---------- DOM ----------
+    const userNameEl = document.getElementById('userName');
+    const userHandleEl = document.getElementById('userHandle');
+    const userEmailEl = document.getElementById('userEmail');
+    const userSinceEl = document.getElementById('userSince');
+    const avatarEl = document.getElementById('avatar');
 
-function showPopup(title,msg,buttons=[{text:"OK",action:()=>hidePopup()}]){
-  const bg=document.getElementById("popupBg");
-  const t=document.getElementById("popupTitle");
-  const m=document.getElementById("popupMsg");
-  const a=document.getElementById("popupActions");
-  t.textContent=title;m.textContent=msg;a.innerHTML="";
-  buttons.forEach(b=>{
-    const btn=document.createElement("button");
-    btn.textContent=b.text;
-    btn.className=b.type||"no";
-    btn.onclick=()=>{b.action();};
-    a.appendChild(btn);
-  });
-  bg.style.display="flex";
-}
-function hidePopup(){document.getElementById("popupBg").style.display="none";}
+    const postsContainer = document.getElementById('postsContainer');
+    const postForm = document.getElementById('postForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const manageAccountBtn = document.getElementById('manageAccountBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-let currentUser=null,userData=null;
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalActions = document.getElementById('modalActions');
 
-// Auth
-onAuthStateChanged(auth,async(u)=>{
-  if(!u){location.href="index.html";return;}
-  currentUser=u;
-  const snap=await getDoc(doc(db,"users",u.uid));
-  userData=snap.exists()?snap.data():{name:"User",username:"",email:u.email};
-  userName.textContent=userData.name||"User";
-  userUsername.textContent=userData.username?`@${userData.username}`:"";
-  userEmail.textContent=userData.email||u.email;
-  loadPosts();
-});
+    // helper: show modal with buttons array [{label, className, callback}]
+    function showModal(title, message, buttons = [{label:'OK', className:'', cb: closeModal}]) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      modalActions.innerHTML = '';
+      buttons.forEach(b => {
+        const btn = document.createElement('button');
+        btn.textContent = b.label;
+        btn.className = b.className || '';
+        btn.style.minWidth = '88px';
+        btn.style.padding = '8px 12px';
+        btn.addEventListener('click', () => {
+          if (typeof b.cb === 'function') b.cb();
+        });
+        modalActions.appendChild(btn);
+      });
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.setAttribute('aria-hidden','false');
+    }
+    function closeModal() {
+      modalBackdrop.style.display = 'none';
+      modalBackdrop.setAttribute('aria-hidden','true');
+    }
 
-manageAccountBtn.addEventListener("click",()=>location.href="account-manage.html");
-logoutBtn.addEventListener("click",()=>{
-  showPopup("Logout","Are you sure you want to logout?",[
-    {text:"Yes",type:"yes",action:()=>{hidePopup();signOut(auth);}},
-    {text:"No",type:"no",action:hidePopup}
-  ]);
-});
+    // small helper to format Firestore timestamp safely
+    function formatTimestamp(ts) {
+      try {
+        if (!ts) return 'Unknown';
+        // Firestore Timestamp has toDate()
+        if (typeof ts.toDate === 'function') {
+          return ts.toDate().toLocaleString();
+        }
+        // sometimes stored as milliseconds
+        if (typeof ts === 'number') {
+          return new Date(ts).toLocaleString();
+        }
+        return String(ts);
+      } catch(e){ return 'Unknown'; }
+    }
 
-// ✅ Fixed post loading
-async function loadPosts(){
-  myPosts.innerHTML='<div class="loader"></div>';
-  const q=query(collection(db,"posts"),where("uid","==",auth.currentUser.uid));
-  const snap=await getDocs(q);
-  if(snap.empty){myPosts.innerHTML='<div class="empty">No posts yet.</div>';return;}
-  myPosts.innerHTML="";
-  snap.forEach(docSnap=>{
-    const d=docSnap.data();
-    const div=document.createElement("div");
-    div.className="post";
-    div.innerHTML=`
-      <h3>${d.caption||"(No caption)"}</h3>
-      ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
-      <div class="prompt">${d.prompt}</div>
-      <button data-id="${docSnap.id}">Delete</button>
-      <p class="msg">${d.approved?"Approved":"Pending approval"}</p>
-    `;
-    div.querySelector("button").addEventListener("click",()=>deletePost(docSnap.id));
-    myPosts.appendChild(div);
-  });
-}
+    // store current user data
+    let currentUser = null;
+    let userData = null;
 
-// Post submit
-postForm.addEventListener("submit",async e=>{
-  e.preventDefault();
-  const imageURL=document.getElementById("imageURL").value.trim();
-  const caption=document.getElementById("caption").value.trim();
-  const prompt=document.getElementById("prompt").value.trim();
-  if(!prompt){showPopup("Error","Prompt is required.");return;}
-  const settingsSnap=await getDoc(doc(db,"settings","global"));
-  const autoApprove=settingsSnap.exists()&&settingsSnap.data().autoApprove===true;
-  await addDoc(collection(db,"posts"),{
-    uid:auth.currentUser.uid,
-    name:userData?.name||"",
-    username:userData?.username||"",
-    email:userData?.email||auth.currentUser.email,
-    imageURL,caption,prompt,
-    timestamp:serverTimestamp(),
-    approved:autoApprove
-  });
-  postForm.reset();
-  showPopup("Success","Your post has been submitted successfully.",[{text:"OK",type:"yes",action:hidePopup}]);
-  loadPosts();
-});
+    // ---------- AUTH & initial load ----------
+    onAuthStateChanged(auth, async (u) => {
+      if (!u) {
+        // not logged-in -> redirect to login
+        location.href = 'index.html';
+        return;
+      }
+      currentUser = u;
 
-// Delete
-async function deletePost(id){
-  showPopup("Delete","Do you really want to delete this post?",[
-    {text:"Yes",type:"yes",action:async()=>{await deleteDoc(doc(db,"posts",id));hidePopup();loadPosts();}},
-    {text:"No",type:"no",action:hidePopup}
-  ]);
-}
-</script>
-</body>
-  </html>
+      try {
+        // fetch user profile from /users/{uid}
+        const userDocRef = doc(db, 'users', u.uid);
+        const userSnap = await getDoc(userDocRef);
+        if (userSnap.exists()) {
+          userData = userSnap.data();
+        } else {
+          userData = { name: 'User', username: '', email: u.email, createdAt: null };
+        }
+
+        // populate profile UI
+        userNameEl.textContent = userData.name || 'User';
+        userHandleEl.textContent = userData.username ? `@${userData.username}` : '';
+        userEmailEl.textContent = userData.email || u.email;
+        avatarEl.textContent = (userData.name ? userData.name.charAt(0) : 'U').toUpperCase();
+        userSinceEl.textContent = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : '—';
+
+        // load posts (new -> old)
+        await loadPosts();
+
+      } catch (err) {
+        console.error('Error loading user/profile:', err);
+        showModal('Error', 'Failed to load profile. Please try again later.', [{label:'Close', cb: closeModal}]);
+      }
+    });
+
+    // ---------- load posts (getDocs, newest first) ----------
+    async function loadPosts() {
+      postsContainer.innerHTML = '<div class="loader" role="status" aria-label="Loading"></div>';
+      try {
+        // query posts for this user, ordered by timestamp desc
+        const postsQuery = query(collection(db, 'posts'),
+                                 where('uid', '==', currentUser.uid),
+                                 orderBy('timestamp', 'desc'));
+        const snap = await getDocs(postsQuery);
+
+        if (snap.empty) {
+          postsContainer.innerHTML = '<div class="empty">You have not created any posts yet.</div>';
+          return;
+        }
+
+        postsContainer.innerHTML = '';
+        snap.forEach(docSnap => {
+          const d = docSnap.data();
+          const postEl = renderPostCard(docSnap.id, d);
+          postsContainer.appendChild(postEl);
+        });
+
+      } catch (err) {
+        console.error('Error loading posts:', err);
+        postsContainer.innerHTML = '<div class="empty">Unable to load posts.</div>';
+        showModal('Error','Unable to load posts. Please try again later.', [{label:'Close', cb: closeModal}]);
+      }
+    }
+
+    // ---------- render a single post card ----------
+    function renderPostCard(id, data) {
+      const card = document.createElement('article');
+      card.className = 'post-card';
+      // timestamp
+      const timeText = formatTimestamp(data.timestamp);
+      card.innerHTML = `
+        <div class="post-top">
+          <div style="flex:1">
+            <p class="post-caption">${escapeHtml(data.caption || '(No caption)')}</p>
+          </div>
+          <div class="post-time">${escapeHtml(timeText)}</div>
+        </div>
+        ${data.imageURL ? `<img class="post-image" src="${escapeAttr(data.imageURL)}" alt="Post image">` : ''}
+        <div class="post-prompt">${escapeHtml(data.prompt)}</div>
+        <div class="post-actions">
+          <button class="btn-delete" data-id="${id}">Delete</button>
+        </div>
+      `;
+      // delete handler
+      const delBtn = card.querySelector('.btn-delete');
+      delBtn.addEventListener('click', () => confirmDelete(id));
+      return card;
+    }
+
+    // ---------- safe helpers to avoid injection in innerHTML context ----------
+    function escapeHtml(str) {
+      if (!str && str !== 0) return '';
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
+    }
+    function escapeAttr(str) {
+      return escapeHtml(str);
+    }
+
+    // ---------- submit post ----------
+    postForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const imageURL = document.getElementById('imageURL').value.trim();
+      const caption = document.getElementById('caption').value.trim();
+      const prompt = document.getElementById('prompt').value.trim();
+
+      if (!prompt) {
+        showModal('Validation', 'Prompt is required.', [{label:'OK', cb: closeModal}]);
+        return;
+      }
+
+      // disable submit to avoid duplicates
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        // check settings for autoApprove
+        let autoApprove = false;
+        try {
+          const settingsSnap = await getDoc(doc(db,'settings','global'));
+          autoApprove = settingsSnap.exists() && settingsSnap.data().autoApprove === true;
+        } catch(e) {
+          // ignore if settings missing
+          autoApprove = false;
+        }
+
+        await addDoc(collection(db, 'posts'), {
+          uid: currentUser.uid,
+          name: userData?.name || '',
+          username: userData?.username || '',
+          email: userData?.email || currentUser.email,
+          imageURL: imageURL || '',
+          caption: caption || '',
+          prompt: prompt,
+          timestamp: serverTimestamp(),
+          approved: autoApprove
+        });
+
+        postForm.reset();
+        showModal('Success', 'Your post has been submitted.', [{label:'OK', cb: () => { closeModal(); loadPosts(); }}]);
+
+      } catch (err) {
+        console.error('Submit post error:', err);
+        showModal('Error', 'Failed to submit post. Please try again.', [{label:'Close', cb: closeModal}]);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Post';
+      }
+    });
+
+    // ---------- confirm delete ----------
+    function confirmDelete(postId) {
+      showModal('Delete post', 'Do you really want to delete this post? This action cannot be undone.', [
+        {label:'Cancel', className:'', cb: closeModal},
+        {label:'Delete', className:'', cb: async () => {
+          closeModal();
+          try {
+            await deleteDoc(doc(db,'posts',postId));
+            showModal('Deleted', 'Post has been deleted.', [{label:'OK', cb: () => { closeModal(); loadPosts(); }}]);
+          } catch (err) {
+            console.error('Delete error', err);
+            showModal('Error', 'Could not delete post. Please try again.', [{label:'OK', cb: closeModal}]);
+          }
+        }}
+      ]);
+    }
+
+    // ---------- manage / logout handlers ----------
+    manageAccountBtn.addEventListener('click', () => {
+      location.href = 'account-manage.html';
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      showModal('Logout', 'Are you sure you want to logout?', [
+        {label:'Cancel', cb: closeModal},
