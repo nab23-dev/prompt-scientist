@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="en">  
 <head>  
   <meta charset="utf-8" />  
@@ -301,32 +300,20 @@ function renderPosts(){
     const div=document.createElement('div');  
     div.className='post-card';  
   
-    // Prompt ট্রাঙ্কেট (character ভিত্তিক)
-const shortPrompt = d.prompt.length > 250 ? d.prompt.slice(0, 250) + '...' : d.prompt;
-const isLong = d.prompt.length > 250;
-
-div.innerHTML = `
-  <div class="post-top">
-    <p class="post-caption">${d.caption || '(No caption)'}</p>
-    <div class="post-time">${d.timestamp?.toDate ? d.timestamp.toDate().toLocaleString() : 'Unknown'}</div>
-  </div>
-  ${d.imageURL ? `<img class="post-image" src="${d.imageURL}" alt="post">` : ""}
-  <pre class="post-prompt">${isLong ? shortPrompt : d.prompt}</pre>
-  ${isLong ? '<button class="see-more">See more</button>' : ''}
-  <div class="post-actions"><button class="btn-delete" data-id="${d.id}">Delete</button></div>
-`;
-
-if (isLong) {
-  const seeMoreBtn = div.querySelector('.see-more');
-  const promptBox = div.querySelector('.post-prompt');
-  let expanded = false;
-
-  seeMoreBtn.addEventListener('click', () => {
-    expanded = !expanded;
-    promptBox.textContent = expanded ? d.prompt : shortPrompt;
-    seeMoreBtn.textContent = expanded ? 'See less' : 'See more';
-  });
-}
+    // Prompt টেক্সট ট্রাঙ্কেট  
+    const shortPrompt = d.prompt.split('\n').slice(0,3).join('\n');  
+    const isLong = d.prompt.split('\n').length > 3;  
+  
+    div.innerHTML=`  
+      <div class="post-top">  
+        <p class="post-caption">${d.caption||'(No caption)'}</p>  
+        <div class="post-time">${d.timestamp?.toDate?d.timestamp.toDate().toLocaleString():'Unknown'}</div>  
+      </div>  
+      ${d.imageURL?`<img class="post-image" src="${d.imageURL}" alt="post">`:""}  
+      <div class="post-prompt" data-full="${encodeURIComponent(d.prompt)}">  
+        ${isLong ? shortPrompt + '...' : d.prompt}  
+      </div>  
+      ${isLong ? '<button class="see-more">See more</button>' : ''}  
       <div class="post-actions"><button class="btn-delete" data-id="${d.id}">Delete</button></div>  
     `;  
     div.querySelector('.btn-delete').addEventListener('click',()=>deletePost(d.id));  
@@ -421,4 +408,4 @@ logoutBtn.addEventListener('click',()=>{
   ]);  
 });  
 </script>  </body>  
-  </html>
+          </html>
