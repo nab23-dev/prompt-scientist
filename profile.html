@@ -28,7 +28,6 @@
       line-height:1.45;
     }
 
-    /* fixed header */
     header{
       position:fixed; top:0; left:0; right:0;
       height:72px;
@@ -48,7 +47,6 @@
       font-size:14px;color:var(--muted);font-weight:600;
     }
 
-    /* layout */
     main.wrapper{
       max-width:var(--maxw);
       margin:96px auto 60px;
@@ -59,10 +57,8 @@
       align-items:start;
     }
 
-    /* left column: posts + form */
     .left-col{display:flex;flex-direction:column;gap:20px}
 
-    /* profile card (right column) */
     .profile-card{
       background:var(--glass);
       border-radius:var(--card-radius);
@@ -90,7 +86,6 @@
     .btn-manage{background:linear-gradient(135deg,var(--accent),var(--accent-600));color:#fff;box-shadow:0 8px 20px rgba(32,78,207,0.14)}
     .btn-logout{background:#fff;border:1px solid rgba(15,23,42,0.06);color:var(--accent);}
 
-    /* post form (card) */
     .card{
       background:var(--glass);
       border-radius:var(--card-radius);
@@ -114,7 +109,6 @@
     .btn-submit{background:var(--accent);color:#fff;padding:12px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
     .btn-submit[disabled]{opacity:0.6;cursor:not-allowed}
 
-    /* posts list */
     .posts-list{display:flex;flex-direction:column;gap:18px}
     .post-card{
       background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(15,23,42,0.04);
@@ -131,12 +125,10 @@
     .btn-delete{background:#f44336;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
     .btn-delete:hover{background:#c62828}
 
-    /* loader & empty */
     .loader{width:36px;height:36px;border-radius:50%;border:4px solid #e6eefc;border-top:4px solid var(--accent);animation:spin 1s linear infinite;margin:18px auto}
     @keyframes spin{to{transform:rotate(360deg)}}
     .empty{padding:28px;text-align:center;color:var(--muted)}
 
-    /* popup modal */
     .modal-backdrop{
       position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:200;
     }
@@ -147,7 +139,6 @@
     .modal p{margin:0 0 16px 0;color:var(--muted)}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* responsive */
     @media (max-width:980px){
       main.wrapper{grid-template-columns:1fr; margin-top:86px}
       .profile-card{position:relative;top:0}
@@ -163,17 +154,16 @@
     <div class="page-label">My Profile</div>
   </header>
 
-  <main class="wrapper" role="main">
+  <main class="wrapper">
     <div class="left-col">
-      <!-- post form -->
-      <section class="card" aria-labelledby="create-post-heading">
-        <h3 id="create-post-heading">Create a new post</h3>
+      <section class="card">
+        <h3>Create a new post</h3>
         <div class="note">Use <a href="https://postimages.org/" target="_blank" rel="noopener">postimages.org</a> to upload an image and paste the <strong>Direct link</strong> below.</div>
 
-        <form id="postForm" novalidate>
+        <form id="postForm">
           <div class="field">
             <label for="imageURL">Image URL (Direct link)</label>
-            <input id="imageURL" type="url" inputmode="url" placeholder="https://i.postimg.cc/..." />
+            <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..." />
           </div>
 
           <div class="field">
@@ -183,7 +173,7 @@
 
           <div class="field">
             <label for="prompt">Prompt (required)</label>
-            <textarea id="prompt" required placeholder="Write your AI prompt..." ></textarea>
+            <textarea id="prompt" required placeholder="Write your AI prompt..."></textarea>
           </div>
 
           <div class="submit-row">
@@ -193,309 +183,193 @@
         </form>
       </section>
 
-      <!-- posts list -->
       <section class="card">
-        <h3 style="margin:0 0 10px 0">My posts</h3>
+        <h3>My posts</h3>
         <div id="postsContainer" class="posts-list">
-          <div class="loader" aria-hidden="true"></div>
+          <div class="loader"></div>
         </div>
       </section>
     </div>
 
-    <!-- right column: profile -->
-    <aside class="profile-card" aria-labelledby="profile-heading">
+    <aside class="profile-card">
       <div class="profile-top">
         <div class="avatar" id="avatar">P</div>
         <div class="profile-meta">
           <h2 id="userName">Loading...</h2>
-          <p id="userHandle" class="muted">@username</p>
-          <p id="userEmail" class="muted">email@example.com</p>
+          <p id="userHandle">@username</p>
+          <p id="userEmail">email@example.com</p>
         </div>
       </div>
-
       <div style="margin-top:6px;color:var(--muted);font-size:13px">Member since: <span id="userSince">—</span></div>
-
-      <div class="profile-actions" style="margin-top:14px">
-        <button id="manageAccountBtn" class="btn btn-manage" type="button">Manage account</button>
-        <button id="logoutBtn" class="btn btn-logout" type="button" aria-haspopup="dialog">
-          <!-- simple exit icon -->
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:block" aria-hidden="true">
-            <path d="M16 17l5-5-5-5" stroke="#163ea0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M21 12H9" stroke="#163ea0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 19H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" stroke="#163ea0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Logout
-        </button>
+      <div class="profile-actions">
+        <button id="manageAccountBtn" class="btn btn-manage">Manage account</button>
+        <button id="logoutBtn" class="btn btn-logout">Logout</button>
       </div>
     </aside>
   </main>
 
-  <!-- modal (custom popup) -->
-  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" role="document" aria-labelledby="modalTitle">
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
       <h4 id="modalTitle">Title</h4>
       <p id="modalMessage">Message</p>
       <div class="modal-actions" id="modalActions"></div>
     </div>
   </div>
 
-  <!-- Firebase + app logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // ---------- CONFIG ----------
-    const firebaseConfig = {
-      apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
-      authDomain: "prompt-scientist.firebaseapp.com",
-      projectId: "prompt-scientist",
-      storageBucket: "prompt-scientist.firebasestorage.app",
-      messagingSenderId: "240705146800",
-      appId: "1:240705146800:web:e7f05107761f4d3007d075"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+  authDomain: "prompt-scientist.firebaseapp.com",
+  projectId: "prompt-scientist",
+  storageBucket: "prompt-scientist.firebasestorage.app",
+  messagingSenderId: "240705146800",
+  appId: "1:240705146800:web:e7f05107761f4d3007d075"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    // ---------- DOM ----------
-    const userNameEl = document.getElementById('userName');
-    const userHandleEl = document.getElementById('userHandle');
-    const userEmailEl = document.getElementById('userEmail');
-    const userSinceEl = document.getElementById('userSince');
-    const avatarEl = document.getElementById('avatar');
+const userNameEl=document.getElementById('userName');
+const userHandleEl=document.getElementById('userHandle');
+const userEmailEl=document.getElementById('userEmail');
+const userSinceEl=document.getElementById('userSince');
+const avatarEl=document.getElementById('avatar');
+const postsContainer=document.getElementById('postsContainer');
+const postForm=document.getElementById('postForm');
+const submitBtn=document.getElementById('submitBtn');
+const manageAccountBtn=document.getElementById('manageAccountBtn');
+const logoutBtn=document.getElementById('logoutBtn');
+const modalBackdrop=document.getElementById('modalBackdrop');
+const modalTitle=document.getElementById('modalTitle');
+const modalMessage=document.getElementById('modalMessage');
+const modalActions=document.getElementById('modalActions');
 
-    const postsContainer = document.getElementById('postsContainer');
-    const postForm = document.getElementById('postForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const manageAccountBtn = document.getElementById('manageAccountBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
+function showModal(title,msg,buttons=[{label:'OK',cb:closeModal}]){
+  modalTitle.textContent=title;
+  modalMessage.textContent=msg;
+  modalActions.innerHTML='';
+  buttons.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.textContent=b.label;
+    btn.addEventListener('click',()=>b.cb&&b.cb());
+    modalActions.appendChild(btn);
+  });
+  modalBackdrop.style.display='flex';
+}
+function closeModal(){modalBackdrop.style.display='none';}
 
-    const modalBackdrop = document.getElementById('modalBackdrop');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalMessage = document.getElementById('modalMessage');
-    const modalActions = document.getElementById('modalActions');
+let currentUser=null,userData=null;
 
-    // helper: show modal with buttons array [{label, className, callback}]
-    function showModal(title, message, buttons = [{label:'OK', className:'', cb: closeModal}]) {
-      modalTitle.textContent = title;
-      modalMessage.textContent = message;
-      modalActions.innerHTML = '';
-      buttons.forEach(b => {
-        const btn = document.createElement('button');
-        btn.textContent = b.label;
-        btn.className = b.className || '';
-        btn.style.minWidth = '88px';
-        btn.style.padding = '8px 12px';
-        btn.addEventListener('click', () => {
-          if (typeof b.cb === 'function') b.cb();
-        });
-        modalActions.appendChild(btn);
-      });
-      modalBackdrop.style.display = 'flex';
-      modalBackdrop.setAttribute('aria-hidden','false');
-    }
-    function closeModal() {
-      modalBackdrop.style.display = 'none';
-      modalBackdrop.setAttribute('aria-hidden','true');
-    }
+onAuthStateChanged(auth,async(u)=>{
+  if(!u){location.href='index.html';return;}
+  currentUser=u;
+  const userSnap=await getDoc(doc(db,'users',u.uid));
+  userData=userSnap.exists()?userSnap.data():{name:'User',username:'',email:u.email};
+  userNameEl.textContent=userData.name||'User';
+  userHandleEl.textContent=userData.username?`@${userData.username}`:'';
+  userEmailEl.textContent=userData.email||u.email;
+  avatarEl.textContent=(userData.name?userData.name.charAt(0):'U').toUpperCase();
+  userSinceEl.textContent=userData.createdAt?new Date(userData.createdAt).toLocaleDateString():'—';
+  loadPosts();
+});
 
-    // small helper to format Firestore timestamp safely
-    function formatTimestamp(ts) {
-      try {
-        if (!ts) return 'Unknown';
-        // Firestore Timestamp has toDate()
-        if (typeof ts.toDate === 'function') {
-          return ts.toDate().toLocaleString();
-        }
-        // sometimes stored as milliseconds
-        if (typeof ts === 'number') {
-          return new Date(ts).toLocaleString();
-        }
-        return String(ts);
-      } catch(e){ return 'Unknown'; }
-    }
-
-    // store current user data
-    let currentUser = null;
-    let userData = null;
-
-    // ---------- AUTH & initial load ----------
-    onAuthStateChanged(auth, async (u) => {
-      if (!u) {
-        // not logged-in -> redirect to login
-        location.href = 'index.html';
-        return;
-      }
-      currentUser = u;
-
-      try {
-        // fetch user profile from /users/{uid}
-        const userDocRef = doc(db, 'users', u.uid);
-        const userSnap = await getDoc(userDocRef);
-        if (userSnap.exists()) {
-          userData = userSnap.data();
-        } else {
-          userData = { name: 'User', username: '', email: u.email, createdAt: null };
-        }
-
-        // populate profile UI
-        userNameEl.textContent = userData.name || 'User';
-        userHandleEl.textContent = userData.username ? `@${userData.username}` : '';
-        userEmailEl.textContent = userData.email || u.email;
-        avatarEl.textContent = (userData.name ? userData.name.charAt(0) : 'U').toUpperCase();
-        userSinceEl.textContent = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : '—';
-
-        // load posts (new -> old)
-        await loadPosts();
-
-      } catch (err) {
-        console.error('Error loading user/profile:', err);
-        showModal('Error', 'Failed to load profile. Please try again later.', [{label:'Close', cb: closeModal}]);
-      }
-    });
-
-    // ---------- load posts (getDocs, newest first) ----------
-    async function loadPosts() {
-      postsContainer.innerHTML = '<div class="loader" role="status" aria-label="Loading"></div>';
-      try {
-        // query posts for this user, ordered by timestamp desc
-        const postsQuery = query(collection(db, 'posts'),
-                                 where('uid', '==', currentUser.uid),
-                                 orderBy('timestamp', 'desc'));
-        const snap = await getDocs(postsQuery);
-
-        if (snap.empty) {
-          postsContainer.innerHTML = '<div class="empty">You have not created any posts yet.</div>';
-          return;
-        }
-
-        postsContainer.innerHTML = '';
-        snap.forEach(docSnap => {
-          const d = docSnap.data();
-          const postEl = renderPostCard(docSnap.id, d);
-          postsContainer.appendChild(postEl);
-        });
-
-      } catch (err) {
-        console.error('Error loading posts:', err);
-        postsContainer.innerHTML = '<div class="empty">Unable to load posts.</div>';
-        showModal('Error','Unable to load posts. Please try again later.', [{label:'Close', cb: closeModal}]);
-      }
-    }
-
-    // ---------- render a single post card ----------
-    function renderPostCard(id, data) {
-      const card = document.createElement('article');
-      card.className = 'post-card';
-      // timestamp
-      const timeText = formatTimestamp(data.timestamp);
-      card.innerHTML = `
+async function loadPosts(){
+  postsContainer.innerHTML='<div class="loader"></div>';
+  try{
+    // ✅ fixed query (no index needed)
+    const q=query(collection(db,'posts'),where('uid','==',auth.currentUser.uid));
+    const snap=await getDocs(q);
+    if(snap.empty){postsContainer.innerHTML='<div class="empty">No posts yet.</div>';return;}
+    postsContainer.innerHTML='';
+    const posts=[];
+    snap.forEach(docSnap=>posts.push({...docSnap.data(),id:docSnap.id}));
+    // sort manually (newest first)
+    posts.sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0));
+    posts.forEach(d=>{
+      const div=document.createElement('div');
+      div.className='post-card';
+      div.innerHTML=`
         <div class="post-top">
-          <div style="flex:1">
-            <p class="post-caption">${escapeHtml(data.caption || '(No caption)')}</p>
-          </div>
-          <div class="post-time">${escapeHtml(timeText)}</div>
+          <p class="post-caption">${d.caption||'(No caption)'}</p>
+          <div class="post-time">${d.timestamp?.toDate?d.timestamp.toDate().toLocaleString():'Unknown'}</div>
         </div>
-        ${data.imageURL ? `<img class="post-image" src="${escapeAttr(data.imageURL)}" alt="Post image">` : ''}
-        <div class="post-prompt">${escapeHtml(data.prompt)}</div>
-        <div class="post-actions">
-          <button class="btn-delete" data-id="${id}">Delete</button>
-        </div>
+        ${d.imageURL?`<img class="post-image" src="${d.imageURL}" alt="post">`:""}
+        <div class="post-prompt">${d.prompt}</div>
+        <div class="post-actions"><button class="btn-delete" data-id="${d.id}">Delete</button></div>
       `;
-      // delete handler
-      const delBtn = card.querySelector('.btn-delete');
-      delBtn.addEventListener('click', () => confirmDelete(id));
-      return card;
-    }
-
-    // ---------- safe helpers to avoid injection in innerHTML context ----------
-    function escapeHtml(str) {
-      if (!str && str !== 0) return '';
-      return String(str)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'",'&#39;');
-    }
-    function escapeAttr(str) {
-      return escapeHtml(str);
-    }
-
-    // ---------- submit post ----------
-    postForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const imageURL = document.getElementById('imageURL').value.trim();
-      const caption = document.getElementById('caption').value.trim();
-      const prompt = document.getElementById('prompt').value.trim();
-
-      if (!prompt) {
-        showModal('Validation', 'Prompt is required.', [{label:'OK', cb: closeModal}]);
-        return;
-      }
-
-      // disable submit to avoid duplicates
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting...';
-
-      try {
-        // check settings for autoApprove
-        let autoApprove = false;
-        try {
-          const settingsSnap = await getDoc(doc(db,'settings','global'));
-          autoApprove = settingsSnap.exists() && settingsSnap.data().autoApprove === true;
-        } catch(e) {
-          // ignore if settings missing
-          autoApprove = false;
-        }
-
-        await addDoc(collection(db, 'posts'), {
-          uid: currentUser.uid,
-          name: userData?.name || '',
-          username: userData?.username || '',
-          email: userData?.email || currentUser.email,
-          imageURL: imageURL || '',
-          caption: caption || '',
-          prompt: prompt,
-          timestamp: serverTimestamp(),
-          approved: autoApprove
-        });
-
-        postForm.reset();
-        showModal('Success', 'Your post has been submitted.', [{label:'OK', cb: () => { closeModal(); loadPosts(); }}]);
-
-      } catch (err) {
-        console.error('Submit post error:', err);
-        showModal('Error', 'Failed to submit post. Please try again.', [{label:'Close', cb: closeModal}]);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Post';
-      }
+      div.querySelector('.btn-delete').addEventListener('click',()=>deletePost(d.id));
+      postsContainer.appendChild(div);
     });
+  }catch(err){
+    console.error(err);
+    postsContainer.innerHTML='<div class="empty">Unable to load posts.</div>';
+  }
+}
 
-    // ---------- confirm delete ----------
-    function confirmDelete(postId) {
-      showModal('Delete post', 'Do you really want to delete this post? This action cannot be undone.', [
-        {label:'Cancel', className:'', cb: closeModal},
-        {label:'Delete', className:'', cb: async () => {
-          closeModal();
-          try {
-            await deleteDoc(doc(db,'posts',postId));
-            showModal('Deleted', 'Post has been deleted.', [{label:'OK', cb: () => { closeModal(); loadPosts(); }}]);
-          } catch (err) {
-            console.error('Delete error', err);
-            showModal('Error', 'Could not delete post. Please try again.', [{label:'OK', cb: closeModal}]);
-          }
-        }}
+postForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const imageURL=document.getElementById('imageURL').value.trim();
+  const caption=document.getElementById('caption').value.trim();
+  const prompt=document.getElementById('prompt').value.trim();
+  if(!prompt){showModal('Error','Prompt is required');return;}
+  submitBtn.disabled=true;
+  submitBtn.textContent='Submitting...';
+  try{
+    const settingsSnap=await getDoc(doc(db,'settings','global'));
+    const autoApprove=settingsSnap.exists()&&settingsSnap.data().autoApprove===true;
+    await addDoc(collection(db,'posts'),{
+      uid:auth.currentUser.uid,
+      name:userData?.name||'',
+      username:userData?.username||'',
+      email:userData?.email||auth.currentUser.email,
+      imageURL,caption,prompt,
+      timestamp:serverTimestamp(),
+      approved:autoApprove
+    });
+    postForm.reset();
+    showModal('Success','Your post has been submitted.',[{label:'OK',cb:()=>{closeModal();loadPosts();}}]);
+  }catch(err){
+    console.error(err);
+    showModal('Error','Failed to submit post.');
+  }finally{
+    submitBtn.disabled=false;
+    submitBtn.textContent='Submit Post';
+  }
+});
+
+async function deletePost(id){
+  showModal('Delete','Do you really want to delete this post?',[
+    {label:'Cancel',cb:closeModal},
+    {label:'Delete',cb:async()=>{
+      closeModal();
+      await deleteDoc(doc(db,'posts',id));
+      showModal('Deleted','Post deleted successfully.',[
+        {label:'OK',cb:()=>{closeModal();loadPosts();}}
       ]);
-    }
+    }}
+  ]);
+}
 
-    // ---------- manage / logout handlers ----------
-    manageAccountBtn.addEventListener('click', () => {
-      location.href = 'account-manage.html';
-    });
+// ---------- manage & logout ----------
+manageAccountBtn.addEventListener('click',()=>{
+  location.href='account-manage.html';
+});
 
-    logoutBtn.addEventListener('click', () => {
-      showModal('Logout', 'Are you sure you want to logout?', [
-        {label:'Cancel', cb: closeModal},
+logoutBtn.addEventListener('click',()=>{
+  showModal('Logout','Are you sure you want to logout?',[
+    {label:'Cancel',cb:closeModal},
+    {label:'Logout',cb:async()=>{
+      closeModal();
+      await signOut(auth);
+      location.href='index.html';
+    }}
+  ]);
+});
+</script>
+
+</body>
+  </html>
