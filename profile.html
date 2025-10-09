@@ -361,7 +361,11 @@ function renderPosts(){
     div.innerHTML = `
       <div class="post-top">
         <p class="post-caption">${d.caption || '(No caption)'}</p>
-        <div class="post-time">${d.timestamp?.toDate ? d.timestamp.toDate().toLocaleString() : 'Unknown'}</div>
+        <div class="post-time">${
+  d.timestamp && typeof d.timestamp.toDate === "function"
+    ? d.timestamp.toDate().toLocaleString()
+    : (d.timestamp?.seconds ? new Date(d.timestamp.seconds * 1000).toLocaleString() : "Unknown")
+}</div>
       </div>
       ${d.imageURL ? `<img class="post-image" src="${d.imageURL}" alt="post">` : ""}
       <pre class="post-prompt">${isLong ? shortPrompt : d.prompt}</pre>
