@@ -118,7 +118,12 @@
     .post-time{font-size:13px;color:var(--muted)}  
     .post-caption{font-size:16px;font-weight:600;margin:0}  
     .post-image{width:100%;max-height:420px;object-fit:cover;border-radius:10px;border:1px solid rgba(15,23,42,0.03)}  
-    .post-prompt{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; background:#f7fafc;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.03);font-size:13px;color:#0f172a}  
+    .post-prompt {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+    }  
     .post-actions{display:flex;justify-content:flex-end;gap:10px}  
     .btn-delete{background:#f44336;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}  
     .btn-delete:hover{background:#c62828}  
@@ -292,62 +297,65 @@ async function loadPosts(){
     postsContainer.innerHTML='<div class="empty">Unable to load posts.</div>';  
   }  
 }  
-  
 function renderPosts(){  
   postsContainer.innerHTML='';  
-  const slice=allPosts.slice(0,visibleCount);  
-  slice.forEach(d=>{  
-    const div=document.createElement('div');  
-    div.className='post-card';  
-  
-    // Prompt টেক্সট ট্রাঙ্কেট  
-    const shortPrompt = d.prompt.split('\n').slice(0,3).join('\n');  
-    const isLong = d.prompt.split('\n').length > 3;  
-  
-    div.innerHTML=`  
+  const slice = allPosts.slice(0, visibleCount);  
+
+  slice.forEach(d => {  
+    const div = document.createElement('div');  
+    div.className = 'post-card';  
+
+    const fullText = d.prompt.trim();  
+    const shortText = fullText.length > 100 ? fullText.slice(0, 100) + '...' : fullText;  
+    const isLong = fullText.length > 100;  
+
+    div.innerHTML = `  
       <div class="post-top">  
-        <p class="post-caption">${d.caption||'(No caption)'}</p>  
-        <div class="post-time">${d.timestamp?.toDate?d.timestamp.toDate().toLocaleString():'Unknown'}</div>  
+        <p class="post-caption">${d.caption || '(No caption)'}</p>  
+        <div class="post-time">${d.timestamp?.toDate ? d.timestamp.toDate().toLocaleString() : 'Unknown'}</div>  
       </div>  
-      ${d.imageURL?`<img class="post-image" src="${d.imageURL}" alt="post">`:""}  
-      <div class="post-prompt" data-full="${encodeURIComponent(d.prompt)}">  
-        ${isLong ? shortPrompt + '...' : d.prompt}  
+      ${d.imageURL ? `<img class="post-image" src="${d.imageURL}" alt="post">` : ""}  
+      <div class="post-prompt" data-full="${encodeURIComponent(fullText)}" style="white-space: pre-wrap; word-break: break-word;">  
+        ${shortText}  
       </div>  
       ${isLong ? '<button class="see-more">See more</button>' : ''}  
       <div class="post-actions"><button class="btn-delete" data-id="${d.id}">Delete</button></div>  
     `;  
-    div.querySelector('.btn-delete').addEventListener('click',()=>deletePost(d.id));  
-      
-    // See more toggle  
-    if(isLong){  
-      const seeMoreBtn=div.querySelector('.see-more');  
-      const promptBox=div.querySelector('.post-prompt');  
-      seeMoreBtn.addEventListener('click',()=>{  
-        if(seeMoreBtn.textContent==='See more'){  
-          promptBox.textContent=decodeURIComponent(promptBox.dataset.full);  
-          seeMoreBtn.textContent='See less';  
-        }else{  
-          promptBox.textContent=shortPrompt+'...';  
-          seeMoreBtn.textContent='See more';  
+
+    div.querySelector('.btn-delete').addEventListener('click', () => deletePost(d.id));  
+
+    // ---- see more toggle ----  
+    if (isLong) {  
+      const seeMoreBtn = div.querySelector('.see-more');  
+      const promptBox = div.querySelector('.post-prompt');  
+      seeMoreBtn.addEventListener('click', () => {  
+        if (seeMoreBtn.textContent === 'See more') {  
+          promptBox.textContent = decodeURIComponent(promptBox.dataset.full);  
+          seeMoreBtn.textContent = 'See less';  
+        } else {  
+          promptBox.textContent = shortText;  
+          seeMoreBtn.textContent = 'See more';  
         }  
       });  
     }  
-  
+
     postsContainer.appendChild(div);  
   });  
-  
-  // Load more button  
+
+  // ---- load more button ----  
   const loadMoreBtn = document.createElement('button');  
   loadMoreBtn.textContent = 'Load More';  
   loadMoreBtn.style.cssText = 'margin:10px auto;display:block;padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;';  
-  if(visibleCount < allPosts.length){  
-    loadMoreBtn.addEventListener('click',()=>{  
+
+  if (visibleCount < allPosts.length) {  
+    loadMoreBtn.addEventListener('click', () => {  
       visibleCount += 5;  
       renderPosts();  
     });  
     postsContainer.appendChild(loadMoreBtn);  
   }  
-}  
+    }  
+
 postForm.addEventListener('submit',async e=>{  
   e.preventDefault();  
   const imageURL=document.getElementById('imageURL').value.trim();  
