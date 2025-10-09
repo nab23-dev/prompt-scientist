@@ -1,451 +1,372 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Prompt Scientist — Profile</title>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Prompt Scientist — Profile</title>
+<style>
+:root{
+  --bg:linear-gradient(135deg,#e0e7ff,#f9fafb);
+  --card:rgba(255,255,255,0.75);
+  --accent:#2563eb;
+  --accent-hover:#1e40af;
+  --border:rgba(255,255,255,0.4);
+  --muted:#6b7280;
+  --shadow:0 8px 28px rgba(37,99,235,0.15);
+  --radius:18px;
+  --maxw:880px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Inter",system-ui,Roboto,"Noto Sans",sans-serif;
+  background:var(--bg);
+  color:#111827;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
 
-  <style>
-    :root{
-      --bg:#f5f7fb;
-      --card:#ffffff;
-      --accent:#2563eb;
-      --accent-hover:#1e40af;
-      --border:#e5e7eb;
-      --muted:#6b7280;
-      --radius:18px;
-      --shadow:0 8px 30px rgba(0,0,0,0.06);
-      --maxw:960px;
-    }
+/* Header */
+header{
+  position:fixed;top:0;left:0;right:0;
+  z-index:100;
+  backdrop-filter:blur(12px);
+  background:rgba(255,255,255,0.7);
+  border-bottom:1px solid var(--border);
+  padding:14px 22px;
+  display:flex;justify-content:space-between;align-items:center;
+  box-shadow:0 2px 10px rgba(0,0,0,0.04);
+}
+header h1{
+  font-size:22px;
+  font-weight:700;
+  color:var(--accent);
+}
+header a{
+  color:var(--accent);
+  font-weight:600;
+  text-decoration:none;
+  font-size:15px;
+  transition:color .2s;
+}
+header a:hover{color:var(--accent-hover);}
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:"Inter",system-ui,Roboto,sans-serif;
-      background:var(--bg);
-      color:#111827;
-      line-height:1.6;
-    }
+/* Layout */
+.container{
+  max-width:var(--maxw);
+  margin:110px auto 60px;
+  padding:0 20px;
+  display:grid;
+  gap:28px;
+}
 
-    /* Navbar */
-    header{
-      position:fixed;
-      top:0;left:0;right:0;
-      z-index:100;
-      background:#fff;
-      border-bottom:1px solid var(--border);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:14px 28px;
-      box-shadow:0 2px 12px rgba(0,0,0,0.05);
-    }
-    header h1{
-      font-size:22px;
-      font-weight:700;
-      color:var(--accent);
-      letter-spacing:-0.5px;
-    }
-    header .right{
-      font-size:15px;
-      color:var(--muted);
-      font-weight:500;
-    }
+/* Glass Card */
+.card, .profile-info{
+  background:var(--card);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:26px;
+}
 
-    main{
-      max-width:var(--maxw);
-      margin:110px auto 50px auto;
-      padding:0 20px;
-      display:grid;
-      gap:30px;
-    }
+/* Profile */
+.profile-info h2{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.profile-info p{
+  color:var(--muted);
+  font-size:14px;
+  margin:4px 0;
+}
+.profile-buttons{
+  margin-top:18px;
+  display:flex;
+  gap:12px;
+}
+button{
+  cursor:pointer;
+  transition:all .25s ease;
+}
+.manage-btn, .logout-btn{
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  font-size:14px;
+}
+.manage-btn{
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  color:#fff;
+}
+.manage-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 14px rgba(37,99,235,0.35);
+}
+.logout-btn{
+  background:#ef4444;
+  color:#fff;
+}
+.logout-btn:hover{background:#b91c1c;}
 
-    /* Profile Section */
-    .profile-card{
-      background:linear-gradient(145deg,#2563eb,#1e40af);
-      color:#fff;
-      border-radius:var(--radius);
-      padding:30px;
-      box-shadow:var(--shadow);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      flex-wrap:wrap;
-      gap:20px;
-      position:relative;
-      overflow:hidden;
-    }
+/* Post Form */
+form{display:flex;flex-direction:column;}
+form h2{font-size:18px;font-weight:700;margin-bottom:8px;}
+form .note{font-size:13px;color:var(--muted);margin-bottom:14px;}
+form .note a{color:var(--accent);font-weight:600;text-decoration:none;}
+form label{font-weight:600;margin-top:10px;font-size:14px;}
+form input,form textarea{
+  width:100%;margin-top:6px;padding:12px;border-radius:10px;
+  border:1px solid var(--border);font-size:14px;background:rgba(255,255,255,0.85);
+}
+form textarea{min-height:90px;resize:vertical;}
+form button{
+  margin-top:18px;padding:12px 18px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;font-weight:600;
+}
+form button:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(30,64,175,0.3);}
 
-    .profile-card::before{
-      content:"";
-      position:absolute;
-      width:180%;
-      height:180%;
-      top:-40%;
-      left:-40%;
-      background:radial-gradient(circle at top right,rgba(255,255,255,0.15),transparent 60%);
-      transform:rotate(20deg);
-      z-index:0;
-    }
+/* Posts */
+.posts{display:grid;gap:18px;}
+.post{
+  background:rgba(255,255,255,0.85);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  box-shadow:var(--shadow);
+}
+.post h3{font-size:16px;font-weight:600;}
+.post img{max-width:100%;border-radius:10px;object-fit:cover}
+.post .prompt{
+  background:rgba(249,250,251,0.9);
+  border:1px solid var(--border);
+  padding:10px;
+  border-radius:8px;
+  font-family:ui-monospace,monospace;
+  font-size:13px;
+}
+.post button{
+  align-self:flex-end;
+  padding:6px 12px;
+  font-size:13px;
+  background:#ef4444;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+}
+.post button:hover{background:#b91c1c;}
+.empty{padding:28px;text-align:center;color:var(--muted)}
 
-    .profile-info{
-      display:flex;
-      align-items:center;
-      gap:20px;
-      position:relative;
-      z-index:1;
-    }
+.loader{
+  width:32px;height:32px;
+  border:4px solid #ccc;
+  border-top:4px solid var(--accent);
+  border-radius:50%;
+  margin:20px auto;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    .profile-pic{
-      width:90px;height:90px;
-      border-radius:50%;
-      background:#fff;
-      color:var(--accent);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:36px;
-      font-weight:700;
-      box-shadow:0 0 0 5px rgba(255,255,255,0.2);
-    }
-
-    .profile-text h2{font-size:24px;margin-bottom:4px;}
-    .profile-text p{font-size:14px;color:#e0e7ff;margin-bottom:3px;}
-
-    .profile-actions{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      position:relative;
-      z-index:1;
-    }
-
-    .manage-btn, .logout-btn{
-      border:none;
-      border-radius:10px;
-      padding:10px 18px;
-      font-weight:600;
-      cursor:pointer;
-      transition:all .25s ease;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .manage-btn{
-      background:#fff;
-      color:var(--accent);
-    }
-    .manage-btn:hover{
-      background:#e0e7ff;
-    }
-    .logout-btn{
-      background:rgba(255,255,255,0.15);
-      color:#fff;
-      border:1px solid rgba(255,255,255,0.4);
-    }
-    .logout-btn:hover{
-      background:rgba(255,255,255,0.25);
-    }
-
-    /* Post Form */
-    .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:28px;
-      box-shadow:var(--shadow);
-    }
-
-    .form-wrapper{
-      background:#f9fafb;
-      border:1px solid var(--border);
-      padding:22px;
-      border-radius:14px;
-    }
-    form label{
-      display:block;
-      margin-top:16px;
-      font-weight:600;
-      font-size:14px;
-      color:#374151;
-    }
-    form input,form textarea{
-      width:100%;
-      margin-top:8px;
-      padding:12px 14px;
-      border-radius:10px;
-      border:1px solid #d1d5db;
-      font-size:14px;
-      background:#fff;
-      transition:border .2s,box-shadow .2s;
-    }
-    form input:focus,form textarea:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 2px rgba(37,99,235,0.2);
-      outline:none;
-    }
-    form textarea{min-height:90px;resize:vertical;}
-
-    form button{
-      margin-top:22px;
-      padding:13px 22px;
-      border:none;
-      border-radius:10px;
-      background:linear-gradient(135deg,#2563eb,#1e40af);
-      color:#fff;
-      font-weight:600;
-      cursor:pointer;
-      transition:all .3s ease;
-      width:100%;
-      box-shadow:0 4px 14px rgba(37,99,235,0.25);
-    }
-    form button:hover{
-      background:linear-gradient(135deg,#1e3a8a,#1e40af);
-      transform:translateY(-2px);
-      box-shadow:0 6px 18px rgba(30,58,138,0.35);
-    }
-
-    /* Posts */
-    .posts{display:grid;gap:20px;}
-    .post{
-      padding:18px;
-      border:1px solid var(--border);
-      border-radius:14px;
-      background:#fff;
-      box-shadow:0 3px 10px rgba(0,0,0,0.04);
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .post h3{font-size:16px;font-weight:600;}
-    .post img{max-width:100%;border-radius:10px;object-fit:cover}
-    .post .prompt{
-      background:#f9fafb;
-      border:1px solid var(--border);
-      padding:10px;
-      border-radius:8px;
-      font-family:ui-monospace,monospace;
-      font-size:13px;
-    }
-    .post button{
-      align-self:flex-end;
-      padding:6px 12px;
-      font-size:13px;
-      background:#ef4444;
-      color:#fff;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      transition:background .2s;
-    }
-    .post button:hover{background:#b91c1c;}
-
-    .empty{padding:28px;text-align:center;color:var(--muted)}
-    #loader{text-align:center;display:none;}
-    #loader img{width:50px;opacity:0.8;}
-
-    @media (max-width:650px){
-      .profile-card{flex-direction:column;align-items:flex-start;}
-      .profile-pic{width:70px;height:70px;font-size:28px;}
-      header{flex-direction:column;gap:6px;}
-      main{margin-top:130px;}
-    }
-  </style>
+/* Popup Modal */
+.popup-bg{
+  position:fixed;inset:0;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(4px);
+  z-index:999;
+}
+.popup{
+  background:#fff;
+  padding:24px 28px;
+  border-radius:14px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.15);
+  text-align:center;
+  max-width:320px;
+  width:90%;
+  animation:fadeIn .25s ease;
+}
+.popup h3{font-size:18px;margin-bottom:12px;}
+.popup p{font-size:14px;color:#444;margin-bottom:20px;}
+.popup .actions{display:flex;justify-content:center;gap:10px;}
+.popup button{
+  padding:8px 16px;border:none;border-radius:8px;font-weight:600;
+}
+.popup .yes{background:#2563eb;color:#fff;}
+.popup .no{background:#e5e7eb;}
+@keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+</style>
 </head>
-
 <body>
-  <header>
-    <h1>Prompt Scientist</h1>
-    <div class="right">My Profile</div>
-  </header>
 
-  <main>
-    <!-- Profile -->
-    <section class="profile-card">
-      <div class="profile-info">
-        <div class="profile-pic" id="avatar">P</div>
-        <div class="profile-text">
-          <h2 id="userName">Loading...</h2>
-          <p><strong>Username:</strong> <span id="userUsername"></span></p>
-          <p><strong>Email:</strong> <span id="userEmail"></span></p>
-        </div>
-      </div>
+<header>
+  <h1>Prompt Scientist</h1>
+  <a href="#profile">My Profile</a>
+</header>
 
-      <div class="profile-actions">
-        <button id="manageAccountBtn" class="manage-btn">Manage Account</button>
-        <button id="logoutBtn" class="logout-btn">Logout</button>
-      </div>
-    </section>
+<main class="container">
+  <section id="profile" class="profile-info">
+    <h2 id="userName">Loading...</h2>
+    <p><strong>Username:</strong> <span id="userUsername"></span></p>
+    <p><strong>Email:</strong> <span id="userEmail"></span></p>
+    <div class="profile-buttons">
+      <button id="manageAccountBtn" class="manage-btn">Manage Account</button>
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+    </div>
+  </section>
 
-    <!-- New Post Form -->
-    <section class="card">
-      <h2 style="margin-bottom:10px;">Create a New Post</h2>
-      <div class="form-wrapper">
-        <p class="msg">Use <a href="https://postimages.org/" target="_blank">postimages.org</a> and paste the direct image link below.</p>
-        <form id="postForm">
-          <label>Image URL
-            <input id="imageURL" type="url" placeholder="https://i.postimg.cc/...">
-          </label>
-          <label>Caption (optional)
-            <textarea id="caption" placeholder="Write your caption..."></textarea>
-          </label>
-          <label>Prompt (required)
-            <textarea id="prompt" required placeholder="Enter your AI prompt..."></textarea>
-          </label>
-          <button type="submit">Publish Post</button>
-        </form>
-      </div>
-    </section>
+  <section class="card">
+    <form id="postForm">
+      <h2>Create a New Post</h2>
+      <p class="note">Use <a href="https://postimages.org/" target="_blank">postimages.org</a> to upload your image and paste the <strong>Direct link</strong> below.</p>
+      <label>Image URL
+        <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..."/>
+      </label>
+      <label>Caption (optional)
+        <textarea id="caption" placeholder="Write your caption..."></textarea>
+      </label>
+      <label>Prompt (required)
+        <textarea id="prompt" required placeholder="Write your AI prompt..."></textarea>
+      </label>
+      <button type="submit">Submit Post</button>
+    </form>
+  </section>
 
-    <!-- My Posts -->
-    <section class="card">
-      <h2>My Posts</h2>
-      <div id="loader"><img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..."></div>
-      <div id="myPosts" class="posts"></div>
-    </section>
-  </main>
+  <section class="card">
+    <h2>My Posts</h2>
+    <div id="myPosts" class="posts"><div class="loader"></div></div>
+  </section>
+</main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, where, serverTimestamp, doc, deleteDoc, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+<!-- Popup Modal -->
+<div class="popup-bg" id="popupBg">
+  <div class="popup" id="popupBox">
+    <h3 id="popupTitle">Message</h3>
+    <p id="popupMsg"></p>
+    <div class="actions" id="popupActions"></div>
+  </div>
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
-      authDomain: "prompt-scientist.firebaseapp.com",
-      projectId: "prompt-scientist",
-      storageBucket: "prompt-scientist.firebasestorage.app",
-      messagingSenderId: "240705146800",
-      appId: "1:240705146800:web:e7f05107761f4d3007d075"
-    };
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+  authDomain: "prompt-scientist.firebaseapp.com",
+  projectId: "prompt-scientist",
+  storageBucket: "prompt-scientist.firebasestorage.app",
+  messagingSenderId: "240705146800",
+  appId: "1:240705146800:web:e7f05107761f4d3007d075"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    const userName=document.getElementById("userName");
-    const userUsername=document.getElementById("userUsername");
-    const userEmail=document.getElementById("userEmail");
-    const avatar=document.getElementById("avatar");
-    const postForm=document.getElementById("postForm");
-    const myPosts=document.getElementById("myPosts");
-    const logoutBtn=document.getElementById("logoutBtn");
-    const manageAccountBtn=document.getElementById("manageAccountBtn");
-    const loader=document.getElementById("loader");
+const userName=document.getElementById("userName");
+const userUsername=document.getElementById("userUsername");
+const userEmail=document.getElementById("userEmail");
+const postForm=document.getElementById("postForm");
+const myPosts=document.getElementById("myPosts");
+const logoutBtn=document.getElementById("logoutBtn");
+const manageAccountBtn=document.getElementById("manageAccountBtn");
 
-    let currentUser=null;
-    let userData=null;
+// Popup System
+function showPopup(title,msg,buttons=[{text:"OK",action:()=>hidePopup()}]){
+  const bg=document.getElementById("popupBg");
+  const t=document.getElementById("popupTitle");
+  const m=document.getElementById("popupMsg");
+  const a=document.getElementById("popupActions");
+  t.textContent=title;m.textContent=msg;a.innerHTML="";
+  buttons.forEach(b=>{
+    const btn=document.createElement("button");
+    btn.textContent=b.text;
+    btn.className=b.type||"no";
+    btn.onclick=()=>{b.action();};
+    a.appendChild(btn);
+  });
+  bg.style.display="flex";
+}
+function hidePopup(){document.getElementById("popupBg").style.display="none";}
 
-    onAuthStateChanged(auth,async(u)=>{
-      if(!u){location.href="index.html";return;}
-      currentUser=u;
-      const userRef=doc(db,"users",u.uid);
-      const snap=await getDoc(userRef);
-      if(snap.exists()){
-        userData=snap.data();
-        userName.textContent=userData.name||"User";
-        userUsername.textContent=userData.username?"@"+userData.username:"";
-        userEmail.textContent=userData.email||u.email;
-        avatar.textContent=userData.name?userData.name.charAt(0).toUpperCase():"U";
-      }else{
-        userData={name:"User",username:"",email:u.email};
-        userName.textContent="User";
-        userEmail.textContent=u.email;
-      }
-      loadPosts();
+let currentUser=null,userData=null;
+
+// Auth
+onAuthStateChanged(auth,async(u)=>{
+  if(!u){location.href="index.html";return;}
+  currentUser=u;
+  const snap=await getDoc(doc(db,"users",u.uid));
+  userData=snap.exists()?snap.data():{name:"User",username:"",email:u.email};
+  userName.textContent=userData.name||"User";
+  userUsername.textContent=userData.username?`@${userData.username}`:"";
+  userEmail.textContent=userData.email||u.email;
+  loadPostsRealtime();
+});
+
+manageAccountBtn.addEventListener("click",()=>location.href="account-manage.html");
+logoutBtn.addEventListener("click",()=>{
+  showPopup("Logout","Are you sure you want to logout?",[
+    {text:"Yes",type:"yes",action:()=>{hidePopup();signOut(auth);}},
+    {text:"No",type:"no",action:hidePopup}
+  ]);
+});
+
+// Realtime Posts
+function loadPostsRealtime(){
+  const q=query(collection(db,"posts"),where("uid","==",auth.currentUser.uid),orderBy("timestamp","desc"));
+  onSnapshot(q,(snap)=>{
+    if(snap.empty){myPosts.innerHTML='<div class="empty">No posts yet.</div>';return;}
+    myPosts.innerHTML="";
+    snap.forEach(docSnap=>{
+      const d=docSnap.data();
+      const div=document.createElement("div");
+      div.className="post";
+      div.innerHTML=`
+        <h3>${d.caption||"(No caption)"}</h3>
+        ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
+        <div class="prompt">${d.prompt}</div>
+        <button data-id="${docSnap.id}">Delete</button>
+        <p class="msg">${d.approved?"Approved":"Pending approval"}</p>
+      `;
+      div.querySelector("button").addEventListener("click",()=>deletePost(docSnap.id));
+      myPosts.appendChild(div);
     });
+  });
+}
 
-    manageAccountBtn.addEventListener("click",()=>location.href="account-manage.html");
+// New Post
+postForm.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const imageURL=document.getElementById("imageURL").value.trim();
+  const caption=document.getElementById("caption").value.trim();
+  const prompt=document.getElementById("prompt").value.trim();
+  if(!prompt){showPopup("Error","Prompt is required.");return;}
+  const settingsSnap=await getDoc(doc(db,"settings","global"));
+  const autoApprove=settingsSnap.exists()&&settingsSnap.data().autoApprove===true;
+  await addDoc(collection(db,"posts"),{
+    uid:auth.currentUser.uid,
+    name:userData?.name||"",
+    username:userData?.username||"",
+    email:userData?.email||auth.currentUser.email,
+    imageURL,caption,prompt,
+    timestamp:serverTimestamp(),
+    approved:autoApprove
+  });
+  postForm.reset();
+  showPopup("Success","Your post has been submitted successfully.");
+});
 
-    logoutBtn.addEventListener("click",async()=>{
-      const confirm=await Swal.fire({
-        title:"Logout Confirmation",
-        text:"Do you really want to logout?",
-        icon:"question",
-        showCancelButton:true,
-        confirmButtonColor:"#2563eb",
-        cancelButtonColor:"#d33",
-        confirmButtonText:"Yes, logout",
-        cancelButtonText:"No"
-      });
-      if(confirm.isConfirmed){
-        await signOut(auth);
-        Swal.fire("Logged Out","You have been logged out successfully.","success");
-        setTimeout(()=>location.href="index.html",1500);
-      }
-    });
-
-    function loadPosts(){
-      loader.style.display="block";
-      const q=query(collection(db,"posts"),where("uid","==",currentUser.uid),orderBy("timestamp","desc"));
-      onSnapshot(q,(snap)=>{
-        loader.style.display="none";
-        if(snap.empty){
-          myPosts.innerHTML='<div class="empty">You have no posts yet.</div>';
-          return;
-        }
-        myPosts.innerHTML="";
-        snap.forEach(docSnap=>{
-          const d=docSnap.data();
-          const div=document.createElement("div");
-          div.className="post";
-          div.innerHTML=`
-            <h3>${d.caption||"(No caption)"}</h3>
-            ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
-            <div class="prompt">${d.prompt}</div>
-            <button data-id="${docSnap.id}">Delete</button>
-            <p class="msg">${d.approved?"Approved":"Pending approval"}</p>
-          `;
-          div.querySelector("button").addEventListener("click",()=>deletePost(docSnap.id));
-          myPosts.appendChild(div);
-        });
-      });
-    }
-
-    postForm.addEventListener("submit",async e=>{
-      e.preventDefault();
-      const imageURL=document.getElementById("imageURL").value.trim();
-      const caption=document.getElementById("caption").value.trim();
-      const prompt=document.getElementById("prompt").value.trim();
-      if(!prompt){
-        Swal.fire("Error","Prompt is required","error");
-        return;
-      }
-
-      const settingsRef = doc(db, "settings", "global");
-      const settingsSnap = await getDoc(settingsRef);
-      let autoApprove = false;
-      if (settingsSnap.exists()) autoApprove = settingsSnap.data().autoApprove === true;
-
-      await addDoc(collection(db,"posts"),{
-        uid: currentUser.uid,
-        name: userData?.name || "",
-        username: userData?.username || "",
-        email: userData?.email || currentUser.email,
-        imageURL, caption, prompt,
-        timestamp: serverTimestamp(),
-        approved: autoApprove
-      });
-
-      Swal.fire("Success","Post submitted successfully!","success");
-      postForm.reset();
-    });
-
-    async function deletePost(id){
-      const confirm = await Swal.fire({
-        title: "Are you sure?",
-        text: "This post will be permanently deleted.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#2563eb",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete",
-        cancelButtonText: "Cancel"
-      });
-      if(confirm.isConfirmed){
-        await deleteDoc(doc(db,"posts",id));
-        Swal.fire("Deleted","Your post has been deleted.","success");
-      }
-    }
-  </script>
+// Delete
+async function deletePost(id){
+  showPopup("Delete","Do you really want to delete this post?",[
+    {text:"Yes",type:"yes",action:async()=>{await deleteDoc(doc(db,"posts",id));hidePopup();}},
+    {text:"No",type:"no",action:hidePopup}
+  ]);
+}
+</script>
 </body>
 </html>
