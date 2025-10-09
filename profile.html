@@ -1,189 +1,229 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Prompt Scientist — Profile</title>
-<style>
-:root{
-  --bg:linear-gradient(135deg,#e0e7ff,#f9fafb);
-  --card:rgba(255,255,255,0.75);
-  --accent:#2563eb;
-  --accent-hover:#1e40af;
-  --border:rgba(255,255,255,0.4);
-  --muted:#6b7280;
-  --shadow:0 8px 28px rgba(37,99,235,0.15);
-  --radius:18px;
-  --maxw:880px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:"Inter",system-ui,Roboto,"Noto Sans",sans-serif;
-  background:var(--bg);
-  color:#111827;
-  -webkit-font-smoothing:antialiased;
-  min-height:100vh;
-}
-header{
-  position:fixed;top:0;left:0;right:0;
-  z-index:100;
-  backdrop-filter:blur(12px);
-  background:rgba(255,255,255,0.7);
-  border-bottom:1px solid var(--border);
-  padding:14px 22px;
-  display:flex;justify-content:space-between;align-items:center;
-  box-shadow:0 2px 10px rgba(0,0,0,0.04);
-}
-header h1{font-size:22px;font-weight:700;color:var(--accent);}
-header a{
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Prompt Scientist — Profile</title>
+
+  <style>
+    :root{
+      --bg-gradient: linear-gradient(135deg,#eef2ff,#f8fafc);
+      --glass: rgba(255,255,255,0.72);
+      --accent: #204ecf;
+      --accent-600:#163ea0;
+      --muted: #6b7280;
+      --card-radius:14px;
+      --shadow-lg: 0 12px 30px rgba(17,24,39,0.08);
+      --maxw:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg-gradient);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+
+    header{
+      position:fixed; top:0; left:0; right:0;
+      height:72px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(15,23,42,0.05);
+      z-index:100;
+    }
+    header .brand{display:flex;align-items:center;gap:12px}
+    header .brand h1{
+      font-size:20px;margin:0;color:var(--accent);font-weight:700;
+      letter-spacing:-0.2px;
+    }
+    header .page-label{
+      font-size:14px;color:var(--muted);font-weight:600;
+    }
+
+    main.wrapper{
+      max-width:var(--maxw);
+      margin:96px auto 60px;
+      padding:0 24px;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:28px;
+      align-items:start;
+    }
+
+    .left-col{display:flex;flex-direction:column;gap:20px}
+
+    .profile-card{
+      background:var(--glass);
+      border-radius:var(--card-radius);
+      padding:22px;
+      box-shadow:var(--shadow-lg);
+      border: 1px solid rgba(15,23,42,0.04);
+      display:flex;flex-direction:column;gap:14px;
+      position:sticky; top:96px;
+    }
+    .profile-top{display:flex;gap:14px;align-items:center}
+    .avatar{
+      width:76px;height:76px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:#fff;color:var(--accent);font-weight:700;font-size:28px;
+      box-shadow:0 6px 16px rgba(15,23,42,0.06);
+    }
+    .profile-meta h2{margin:0;font-size:18px}
+    .profile-meta p{margin:4px 0;color:var(--muted);font-size:14px}
+    .profile-actions{display:flex;gap:10px;margin-top:8px}
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 14px;border-radius:10px;border:none;cursor:pointer;
+      font-weight:600;font-size:14px;
+    }
+    .btn-manage{background:linear-gradient(135deg,var(--accent),var(--accent-600));color:#fff;box-shadow:0 8px 20px rgba(32,78,207,0.14)}
+    .btn-logout{background:#fff;border:1px solid rgba(15,23,42,0.06);color:var(--accent);}
+
+    .card{
+      background:var(--glass);
+      border-radius:var(--card-radius);
+      padding:20px;
+      box-shadow:var(--shadow-lg);
+      border:1px solid rgba(15,23,42,0.04);
+    }
+    .card h3{margin:0 0 8px 0;font-size:18px}
+    .note{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .field{display:flex;flex-direction:column;margin-top:12px}
+    label{font-size:13px;font-weight:600;color:#0f172a;margin-bottom:8px}
+    input[type="url"], textarea{
+      padding:12px 14px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:#fff;
+      font-size:14px;color:#0f172a;
+      outline:none;transition:box-shadow .15s,border-color .15s;
+    }
+    input:focus,textarea:focus{box-shadow:0 6px 18px rgba(32,78,207,0.08);border-color:rgba(32,78,207,0.18)}
+    textarea{min-height:120px;resize:vertical}
+
+    .submit-row{margin-top:18px;display:flex;gap:12px;align-items:center}
+    .btn-submit{background:var(--accent);color:#fff;padding:12px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .btn-submit[disabled]{opacity:0.6;cursor:not-allowed}
+
+    .posts-list{display:flex;flex-direction:column;gap:18px}
+    .post-card{
+      background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(15,23,42,0.04);
+      box-shadow:0 6px 18px rgba(15,23,42,0.04);display:flex;flex-direction:column;gap:10px;
+      transition:transform .12s, box-shadow .12s;
+    }
+    .post-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(15,23,42,0.08)}
+    .post-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .post-time{font-size:13px;color:var(--muted)}
+    .post-caption{font-size:16px;font-weight:600;margin:0}
+    .post-image{width:100%;max-height:420px;object-fit:cover;border-radius:10px;border:1px solid rgba(15,23,42,0.03)}
+    .post-prompt{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; background:#f7fafc;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.03);font-size:13px;color:#0f172a}
+    .post-actions{display:flex;justify-content:flex-end;gap:10px}
+    .btn-delete{background:#f44336;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .btn-delete:hover{background:#c62828}
+
+    .loader{width:36px;height:36px;border-radius:50%;border:4px solid #e6eefc;border-top:4px solid var(--accent);animation:spin 1s linear infinite;margin:18px auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .empty{padding:28px;text-align:center;color:var(--muted)}
+
+    .modal-backdrop{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:200;
+    }
+    .modal{
+      background:#fff;border-radius:12px;padding:20px 22px;max-width:420px;width:92%;box-shadow:0 20px 60px rgba(2,6,23,0.18);
+    }
+    .modal h4{margin:0 0 8px 0;font-size:17px}
+    .modal p{margin:0 0 16px 0;color:var(--muted)}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.see-more{
+  background:none;
+  border:none;
   color:var(--accent);
   font-weight:600;
-  text-decoration:none;
-  font-size:15px;
-  transition:color .2s;
-}
-header a:hover{color:var(--accent-hover);}
-.container{
-  max-width:var(--maxw);
-  margin:110px auto 60px;
-  padding:0 20px;
-  display:grid;
-  gap:28px;
-}
-.card, .profile-info{
-  background:var(--card);
-  backdrop-filter:blur(16px);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:26px;
-}
-.profile-info h2{font-size:22px;font-weight:700;margin-bottom:8px;}
-.profile-info p{color:var(--muted);font-size:14px;margin:4px 0;}
-.profile-buttons{margin-top:18px;display:flex;gap:12px;}
-button{cursor:pointer;transition:all .25s ease;}
-.manage-btn,.logout-btn{
-  padding:10px 18px;border:none;border-radius:10px;
-  font-weight:600;font-size:14px;
-}
-.manage-btn{background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;}
-.manage-btn:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(37,99,235,0.35);}
-.logout-btn{background:#ef4444;color:#fff;}
-.logout-btn:hover{background:#b91c1c;}
-form{display:flex;flex-direction:column;}
-form h2{font-size:18px;font-weight:700;margin-bottom:8px;}
-form .note{font-size:13px;color:var(--muted);margin-bottom:14px;}
-form .note a{color:var(--accent);font-weight:600;text-decoration:none;}
-form label{font-weight:600;margin-top:10px;font-size:14px;}
-form input,form textarea{
-  width:100%;margin-top:6px;padding:12px;border-radius:10px;
-  border:1px solid var(--border);font-size:14px;background:rgba(255,255,255,0.85);
-}
-form textarea{min-height:90px;resize:vertical;}
-form button{
-  margin-top:18px;padding:12px 18px;border:none;border-radius:10px;
-  background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;font-weight:600;
-}
-form button:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(30,64,175,0.3);}
-.posts{display:grid;gap:18px;}
-.post{
-  background:rgba(255,255,255,0.85);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  box-shadow:var(--shadow);
-}
-.post h3{font-size:16px;font-weight:600;}
-.post img{max-width:100%;border-radius:10px;object-fit:cover}
-.post .prompt{
-  background:rgba(249,250,251,0.9);
-  border:1px solid var(--border);
-  padding:10px;
-  border-radius:8px;
-  font-family:ui-monospace,monospace;
   font-size:13px;
-  white-space:pre-line;
-}
-.prompt.collapsed{
-  display:-webkit-box;
-  -webkit-line-clamp:3;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-}
-.post button{
-  align-self:flex-end;
-  padding:6px 12px;
-  font-size:13px;
-  background:#ef4444;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-}
-.post button:hover{background:#b91c1c;}
-.empty{padding:28px;text-align:center;color:var(--muted)}
-.loader{
-  width:32px;height:32px;border:4px solid #ccc;
-  border-top:4px solid var(--accent);
-  border-radius:50%;margin:20px auto;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-#loadMoreBtn{
-  margin-top:10px;
-  padding:8px 14px;
-  border:none;
-  border-radius:8px;
-  background:linear-gradient(135deg,#2563eb,#1e40af);
-  color:#fff;
-  font-weight:600;
   cursor:pointer;
+  align-self:flex-start;
 }
-#loadMoreBtn:hover{background:#1e40af;}
-</style>
+.see-more:hover{text-decoration:underline;}
+    @media (max-width:980px){
+      main.wrapper{grid-template-columns:1fr; margin-top:86px}
+      .profile-card{position:relative;top:0}
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>Prompt Scientist</h1>
-  <a href="#profile">My Profile</a>
-</header>
 
-<main class="container">
-  <section id="profile" class="profile-info">
-    <h2 id="userName">Loading...</h2>
-    <p><strong>Username:</strong> <span id="userUsername"></span></p>
-    <p><strong>Email:</strong> <span id="userEmail"></span></p>
-    <div class="profile-buttons">
-      <button id="manageAccountBtn" class="manage-btn">Manage Account</button>
-      <button id="logoutBtn" class="logout-btn">Logout</button>
+  <header>
+    <div class="brand">
+      <h1>Prompt Scientist</h1>
     </div>
-  </section>
+    <div class="page-label">My Profile</div>
+  </header>
 
-  <section class="card">
-    <form id="postForm">
-      <h2>Create a New Post</h2>
-      <p class="note">Use <a href="https://postimages.org/" target="_blank">postimages.org</a> to upload your image and paste the <strong>Direct link</strong> below.</p>
-      <label>Image URL
-        <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..."/>
-      </label>
-      <label>Caption (optional)
-        <textarea id="caption" placeholder="Write your caption..."></textarea>
-      </label>
-      <label>Prompt (required)
-        <textarea id="prompt" required placeholder="Write your AI prompt..."></textarea>
-      </label>
-      <button type="submit">Submit Post</button>
-    </form>
-  </section>
+  <main class="wrapper">
+    <div class="left-col">
+      <section class="card">
+        <h3>Create a new post</h3>
+        <div class="note">Use <a href="https://postimages.org/" target="_blank" rel="noopener">postimages.org</a> to upload an image and paste the <strong>Direct link</strong> below.</div>
 
-  <section class="card">
-    <h2>My Posts</h2>
-    <div id="myPosts" class="posts"><div class="loader"></div></div>
-    <button id="loadMoreBtn" style="display:none;">Load more</button>
-  </section>
-</main>
+        <form id="postForm">
+          <div class="field">
+            <label for="imageURL">Image URL (Direct link)</label>
+            <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..." />
+          </div>
+
+          <div class="field">
+            <label for="caption">Caption (optional)</label>
+            <input id="caption" type="text" placeholder="Short caption (optional)" />
+          </div>
+
+          <div class="field">
+            <label for="prompt">Prompt (required)</label>
+            <textarea id="prompt" required placeholder="Write your AI prompt..."></textarea>
+          </div>
+
+          <div class="submit-row">
+            <button type="submit" id="submitBtn" class="btn-submit">Submit Post</button>
+            <div id="submitNote" style="color:var(--muted);font-size:13px">Your post will appear above after submission.</div>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h3>My posts</h3>
+        <div id="postsContainer" class="posts-list">
+          <div class="loader"></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="profile-card">
+      <div class="profile-top">
+        <div class="avatar" id="avatar">P</div>
+        <div class="profile-meta">
+          <h2 id="userName">Loading...</h2>
+          <p id="userHandle">@username</p>
+          <p id="userEmail">email@example.com</p>
+        </div>
+      </div>
+      <div style="margin-top:6px;color:var(--muted);font-size:13px">Member since: <span id="userSince">—</span></div>
+      <div class="profile-actions">
+        <button id="manageAccountBtn" class="btn btn-manage">Manage account</button>
+        <button id="logoutBtn" class="btn btn-logout">Logout</button>
+      </div>
+    </aside>
+  </main>
+
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <h4 id="modalTitle">Title</h4>
+      <p id="modalMessage">Message</p>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -202,110 +242,184 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const userName=document.getElementById("userName");
-const userUsername=document.getElementById("userUsername");
-const userEmail=document.getElementById("userEmail");
-const postForm=document.getElementById("postForm");
-const myPosts=document.getElementById("myPosts");
-const loadMoreBtn=document.getElementById("loadMoreBtn");
-const logoutBtn=document.getElementById("logoutBtn");
-const manageAccountBtn=document.getElementById("manageAccountBtn");
+const userNameEl=document.getElementById('userName');
+const userHandleEl=document.getElementById('userHandle');
+const userEmailEl=document.getElementById('userEmail');
+const userSinceEl=document.getElementById('userSince');
+const avatarEl=document.getElementById('avatar');
+const postsContainer=document.getElementById('postsContainer');
+const postForm=document.getElementById('postForm');
+const submitBtn=document.getElementById('submitBtn');
+const manageAccountBtn=document.getElementById('manageAccountBtn');
+const logoutBtn=document.getElementById('logoutBtn');
+const modalBackdrop=document.getElementById('modalBackdrop');
+const modalTitle=document.getElementById('modalTitle');
+const modalMessage=document.getElementById('modalMessage');
+const modalActions=document.getElementById('modalActions');
 
-let allPosts=[];
-let displayedCount=0;
-const INITIAL_COUNT=3;
-const LOAD_MORE_COUNT=5;
+function showModal(title,msg,buttons=[{label:'OK',cb:closeModal}]){
+  modalTitle.textContent=title;
+  modalMessage.textContent=msg;
+  modalActions.innerHTML='';
+  buttons.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.textContent=b.label;
+    btn.addEventListener('click',()=>b.cb&&b.cb());
+    modalActions.appendChild(btn);
+  });
+  modalBackdrop.style.display='flex';
+}
+function closeModal(){modalBackdrop.style.display='none';}
+
+let currentUser=null,userData=null;
 
 onAuthStateChanged(auth,async(u)=>{
-  if(!u){location.href="index.html";return;}
-  const snap=await getDoc(doc(db,"users",u.uid));
-  const userData=snap.exists()?snap.data():{name:"User",username:"",email:u.email};
-  userName.textContent=userData.name||"User";
-  userUsername.textContent=userData.username?`@${userData.username}`:"";
-  userEmail.textContent=userData.email||u.email;
-  loadPosts(u.uid);
+  if(!u){location.href='index.html';return;}
+  currentUser=u;
+  const userSnap=await getDoc(doc(db,'users',u.uid));
+  userData=userSnap.exists()?userSnap.data():{name:'User',username:'',email:u.email};
+  userNameEl.textContent=userData.name||'User';
+  userHandleEl.textContent=userData.username?`@${userData.username}`:'';
+  userEmailEl.textContent=userData.email||u.email;
+  avatarEl.textContent=(userData.name?userData.name.charAt(0):'U').toUpperCase();
+  userSinceEl.textContent=userData.createdAt?new Date(userData.createdAt).toLocaleDateString():'—';
+  loadPosts();
 });
 
-async function loadPosts(uid){
-  myPosts.innerHTML='<div class="loader"></div>';
-  const q=query(collection(db,"posts"),where("uid","==",uid));
-  const snap=await getDocs(q);
-  allPosts=[];
-  snap.forEach(docSnap=>allPosts.push({id:docSnap.id,...docSnap.data()}));
-  allPosts.sort((a,b)=>b.timestamp?.seconds - a.timestamp?.seconds);
-  myPosts.innerHTML="";
-  displayedCount=0;
-  renderNextPosts(INITIAL_COUNT);
+let allPosts = []; // সব পোস্ট রাখব
+let visibleCount = 3; // প্রথমে ৩টা দেখাবে
+
+async function loadPosts(){
+  postsContainer.innerHTML='<div class="loader"></div>';
+  try{
+    const q=query(collection(db,'posts'),where('uid','==',auth.currentUser.uid));
+    const snap=await getDocs(q);
+    if(snap.empty){postsContainer.innerHTML='<div class="empty">No posts yet.</div>';return;}
+    allPosts=[];
+    snap.forEach(docSnap=>allPosts.push({...docSnap.data(),id:docSnap.id}));
+    allPosts.sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0));
+    renderPosts();
+  }catch(err){
+    console.error(err);
+    postsContainer.innerHTML='<div class="empty">Unable to load posts.</div>';
+  }
 }
 
-function renderNextPosts(count){
-  const next=allPosts.slice(displayedCount,displayedCount+count);
-  next.forEach(d=>{
-    const div=document.createElement("div");
-    div.className="post";
-    const promptDiv=document.createElement("div");
-    promptDiv.className="prompt collapsed";
-    promptDiv.textContent=d.prompt;
-    const seeBtn=document.createElement("button");
-    seeBtn.textContent="See more";
-    seeBtn.style.alignSelf="flex-start";
-    seeBtn.style.background="#2563eb";
-    seeBtn.style.color="#fff";
-    seeBtn.style.border="none";
-    seeBtn.style.borderRadius="6px";
-    seeBtn.style.padding="4px 10px";
-    seeBtn.style.fontSize="12px";
-    seeBtn.onclick=()=>{
-      if(promptDiv.classList.contains("collapsed")){
-        promptDiv.classList.remove("collapsed");
-        seeBtn.textContent="See less";
-      }else{
-        promptDiv.classList.add("collapsed");
-        seeBtn.textContent="See more";
-      }
-    };
+function renderPosts(){
+  postsContainer.innerHTML='';
+  const slice=allPosts.slice(0,visibleCount);
+  slice.forEach(d=>{
+    const div=document.createElement('div');
+    div.className='post-card';
+
+    // Prompt টেক্সট ট্রাঙ্কেট
+    const shortPrompt = d.prompt.split('\n').slice(0,3).join('\n');
+    const isLong = d.prompt.split('\n').length > 3;
+
     div.innerHTML=`
-      <h3>${d.caption||"(No caption)"}</h3>
-      ${d.imageURL?`<img src="${d.imageURL}" alt="post">`:""}
+      <div class="post-top">
+        <p class="post-caption">${d.caption||'(No caption)'}</p>
+        <div class="post-time">${d.timestamp?.toDate?d.timestamp.toDate().toLocaleString():'Unknown'}</div>
+      </div>
+      ${d.imageURL?`<img class="post-image" src="${d.imageURL}" alt="post">`:""}
+      <div class="post-prompt" data-full="${encodeURIComponent(d.prompt)}">
+        ${isLong ? shortPrompt + '...' : d.prompt}
+      </div>
+      ${isLong ? '<button class="see-more">See more</button>' : ''}
+      <div class="post-actions"><button class="btn-delete" data-id="${d.id}">Delete</button></div>
     `;
-    div.appendChild(promptDiv);
-    div.appendChild(seeBtn);
-    const delBtn=document.createElement("button");
-    delBtn.textContent="Delete";
-    delBtn.onclick=()=>deletePost(d.id);
-    div.appendChild(delBtn);
-    myPosts.appendChild(div);
+    div.querySelector('.btn-delete').addEventListener('click',()=>deletePost(d.id));
+    
+    // See more toggle
+    if(isLong){
+      const seeMoreBtn=div.querySelector('.see-more');
+      const promptBox=div.querySelector('.post-prompt');
+      seeMoreBtn.addEventListener('click',()=>{
+        if(seeMoreBtn.textContent==='See more'){
+          promptBox.textContent=decodeURIComponent(promptBox.dataset.full);
+          seeMoreBtn.textContent='See less';
+        }else{
+          promptBox.textContent=shortPrompt+'...';
+          seeMoreBtn.textContent='See more';
+        }
+      });
+    }
+
+    postsContainer.appendChild(div);
   });
-  displayedCount+=next.length;
-  loadMoreBtn.style.display=displayedCount<allPosts.length?"block":"none";
+
+  // Load more button
+  const loadMoreBtn = document.createElement('button');
+  loadMoreBtn.textContent = 'Load More';
+  loadMoreBtn.style.cssText = 'margin:10px auto;display:block;padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;';
+  if(visibleCount < allPosts.length){
+    loadMoreBtn.addEventListener('click',()=>{
+      visibleCount += 5;
+      renderPosts();
+    });
+    postsContainer.appendChild(loadMoreBtn);
+  }
 }
-
-loadMoreBtn.addEventListener("click",()=>renderNextPosts(LOAD_MORE_COUNT));
-
-postForm.addEventListener("submit",async e=>{
+postForm.addEventListener('submit',async e=>{
   e.preventDefault();
-  const imageURL=document.getElementById("imageURL").value.trim();
-  const caption=document.getElementById("caption").value.trim();
-  const prompt=document.getElementById("prompt").value.trim();
-  if(!prompt){alert("Prompt required");return;}
-  await addDoc(collection(db,"posts"),{
-    uid:auth.currentUser.uid,
-    imageURL,caption,prompt,
-    timestamp:serverTimestamp(),
-    approved:false
-  });
-  postForm.reset();
-  loadPosts(auth.currentUser.uid);
+  const imageURL=document.getElementById('imageURL').value.trim();
+  const caption=document.getElementById('caption').value.trim();
+  const prompt=document.getElementById('prompt').value.trim();
+  if(!prompt){showModal('Error','Prompt is required');return;}
+  submitBtn.disabled=true;
+  submitBtn.textContent='Submitting...';
+  try{
+    const settingsSnap=await getDoc(doc(db,'settings','global'));
+    const autoApprove=settingsSnap.exists()&&settingsSnap.data().autoApprove===true;
+    await addDoc(collection(db,'posts'),{
+      uid:auth.currentUser.uid,
+      name:userData?.name||'',
+      username:userData?.username||'',
+      email:userData?.email||auth.currentUser.email,
+      imageURL,caption,prompt,
+      timestamp:serverTimestamp(),
+      approved:autoApprove
+    });
+    postForm.reset();
+    showModal('Success','Your post has been submitted.',[{label:'OK',cb:()=>{closeModal();loadPosts();}}]);
+  }catch(err){
+    console.error(err);
+    showModal('Error','Failed to submit post.');
+  }finally{
+    submitBtn.disabled=false;
+    submitBtn.textContent='Submit Post';
+  }
 });
 
 async function deletePost(id){
-  if(!confirm("Delete this post?"))return;
-  await deleteDoc(doc(db,"posts",id));
-  loadPosts(auth.currentUser.uid);
+  showModal('Delete','Do you really want to delete this post?',[
+    {label:'Cancel',cb:closeModal},
+    {label:'Delete',cb:async()=>{
+      closeModal();
+      await deleteDoc(doc(db,'posts',id));
+      showModal('Deleted','Post deleted successfully.',[
+        {label:'OK',cb:()=>{closeModal();loadPosts();}}
+      ]);
+    }}
+  ]);
 }
 
-manageAccountBtn.addEventListener("click",()=>location.href="account-manage.html");
-logoutBtn.addEventListener("click",()=>signOut(auth));
+// ---------- manage & logout ----------
+manageAccountBtn.addEventListener('click',()=>{
+  location.href='account-manage.html';
+});
+
+logoutBtn.addEventListener('click',()=>{
+  showModal('Logout','Are you sure you want to logout?',[
+    {label:'Cancel',cb:closeModal},
+    {label:'Logout',cb:async()=>{
+      closeModal();
+      await signOut(auth);
+      location.href='index.html';
+    }}
+  ]);
+});
 </script>
+
 </body>
 </html>
