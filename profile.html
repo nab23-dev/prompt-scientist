@@ -138,16 +138,20 @@
     .modal h4{margin:0 0 8px 0;font-size:17px}
     .modal p{margin:0 0 16px 0;color:var(--muted)}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
-.see-more{
-  background:none;
-  border:none;
-  color:var(--accent);
-  font-weight:600;
-  font-size:13px;
-  cursor:pointer;
-  align-self:flex-start;
+.see-more {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: color .2s;
 }
-.see-more:hover{text-decoration:underline;}
+.see-more:hover {
+  color: var(--accent-600);
+  text-decoration: underline;
+            }
     @media (max-width:980px){
       main.wrapper{grid-template-columns:1fr; margin-top:86px}
       .profile-card{position:relative;top:0}
