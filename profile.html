@@ -442,34 +442,53 @@ function renderPosts() {
   }
 }
 
-// 🔹 New Post
+// 🔹 New Post Submit (Fixed version)
 postForm.addEventListener('submit', async e => {
   e.preventDefault();
+
   const imageURL = document.getElementById('imageURL').value.trim();
   const caption = document.getElementById('caption').value.trim();
   const prompt = document.getElementById('prompt').value.trim();
-  if (!prompt) return alert('Prompt is required');
-  submitBtn.disabled = true; submitBtn.textContent = 'Submitting...';
-  try {
-    // Auto approve check
-    const settingsRef = doc(db, 'settings', 'global');
-    const settingsSnap = await getDoc(settingsRef);
-    const autoApprove = settingsSnap.exists() ? settingsSnap.data().autoApprove === true : false;
 
-    await addDoc(collection(db, 'posts'), {
+  if (!prompt) return alert('Prompt is required');
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+
+  try {
+    // 🔹 Get autoApprove setting from Firestore (settings/global)
+    const settingsRef = doc(db, "settings", "global");
+    const settingsSnap = await getDoc(settingsRef);
+    let autoApprove = false;
+
+    if (settingsSnap.exists()) {
+      autoApprove = settingsSnap.data().autoApprove === true;
+    }
+
+    // 🔹 Save post with approve status
+    await addDoc(collection(db, "posts"), {
       uid: auth.currentUser.uid,
-      name: userData.name || '',
-      username: userData.username || '',
+      name: userData.name || "",
+      username: userData.username || "",
       email: userData.email || auth.currentUser.email,
-      imageURL, caption, prompt,
+      imageURL,
+      caption,
+      prompt,
       timestamp: serverTimestamp(),
-      approved: autoApprove
+      approved: autoApprove   // ✅ এটা হলো মূল fix
     });
+
+    alert("✅ Post submitted! Pending admin approval.");
     postForm.reset();
     loadPosts();
-    alert('Post submitted successfully.');
-  } catch (e) { alert('Failed to submit'); }
-  submitBtn.disabled = false; submitBtn.textContent = 'Submit Post';
+
+  } catch (err) {
+    console.error(err);
+    alert('Failed to submit post.');
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Submit Post';
 });
 
 // 🔹 Delete Post
