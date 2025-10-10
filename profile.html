@@ -1,412 +1,464 @@
 <!doctype html>
-<html lang="en">  
-<head>  
-  <meta charset="utf-8" />  
-  <meta name="viewport" content="width=device-width,initial-scale=1" />  
-  <title>Prompt Scientist — Profile</title>    <style>  
-    :root{  
-      --bg-gradient: linear-gradient(135deg,#eef2ff,#f8fafc);  
-      --glass: rgba(255,255,255,0.72);  
-      --accent: #204ecf;  
-      --accent-600:#163ea0;  
-      --muted: #6b7280;  
-      --card-radius:14px;  
-      --shadow-lg: 0 12px 30px rgba(17,24,39,0.08);  
-      --maxw:1100px;  
-    }  
-    *{box-sizing:border-box}  
-    html,body{height:100%}  
-    body{  
-      margin:0;  
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;  
-      background:var(--bg-gradient);  
-      color:#0f172a;  
-      -webkit-font-smoothing:antialiased;  
-      -moz-osx-font-smoothing:grayscale;  
-      line-height:1.45;  
-    }  
-  
-    header{  
-      position:fixed; top:0; left:0; right:0;  
-      height:72px;  
-      display:flex; align-items:center; justify-content:space-between;  
-      padding:0 28px;  
-      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));  
-      backdrop-filter: blur(8px);  
-      border-bottom: 1px solid rgba(15,23,42,0.05);  
-      z-index:100;  
-    }  
-    header .brand{display:flex;align-items:center;gap:12px}  
-    header .brand h1{  
-      font-size:20px;margin:0;color:var(--accent);font-weight:700;  
-      letter-spacing:-0.2px;  
-    }  
-    header .page-label{  
-      font-size:14px;color:var(--muted);font-weight:600;  
-    }  
-  
-    main.wrapper{  
-      max-width:var(--maxw);  
-      margin:96px auto 60px;  
-      padding:0 24px;  
-      display:grid;  
-      grid-template-columns: 1fr 420px;  
-      gap:28px;  
-      align-items:start;  
-    }  
-  
-    .left-col{display:flex;flex-direction:column;gap:20px}  
-  
-    .profile-card{  
-      background:var(--glass);  
-      border-radius:var(--card-radius);  
-      padding:22px;  
-      box-shadow:var(--shadow-lg);  
-      border: 1px solid rgba(15,23,42,0.04);  
-      display:flex;flex-direction:column;gap:14px;  
-      position:sticky; top:96px;  
-    }  
-    .profile-top{display:flex;gap:14px;align-items:center}  
-    .avatar{  
-      width:76px;height:76px;border-radius:12px;  
-      display:flex;align-items:center;justify-content:center;  
-      background:#fff;color:var(--accent);font-weight:700;font-size:28px;  
-      box-shadow:0 6px 16px rgba(15,23,42,0.06);  
-    }  
-    .profile-meta h2{margin:0;font-size:18px}  
-    .profile-meta p{margin:4px 0;color:var(--muted);font-size:14px}  
-    .profile-actions{display:flex;gap:10px;margin-top:8px}  
-    .btn{  
-      display:inline-flex;align-items:center;gap:10px;  
-      padding:10px 14px;border-radius:10px;border:none;cursor:pointer;  
-      font-weight:600;font-size:14px;  
-    }  
-    .btn-manage{background:linear-gradient(135deg,var(--accent),var(--accent-600));color:#fff;box-shadow:0 8px 20px rgba(32,78,207,0.14)}  
-    .btn-logout{background:#fff;border:1px solid rgba(15,23,42,0.06);color:var(--accent);}  
-  
-    .card{  
-      background:var(--glass);  
-      border-radius:var(--card-radius);  
-      padding:20px;  
-      box-shadow:var(--shadow-lg);  
-      border:1px solid rgba(15,23,42,0.04);  
-    }  
-    .card h3{margin:0 0 8px 0;font-size:18px}  
-    .note{font-size:13px;color:var(--muted);margin-bottom:12px}  
-    .field{display:flex;flex-direction:column;margin-top:12px}  
-    label{font-size:13px;font-weight:600;color:#0f172a;margin-bottom:8px}  
-    input[type="url"], textarea{  
-      padding:12px 14px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:#fff;  
-      font-size:14px;color:#0f172a;  
-      outline:none;transition:box-shadow .15s,border-color .15s;  
-    }  
-    input:focus,textarea:focus{box-shadow:0 6px 18px rgba(32,78,207,0.08);border-color:rgba(32,78,207,0.18)}  
-    textarea{min-height:120px;resize:vertical}  
-  
-    .submit-row{margin-top:18px;display:flex;gap:12px;align-items:center}  
-    .btn-submit{background:var(--accent);color:#fff;padding:12px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer}  
-    .btn-submit[disabled]{opacity:0.6;cursor:not-allowed}  
-  
-    .posts-list{display:flex;flex-direction:column;gap:18px}  
-    .post-card{  
-      background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(15,23,42,0.04);  
-      box-shadow:0 6px 18px rgba(15,23,42,0.04);display:flex;flex-direction:column;gap:10px;  
-      transition:transform .12s, box-shadow .12s;  
-    }  
-    .post-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(15,23,42,0.08)}  
-    .post-top{display:flex;justify-content:space-between;align-items:center;gap:12px}  
-    .post-time{font-size:13px;color:var(--muted)}  
-    .post-caption{font-size:16px;font-weight:600;margin:0}  
-    .post-image{width:100%;max-height:420px;object-fit:cover;border-radius:10px;border:1px solid rgba(15,23,42,0.03)}  
-    .post-prompt{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; background:#f7fafc;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.03);font-size:13px;color:#0f172a}  
-    .post-actions{display:flex;justify-content:flex-end;gap:10px}  
-    .btn-delete{background:#f44336;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}  
-    .btn-delete:hover{background:#c62828}  
-  
-    .loader{width:36px;height:36px;border-radius:50%;border:4px solid #e6eefc;border-top:4px solid var(--accent);animation:spin 1s linear infinite;margin:18px auto}  
-    @keyframes spin{to{transform:rotate(360deg)}}  
-    .empty{padding:28px;text-align:center;color:var(--muted)}  
-  
-    .modal-backdrop{  
-      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:200;  
-    }  
-    .modal{  
-      background:#fff;border-radius:12px;padding:20px 22px;max-width:420px;width:92%;box-shadow:0 20px 60px rgba(2,6,23,0.18);  
-    }  
-    .modal h4{margin:0 0 8px 0;font-size:17px}  
-    .modal p{margin:0 0 16px 0;color:var(--muted)}  
-    .modal-actions{display:flex;gap:10px;justify-content:flex-end}  
-.see-more{  
-  background:none;  
-  border:none;  
-  color:var(--accent);  
-  font-weight:600;  
-  font-size:13px;  
-  cursor:pointer;  
-  align-self:flex-start;  
-}  
-.see-more:hover{text-decoration:underline;}  
-    @media (max-width:980px){  
-      main.wrapper{grid-template-columns:1fr; margin-top:86px}  
-      .profile-card{position:relative;top:0}  
-    }  
-  </style>  </head>  
-<body>    <header>  
-    <div class="brand">  
-      <h1>Prompt Scientist</h1>  
-    </div>  
-    <div class="page-label">My Profile</div>  
-  </header>    <main class="wrapper">  
-    <div class="left-col">  
-      <section class="card">  
-        <h3>Create a new post</h3>  
-        <div class="note">Use <a href="https://postimages.org/" target="_blank" rel="noopener">postimages.org</a> to upload an image and paste the <strong>Direct link</strong> below.</div>  <form id="postForm">  
-      <div class="field">  
-        <label for="imageURL">Image URL (Direct link)</label>  
-        <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..." />  
-      </div>  
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Prompt Scientist — Profile</title>
 
-      <div class="field">  
-        <label for="caption">Caption (optional)</label>  
-        <input id="caption" type="text" placeholder="Short caption (optional)" />  
-      </div>  
+  <style>
+    :root {
+      --accent: #204ecf;
+      --accent-dark: #163ea0;
+      --muted: #6b7280;
+      --bg: #f3f6fb;
+      --white: #ffffff;
+      --shadow: 0 8px 24px rgba(15,23,42,0.08);
+      --radius: 14px;
+    }
 
-      <div class="field">  
-        <label for="prompt">Prompt (required)</label>  
-        <textarea id="prompt" required placeholder="Write your AI prompt..."></textarea>  
-      </div>  
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      <div class="submit-row">  
-        <button type="submit" id="submitBtn" class="btn-submit">Submit Post</button>  
-        <div id="submitNote" style="color:var(--muted);font-size:13px">Your post will appear above after submission.</div>  
-      </div>  
-    </form>  
-  </section>  
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--bg);
+      color: #0f172a;
+      line-height: 1.5;
+    }
 
-  <section class="card">  
-    <h3>My posts</h3>  
-    <div id="postsContainer" class="posts-list">  
-      <div class="loader"></div>  
-    </div>  
-  </section>  
-</div>  
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-<aside class="profile-card">  
-  <div class="profile-top">  
-    <div class="avatar" id="avatar">P</div>  
-    <div class="profile-meta">  
-      <h2 id="userName">Loading...</h2>  
-      <p id="userHandle">@username</p>  
-      <p id="userEmail">email@example.com</p>  
-    </div>  
-  </div>  
-  <div style="margin-top:6px;color:var(--muted);font-size:13px">Member since: <span id="userSince">—</span></div>  
-  <div class="profile-actions">  
-    <button id="manageAccountBtn" class="btn btn-manage">Manage account</button>  
-    <button id="logoutBtn" class="btn btn-logout">Logout</button>  
-  </div>  
-</aside>
+    header h1 {
+      font-size: 20px;
+      color: var(--accent);
+      font-weight: 700;
+    }
 
-  </main>    <div id="modalBackdrop" class="modal-backdrop">  
-    <div class="modal">  
-      <h4 id="modalTitle">Title</h4>  
-      <p id="modalMessage">Message</p>  
-      <div class="modal-actions" id="modalActions"></div>  
-    </div>  
-  </div>  <script type="module">  
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";  
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";  
-import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";  
-  
-const firebaseConfig = {  
-  apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",  
-  authDomain: "prompt-scientist.firebaseapp.com",  
-  projectId: "prompt-scientist",  
-  storageBucket: "prompt-scientist.firebasestorage.app",  
-  messagingSenderId: "240705146800",  
-  appId: "1:240705146800:web:e7f05107761f4d3007d075"  
-};  
-const app = initializeApp(firebaseConfig);  
-const auth = getAuth(app);  
-const db = getFirestore(app);  
-  
-const userNameEl=document.getElementById('userName');  
-const userHandleEl=document.getElementById('userHandle');  
-const userEmailEl=document.getElementById('userEmail');  
-const userSinceEl=document.getElementById('userSince');  
-const avatarEl=document.getElementById('avatar');  
-const postsContainer=document.getElementById('postsContainer');  
-const postForm=document.getElementById('postForm');  
-const submitBtn=document.getElementById('submitBtn');  
-const manageAccountBtn=document.getElementById('manageAccountBtn');  
-const logoutBtn=document.getElementById('logoutBtn');  
-const modalBackdrop=document.getElementById('modalBackdrop');  
-const modalTitle=document.getElementById('modalTitle');  
-const modalMessage=document.getElementById('modalMessage');  
-const modalActions=document.getElementById('modalActions');  
-  
-function showModal(title,msg,buttons=[{label:'OK',cb:closeModal}]){  
-  modalTitle.textContent=title;  
-  modalMessage.textContent=msg;  
-  modalActions.innerHTML='';  
-  buttons.forEach(b=>{  
-    const btn=document.createElement('button');  
-    btn.textContent=b.label;  
-    btn.addEventListener('click',()=>b.cb&&b.cb());  
-    modalActions.appendChild(btn);  
-  });  
-  modalBackdrop.style.display='flex';  
-}  
-function closeModal(){modalBackdrop.style.display='none';}  
-  
-let currentUser=null,userData=null;  
-  
-onAuthStateChanged(auth,async(u)=>{  
-  if(!u){location.href='index.html';return;}  
-  currentUser=u;  
-  const userSnap=await getDoc(doc(db,'users',u.uid));  
-  userData=userSnap.exists()?userSnap.data():{name:'User',username:'',email:u.email};  
-  userNameEl.textContent=userData.name||'User';  
-  userHandleEl.textContent=userData.username?`@${userData.username}`:'';  
-  userEmailEl.textContent=userData.email||u.email;  
-  avatarEl.textContent=(userData.name?userData.name.charAt(0):'U').toUpperCase();  
-  userSinceEl.textContent=userData.createdAt?new Date(userData.createdAt).toLocaleDateString():'—';  
-  loadPosts();  
-});  
-  
-let allPosts = []; // সব পোস্ট রাখব  
-let visibleCount = 3; // প্রথমে ৩টা দেখাবে  
-  
-async function loadPosts(){  
-  postsContainer.innerHTML='<div class="loader"></div>';  
-  try{  
-    const q=query(collection(db,'posts'),where('uid','==',auth.currentUser.uid));  
-    const snap=await getDocs(q);  
-    if(snap.empty){postsContainer.innerHTML='<div class="empty">No posts yet.</div>';return;}  
-    allPosts=[];  
-    snap.forEach(docSnap=>allPosts.push({...docSnap.data(),id:docSnap.id}));  
-    allPosts.sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0));  
-    renderPosts();  
-  }catch(err){  
-    console.error(err);  
-    postsContainer.innerHTML='<div class="empty">Unable to load posts.</div>';  
-  }  
-}  
-  
-function renderPosts(){  
-  postsContainer.innerHTML='';  
-  const slice=allPosts.slice(0,visibleCount);  
-  slice.forEach(d=>{  
-    const div=document.createElement('div');  
-    div.className='post-card';  
-  
-    // Prompt টেক্সট ট্রাঙ্কেট  
-    const shortPrompt = d.prompt.split('\n').slice(0,3).join('\n');  
-    const isLong = d.prompt.split('\n').length > 3;  
-  
-    div.innerHTML=`  
-      <div class="post-top">  
-        <p class="post-caption">${d.caption||'(No caption)'}</p>  
-        <div class="post-time">${d.timestamp?.toDate?d.timestamp.toDate().toLocaleString():'Unknown'}</div>  
-      </div>  
-      ${d.imageURL?`<img class="post-image" src="${d.imageURL}" alt="post">`:""}  
-      <div class="post-prompt" data-full="${encodeURIComponent(d.prompt)}">  
-        ${isLong ? shortPrompt + '...' : d.prompt}  
-      </div>  
-      ${isLong ? '<button class="see-more">See more</button>' : ''}  
-      <div class="post-actions"><button class="btn-delete" data-id="${d.id}">Delete</button></div>  
-    `;  
-    div.querySelector('.btn-delete').addEventListener('click',()=>deletePost(d.id));  
-      
-    // See more toggle  
-    if(isLong){  
-      const seeMoreBtn=div.querySelector('.see-more');  
-      const promptBox=div.querySelector('.post-prompt');  
-      seeMoreBtn.addEventListener('click',()=>{  
-        if(seeMoreBtn.textContent==='See more'){  
-          promptBox.textContent=decodeURIComponent(promptBox.dataset.full);  
-          seeMoreBtn.textContent='See less';  
-        }else{  
-          promptBox.textContent=shortPrompt+'...';  
-          seeMoreBtn.textContent='See more';  
-        }  
-      });  
-    }  
-  
-    postsContainer.appendChild(div);  
-  });  
-  
-  // Load more button  
-  const loadMoreBtn = document.createElement('button');  
-  loadMoreBtn.textContent = 'Load More';  
-  loadMoreBtn.style.cssText = 'margin:10px auto;display:block;padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;';  
-  if(visibleCount < allPosts.length){  
-    loadMoreBtn.addEventListener('click',()=>{  
-      visibleCount += 5;  
-      renderPosts();  
-    });  
-    postsContainer.appendChild(loadMoreBtn);  
-  }  
-}  
-postForm.addEventListener('submit',async e=>{  
-  e.preventDefault();  
-  const imageURL=document.getElementById('imageURL').value.trim();  
-  const caption=document.getElementById('caption').value.trim();  
-  const prompt=document.getElementById('prompt').value.trim();  
-  if(!prompt){showModal('Error','Prompt is required');return;}  
-  submitBtn.disabled=true;  
-  submitBtn.textContent='Submitting...';  
-  try{  
-    const settingsSnap=await getDoc(doc(db,'settings','global'));  
-    const autoApprove=settingsSnap.exists()&&settingsSnap.data().autoApprove===true;  
-    await addDoc(collection(db,'posts'),{  
-      uid:auth.currentUser.uid,  
-      name:userData?.name||'',  
-      username:userData?.username||'',  
-      email:userData?.email||auth.currentUser.email,  
-      imageURL,caption,prompt,  
-      timestamp:serverTimestamp(),  
-      approved:autoApprove  
-    });  
-    postForm.reset();  
-    showModal('Success','Your post has been submitted.',[{label:'OK',cb:()=>{closeModal();loadPosts();}}]);  
-  }catch(err){  
-    console.error(err);  
-    showModal('Error','Failed to submit post.');  
-  }finally{  
-    submitBtn.disabled=false;  
-    submitBtn.textContent='Submit Post';  
-  }  
-});  
-  
-async function deletePost(id){  
-  showModal('Delete','Do you really want to delete this post?',[  
-    {label:'Cancel',cb:closeModal},  
-    {label:'Delete',cb:async()=>{  
-      closeModal();  
-      await deleteDoc(doc(db,'posts',id));  
-      showModal('Deleted','Post deleted successfully.',[  
-        {label:'OK',cb:()=>{closeModal();loadPosts();}}  
-      ]);  
-    }}  
-  ]);  
-}  
-  
-// ---------- manage & logout ----------  
-manageAccountBtn.addEventListener('click',()=>{  
-  location.href='account-manage.html';  
-});  
-  
-logoutBtn.addEventListener('click',()=>{  
-  showModal('Logout','Are you sure you want to logout?',[  
-    {label:'Cancel',cb:closeModal},  
-    {label:'Logout',cb:async()=>{  
-      closeModal();  
-      await signOut(auth);  
-      location.href='index.html';  
-    }}  
-  ]);  
-});  
-</script>  
-</body>  
- </html>
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 16px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ---------- Profile ---------- */
+    .profile-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 32px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(32,78,207,0.3);
+    }
+
+    .profile-meta h2 { margin: 8px 0 2px; font-size: 20px; }
+    .profile-meta p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .profile-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .btn-manage {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-manage:hover { background: var(--accent-dark); }
+    .btn-logout {
+      background: #f8f9fb;
+      color: var(--accent);
+      border: 1px solid rgba(32,78,207,0.1);
+    }
+    .btn-logout:hover { background: #eef2ff; }
+
+    /* ---------- Post Form ---------- */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      margin-top: 14px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      padding: 10px 12px;
+      border: 1px solid rgba(15,23,42,0.08);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(32,78,207,0.12);
+    }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    .btn-submit {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: background .2s;
+    }
+    .btn-submit:hover { background: var(--accent-dark); }
+
+    /* ---------- Posts ---------- */
+    .posts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .post-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .post-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .post-caption {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111;
+    }
+
+    .post-time {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .post-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+
+    .post-prompt {
+      font-family: "Roboto Mono", monospace;
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(15,23,42,0.05);
+      font-size: 13.5px;
+      color: #0f172a;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.5;
+    }
+
+    .see-more {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-delete {
+      background: #f44336;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .btn-delete:hover { background: #c62828; }
+
+    .loader {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 4px solid #e6eefc;
+      border-top: 4px solid var(--accent);
+      animation: spin 1s linear infinite;
+      margin: 18px auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty {
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    @media (max-width:600px){
+      main { padding: 0 12px 60px; }
+      .post-image { max-height: 250px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Prompt Scientist</h1>
+    <span style="color:#64748b;font-weight:600;">My Profile</span>
+  </header>
+
+  <main>
+    <!-- Profile -->
+    <section class="profile-card">
+      <div class="avatar" id="avatar">P</div>
+      <div class="profile-meta">
+        <h2 id="userName">Loading...</h2>
+        <p id="userHandle">@username</p>
+        <p id="userEmail">email@example.com</p>
+        <p style="font-size:13px;color:var(--muted)">Member since: <span id="userSince">—</span></p>
+      </div>
+      <div class="profile-actions">
+        <button id="manageAccountBtn" class="btn btn-manage">Manage account</button>
+        <button id="logoutBtn" class="btn btn-logout">Logout</button>
+      </div>
+    </section>
+
+    <!-- Create Post -->
+    <section class="card">
+      <h3>Create a new post</h3>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">
+        Use <a href="https://postimages.org/" target="_blank">postimages.org</a> to upload an image and paste the <strong>Direct link</strong>.
+      </div>
+
+      <form id="postForm">
+        <div class="field">
+          <label for="imageURL">Image URL (Direct link)</label>
+          <input id="imageURL" type="url" placeholder="https://i.postimg.cc/..." />
+        </div>
+
+        <div class="field">
+          <label for="caption">Caption (optional)</label>
+          <input id="caption" type="text" placeholder="Short caption" />
+        </div>
+
+        <div class="field">
+          <label for="prompt">Prompt (required)</label>
+          <textarea id="prompt" required placeholder="Write your AI prompt..."></textarea>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-submit">Submit Post</button>
+      </form>
+    </section>
+
+    <!-- My Posts -->
+    <section class="card">
+      <h3>My Posts</h3>
+      <div id="postsContainer" class="posts-list">
+        <div class="loader"></div>
+      </div>
+    </section>
+  </main>
+
+<script type="module">
+// তোমার Firebase কোড একই থাকবে, শুধু renderPosts অংশ নিচের মতো রাখো 👇
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDDgwI90DMBa25JOkNR2Oec32kfgIt5TNg",
+  authDomain: "prompt-scientist.firebaseapp.com",
+  projectId: "prompt-scientist",
+  storageBucket: "prompt-scientist.firebasestorage.app",
+  messagingSenderId: "240705146800",
+  appId: "1:240705146800:web:e7f05107761f4d3007d075"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const userNameEl=document.getElementById('userName');
+const userHandleEl=document.getElementById('userHandle');
+const userEmailEl=document.getElementById('userEmail');
+const userSinceEl=document.getElementById('userSince');
+const avatarEl=document.getElementById('avatar');
+const postsContainer=document.getElementById('postsContainer');
+const postForm=document.getElementById('postForm');
+const submitBtn=document.getElementById('submitBtn');
+const manageAccountBtn=document.getElementById('manageAccountBtn');
+const logoutBtn=document.getElementById('logoutBtn');
+
+let currentUser=null,userData=null,allPosts=[],visibleCount=3;
+
+onAuthStateChanged(auth,async(u)=>{
+  if(!u){location.href='index.html';return;}
+  currentUser=u;
+  const userSnap=await getDoc(doc(db,'users',u.uid));
+  userData=userSnap.exists()?userSnap.data():{name:'User',username:'',email:u.email};
+  userNameEl.textContent=userData.name||'User';
+  userHandleEl.textContent=userData.username?`@${userData.username}`:'';
+  userEmailEl.textContent=userData.email||u.email;
+  avatarEl.textContent=(userData.name?userData.name.charAt(0):'U').toUpperCase();
+  userSinceEl.textContent=userData.createdAt?new Date(userData.createdAt).toLocaleDateString():'—';
+  loadPosts();
+});
+
+async function loadPosts(){
+  postsContainer.innerHTML='<div class="loader"></div>';
+  const q=query(collection(db,'posts'),where('uid','==',auth.currentUser.uid));
+  const snap=await getDocs(q);
+  if(snap.empty){postsContainer.innerHTML='<div class="empty">No posts yet.</div>';return;}
+  allPosts=[];
+  snap.forEach(docSnap=>allPosts.push({...docSnap.data(),id:docSnap.id}));
+  allPosts.sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0));
+  renderPosts();
+}
+
+function renderPosts(){
+  postsContainer.innerHTML='';
+  const slice=allPosts.slice(0,visibleCount);
+  slice.forEach(d=>{
+    const div=document.createElement('div');
+    div.className='post-card';
+    const shortPrompt=d.prompt.length>100?d.prompt.slice(0,100)+'...':d.prompt;
+    const isLong=d.prompt.length>100;
+    div.innerHTML=`
+      <div class="post-top">
+        <p class="post-caption">${d.caption||'(No caption)'}</p>
+        <div class="post-time">${d.timestamp?.toDate?d.timestamp.toDate().toLocaleString():'Unknown'}</div>
+      </div>
+      ${d.imageURL?`<img class="post-image" src="${d.imageURL}" alt="post">`:""}
+      <div class="post-prompt">${isLong?shortPrompt:d.prompt}</div>
+      ${isLong?'<button class="see-more">See more</button>':''}
+      <div class="post-actions"><button class="btn-delete" data-id="${d.id}">Delete</button></div>
+    `;
+    div.querySelector('.btn-delete').addEventListener('click',()=>deletePost(d.id));
+    if(isLong){
+      const btn=div.querySelector('.see-more');
+      const pbox=div.querySelector('.post-prompt');
+      let ex=false;
+      btn.addEventListener('click',()=>{
+        ex=!ex;
+        pbox.textContent=ex?d.prompt:shortPrompt;
+        btn.textContent=ex?'See less':'See more';
+      });
+    }
+    postsContainer.appendChild(div);
+  });
+  if(visibleCount<allPosts.length){
+    const loadBtn=document.createElement('button');
+    loadBtn.textContent='Load More';
+    loadBtn.className='btn btn-manage';
+    loadBtn.style.margin='10px auto';
+    loadBtn.addEventListener('click',()=>{visibleCount+=5;renderPosts();});
+    postsContainer.appendChild(loadBtn);
+  }
+}
+
+postForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const imageURL=document.getElementById('imageURL').value.trim();
+  const caption=document.getElementById('caption').value.trim();
+  const prompt=document.getElementById('prompt').value.trim();
+  if(!prompt)return alert('Prompt is required');
+  submitBtn.disabled=true;submitBtn.textContent='Submitting...';
+  try{
+    await addDoc(collection(db,'posts'),{
+      uid:auth.currentUser.uid,name:userData.name||'',username:userData.username||'',
+      email:userData.email||auth.currentUser.email,imageURL,caption,prompt,
+      timestamp:serverTimestamp()
+    });
+    postForm.reset();loadPosts();alert('Post submitted successfully');
+  }catch(e){alert('Failed to submit');}
+  submitBtn.disabled=false;submitBtn.textContent='Submit Post';
+});
+
+async function deletePost(id){
+  if(confirm('Delete this post?')){
+    await deleteDoc(doc(db,'posts',id));
+    loadPosts();
+  }
+}
+
+manageAccountBtn.onclick=()=>location.href='account-manage.html';
+logoutBtn.onclick=()=>{signOut(auth);location.href='index.html';}
+</script>
+
+</body>
+  </html>
