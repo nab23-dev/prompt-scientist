@@ -3,10 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
- <meta name="google-adsense-account" content="ca-pub-5103982667997489">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5103982667997489"
-     crossorigin="anonymous"></script>
- <title>Prompt-Scientist — Feed</title>
+  <title>Prompt-Scientist — Feed</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <!-- PWA Manifest -->
@@ -18,46 +15,8 @@
   <!-- Favicon / Home screen icon -->
   <link rel="icon" type="image/png" href="prompticon.png" sizes="192x192">
   <link rel="apple-touch-icon" href="prompticon.png">
-    <!-- Description -->
-  <meta name="description" content="Prompt-Scientist is an AI image prompt sharing platform. Explore, share, and discover creative prompts for Gemini, MidJourney, Stable Diffusion, and more.">
-
-  <!-- Keywords -->
-  <meta name="keywords" content="AI prompts, Gemini, MidJourney, Stable Diffusion, AI art, creative prompts, prompt sharing, AI image generation">
-
-  <!-- Canonical -->
-  <link rel="canonical" href="https://www.prompt-sci.pro/feed.html">
-
-  <!-- Open Graph (Facebook, LinkedIn etc.) -->
-  <meta property="og:title" content="Prompt-Scientist — Share & Explore AI Prompts">
-  <meta property="og:description" content="Discover trending AI image prompts shared by the community.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.prompt-sci.pro/feed.html">
-  <meta property="og:image" content="https://www.prompt-sci.pro/prompticon.png">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Prompt-Scientist — AI Prompt Sharing Platform">
-  <meta name="twitter:description" content="Explore creative AI prompts for generating unique images.">
-  <meta name="twitter:image" content="https://www.prompt-sci.pro/prompticon.png">
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-   <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Prompt-Scientist",
-  "url": "https://www.prompt-sci.pro/",
-  "description": "Prompt-Scientist is an AI image prompt sharing platform where users can share and explore AI prompts for Gemini, MidJourney, Stable Diffusion, and other AI tools.",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://www.prompt-sci.pro/feed.html?search={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
-   </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5103982667997489"
-     crossorigin="anonymous"></script>
-  <style>
+  
+    <style>
     :root{
       --maxw: 920px;
       --radius: 12px;
@@ -215,9 +174,6 @@ body.dark .btn-react .count {
   </style>
 </head>
 <body class="">
-  <noscript>
-  <p>Prompt-Scientist is a community where you can share and explore AI image prompts.</p>
-  </noscript>
   <div class="wrap">
     <header class="topbar" id="topbar">
       <div class="brand">
@@ -261,54 +217,6 @@ body.dark .btn-react .count {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getFirestore(app);
-
-    // ----------- Dynamic SEO Functions ----------- //
-function updateSEOMeta(post) {
-  const title = `${post.caption?.slice(0, 60) || "AI Prompt"} | Prompt-Scientist`;
-  const desc = post.prompt?.slice(0, 160) || "Explore creative AI prompts on Prompt-Scientist.";
-  const image = post.imageURL || "https://www.prompt-sci.pro/prompticon.png";
-  const url   = `${window.location.origin}${window.location.pathname}?id=${post.id}`;
-
-  document.title = title;
-
-  setMeta("description", desc);
-  setMeta("keywords", "AI prompt, MidJourney, Stable Diffusion, AI art, creative prompts");
-  setOg("og:title", title);
-  setOg("og:description", desc);
-  setOg("og:image", image);
-  setOg("og:url", url);
-  setMeta("twitter:title", title);
-  setMeta("twitter:description", desc);
-  setMeta("twitter:image", image);
-
-  // Canonical
-  let canon = document.querySelector("link[rel='canonical']");
-  if (!canon) {
-    canon = document.createElement("link");
-    canon.rel = "canonical";
-    document.head.appendChild(canon);
-  }
-  canon.href = url;
-}
-
-function setMeta(name, content) {
-  let tag = document.querySelector(`meta[name='${name}']`);
-  if (!tag) {
-    tag = document.createElement("meta");
-    tag.name = name;
-    document.head.appendChild(tag);
-  }
-  tag.content = content;
-}
-function setOg(property, content) {
-  let tag = document.querySelector(`meta[property='${property}']`);
-  if (!tag) {
-    tag = document.createElement("meta");
-    tag.setAttribute("property", property);
-    document.head.appendChild(tag);
-  }
-  tag.content = content;
-    }
 
     // ---------- DOM ----------
     const feedEl    = document.getElementById("feed");
@@ -583,21 +491,7 @@ if (postIdFromUrl) {
 
       feedEl.innerHTML = "";
       feedEl.appendChild(renderPost(p));
-      // Single post AdSense (সব ইউজারের জন্য)
-const adEl = document.createElement("div");
-adEl.className = "ad-card";
-adEl.style.marginTop = "16px"; // পোস্টের সাথে কিছু space
-adEl.innerHTML = `
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-5103982667997489"
-       data-ad-slot="3093231148"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-`;
-feedEl.appendChild(adEl);
-(adsbygoogle = window.adsbygoogle || []).push({});
-      updateSEOMeta(p);
+
       // guest হলে signup মেসেজ দেখাবে
       if (isGuest) {
         const msg = document.createElement("div");
@@ -650,12 +544,16 @@ feedEl.appendChild(adEl);
   });
     }
   </script>
+  <script src="app.js"></script> <!-- ধরো তোমার main js আছে -->
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js")
+  navigator.serviceWorker
+    .register("/prompt-scientist/sw.js")
     .then(() => console.log("✅ Service Worker Registered"))
     .catch((err) => console.log("❌ SW registration failed:", err));
 }
 </script>
+</body>
+</html>
 </body>
 </html>
