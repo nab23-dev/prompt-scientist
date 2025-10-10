@@ -583,6 +583,20 @@ if (postIdFromUrl) {
 
       feedEl.innerHTML = "";
       feedEl.appendChild(renderPost(p));
+      // Single post AdSense (সব ইউজারের জন্য)
+const adEl = document.createElement("div");
+adEl.className = "ad-card";
+adEl.style.marginTop = "16px"; // পোস্টের সাথে কিছু space
+adEl.innerHTML = `
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-5103982667997489"
+       data-ad-slot="3093231148"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+`;
+feedEl.appendChild(adEl);
+(adsbygoogle = window.adsbygoogle || []).push({});
       updateSEOMeta(p);
       // guest হলে signup মেসেজ দেখাবে
       if (isGuest) {
