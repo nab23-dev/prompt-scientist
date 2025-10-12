@@ -478,41 +478,51 @@ function shuffleArray(arr) {
 
     // ---------- Events ----------
     feedEl.addEventListener("click", async (ev) => {
-// --- Copy button with Reward Ad ---
-const copyBtn = ev.target.closest(".btn-copy");
+//--------copy button ------
+      const copyBtn = ev.target.closest(".btn-copy");
 if (copyBtn) {
   const text =
     copyBtn.getAttribute("data-prompt") ||
     copyBtn.previousElementSibling.textContent.trim();
 
-  // 🔹 ১. Propeller SmartLink খুলবে
-  window.open("https://otieu.com/4/10030314", "_blank");
+  // 🔹 Step 1: ইউজার ক্লিক করার পর SmartLink খুলবে
+  const adWindow = window.open("https://otieu.com/4/10030314", "_blank");
 
-  // 🔹 ২. বাটনে লোডিং স্টেট দেখাও
+  // 🔹 Step 2: বাটনে loading দেখাও
   copyBtn.textContent = "🔒 Please wait...";
   copyBtn.disabled = true;
 
-  // 🔹 ৩. ৭ সেকেন্ড পর prompt কপি হবে
-  setTimeout(async () => {
+  // 🔹 Step 3: ৭ সেকেন্ড পর clipboard copy
+  setTimeout(() => {
     try {
-      await navigator.clipboard.writeText(text);
+      // নতুন tab না খোলার ক্ষেত্রে fallback
+      if (!navigator.clipboard) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      } else {
+        navigator.clipboard.writeText(text);
+      }
+
       copyBtn.textContent = "✅ Copied!";
     } catch (err) {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      copyBtn.textContent = "✅ Copied!";
+      copyBtn.textContent = "⚠️ Failed, try again";
     }
 
-    // 🔹 ৪. বাটন রিসেট হবে
+    // 🔹 Step 4: Reset button
     setTimeout(() => {
       copyBtn.textContent = "Copy";
       copyBtn.disabled = false;
     }, 2000);
-  }, 7000); // Delay: ৭ সেকেন্ড
+
+    // 🔹 Optional: ad window close করা যায় ৭ সেকেন্ড পর
+    if (adWindow) adWindow.close();
+
+  }, 7000); // ৭ সেকেন্ড delay
+
   return;
     }
 // --- Share button ---
