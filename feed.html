@@ -478,51 +478,29 @@ function shuffleArray(arr) {
 
     // ---------- Events ----------
     feedEl.addEventListener("click", async (ev) => {
-//--------copy button ------
-      const copyBtn = ev.target.closest(".btn-copy");
+// --- Copy button ---
+const copyBtn = ev.target.closest(".btn-copy");
 if (copyBtn) {
+  // টেক্সট বের করুন – dataset না থাকলেও fallback নেবে
   const text =
     copyBtn.getAttribute("data-prompt") ||
     copyBtn.previousElementSibling.textContent.trim();
 
-  // 🔹 Step 1: ইউজার ক্লিক করার পর SmartLink খুলবে
-  const adWindow = window.open("https://otieu.com/4/10030314", "_blank");
+  try {
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = "Copied!";
+  } catch (err) {
+    // Clipboard কাজ না করলে ফোলব্যাক
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    copyBtn.textContent = "Copied!";
+  }
 
-  // 🔹 Step 2: বাটনে loading দেখাও
-  copyBtn.textContent = "🔒 Please wait...";
-  copyBtn.disabled = true;
-
-  // 🔹 Step 3: ৭ সেকেন্ড পর clipboard copy
-  setTimeout(() => {
-    try {
-      // নতুন tab না খোলার ক্ষেত্রে fallback
-      if (!navigator.clipboard) {
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-      } else {
-        navigator.clipboard.writeText(text);
-      }
-
-      copyBtn.textContent = "✅ Copied!";
-    } catch (err) {
-      copyBtn.textContent = "⚠️ Failed, try again";
-    }
-
-    // 🔹 Step 4: Reset button
-    setTimeout(() => {
-      copyBtn.textContent = "Copy";
-      copyBtn.disabled = false;
-    }, 2000);
-
-    // 🔹 Optional: ad window close করা যায় ৭ সেকেন্ড পর
-    if (adWindow) adWindow.close();
-
-  }, 7000); // ৭ সেকেন্ড delay
-
+  setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
   return;
     }
 // --- Share button ---
