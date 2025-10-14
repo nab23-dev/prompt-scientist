@@ -258,6 +258,19 @@ body.dark .btn-react .count {
     const auth = getAuth(app);
     const db   = getFirestore(app);
 
+   // ----------- Load Ads Once Before Feed ----------- //
+function loadAdsOnce() {
+  return new Promise((resolve) => {
+    const unsub = onSnapshot(collection(db, "ads"), (snapAds) => {
+      ads = snapAds.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (ads.length) {
+        console.log("✅ Ads loaded:", ads.length);
+        resolve(ads);
+        unsub(); // একবার লোড হলে আর বারবার শোনার দরকার নেই
+      }
+    });
+  });
+    }
     // ----------- Dynamic SEO Functions ----------- //
 function updateSEOMeta(post) {
   const title = `${post.caption?.slice(0, 60) || "AI Prompt"} | Prompt-Scientist`;
