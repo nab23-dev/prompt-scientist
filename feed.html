@@ -432,10 +432,19 @@ function shuffleArray(arr) {
       const end = Math.min(currentIndex + PAGE_SIZE, posts.length);
       for(let i=currentIndex;i<end;i++){
         frag.appendChild(renderPost(posts[i]));
-        if(ads.length && ( (i+1-currentIndex) % nextAdAfter === 0 )){
-          frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
-          nextAdAfter = randomAdGap();
-        }
+        // --- renderNext() এর উপরে যোগ করো ---
+let postsSinceLastAd = 0; // global counter
+
+// --- renderNext() এর মধ্যে for loop এর ভেতর বদলাও ---
+for(let i=currentIndex;i<end;i++){
+  frag.appendChild(renderPost(posts[i]));
+  postsSinceLastAd++;
+  if (ads.length && postsSinceLastAd >= nextAdAfter) {
+    frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
+    postsSinceLastAd = 0;
+    nextAdAfter = randomAdGap();
+  }
+    }
       }
       feedEl.appendChild(frag);
       currentIndex=end;
