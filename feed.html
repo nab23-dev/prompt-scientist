@@ -373,56 +373,62 @@ function shuffleArray(arr) {
     }
 
     // ---------- Load posts & ads ----------
-    async function subscribeToPosts(){
+    async function subscribeToPosts() {
   loadingEl.style.display = "block";
   feedEl.innerHTML = "";
   endMsgEl.style.display = "none";
 
-  // 🔹 আগে Ads লোড করো
   await loadAdsOnce();  
 
-  const q = query(collection(db, "posts"), where("approved","==", true));
-  // 🔹 Posts লোড
-  onSnapshot(q, async (snap)=>{
-  let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+  const q = query(collection(db, "posts"), where("approved", "==", true));
 
-  if (posts.length === 0) {
-    // প্রথমবার shuffle হবে
-    fetched = shuffleArray(fetched);
+  onSnapshot(q, async (snap) => {
+    const changes = snap.docChanges();
 
-    const uids = Array.from(new Set(fetched.map(p=>p.uid).filter(Boolean)));
-    await loadUsersForPosts(uids);
+    for (const change of changes) {
+      const docData = { id: change.doc.id, ...change.doc.data() };
 
-    posts = fetched.map(p=>({
-      ...p,
-      name: userCache[p.uid] || "Unknown",
-      color: randomColor()
-    }));
+      if (change.type === "added") {
+        // নতুন পোস্ট এলে আগে থেকে আছে কিনা চেক করো
+        if (!posts.some(p => p.id === docData.id)) {
+          posts.unshift({
+            ...docData,
+            name: userCache[docData.uid] || "Unknown",
+            color: randomColor()
+          });
 
-    // শুধু প্রথমবার পুরো feed render হবে
-    feedEl.innerHTML = "";
-    currentIndex = 0;
-    nextAdAfter = randomAdGap();
-    renderNext();
-    loadingEl.style.display="none";
-  } else {
-    // পরেরবার শুধু update হওয়া post replace করবো
-    snap.docChanges().forEach(change => {
-      if (change.type === "modified") {
-        const updated = { id: change.doc.id, ...change.doc.data() };
-        const idx = posts.findIndex(p => p.id === updated.id);
-        if (idx !== -1) {
-          posts[idx] = { ...posts[idx], ...updated };
-          const oldEl = feedEl.querySelector(`[data-id="${updated.id}"]`);
-          if (oldEl) {
-            oldEl.replaceWith(renderPost(posts[idx]));
+          // DOM-এ duplicate আছে কিনা দেখো
+          if (!feedEl.querySelector(`[data-id="${docData.id}"]`)) {
+            feedEl.insertBefore(renderPost(docData), feedEl.firstChild);
           }
         }
+      } 
+      else if (change.type === "modified") {
+        const idx = posts.findIndex(p => p.id === docData.id);
+        if (idx !== -1) {
+          posts[idx] = { ...posts[idx], ...docData };
+          const el = feedEl.querySelector(`[data-id="${docData.id}"]`);
+          if (el) el.replaceWith(renderPost(posts[idx]));
+        }
       }
-    });
-  }
-});
-  }
+    }
+
+    // প্রথমবারের জন্য একবারই renderNext() চালাও
+    if (posts.length && feedEl.children.length === 0) {
+      const uids = Array.from(new Set(posts.map(p => p.uid).filter(Boolean)));
+      await loadUsersForPosts(uids);
+      posts = posts.map(p => ({
+        ...p,
+        name: userCache[p.uid] || "Unknown",
+        color: randomColor()
+      }));
+
+      posts = shuffleArray(posts);
+      renderNext();
+      loadingEl.style.display = "none";
+    }
+  });
+    }
     // ---------- Render ----------
     function renderNext(){
       if(currentIndex >= posts.length){
