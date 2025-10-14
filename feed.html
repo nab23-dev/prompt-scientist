@@ -422,39 +422,41 @@ function renderNext(){
   const frag = document.createDocumentFragment();
   const end = Math.min(currentIndex + PAGE_SIZE, posts.length);
 
-  for(let i=currentIndex; i<end; i++){
-    try {
-      frag.appendChild(renderPost(posts[i]));
+  for(let i = currentIndex; i < end; i++){
+    // 🔹 পোস্ট যোগ করো
+    frag.appendChild(renderPost(posts[i]));
 
-      // Firebase ads
-      if(ads.length && ((i+1-currentIndex) % nextAdAfter === 0)){
-        frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
-        nextAdAfter = randomAdGap();
-      }
+    // 🔹 Firebase ads (random gap)
+    if(ads.length && ((i+1-currentIndex) % nextAdAfter === 0)){
+      frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
+      nextAdAfter = randomAdGap();
+    }
 
-      // Google AdSense
-      if ((i+1) % 5 === 0){
-        const googleAd = document.createElement("div");
-        googleAd.innerHTML = `
-          <ins class="adsbygoogle"
-               style="display:block; margin:16px 0;"
-               data-ad-client="ca-pub-5103982667997489"
-               data-ad-slot="3093231148"
-               data-ad-format="auto"
-               data-full-width-responsive="true"></ins>
-        `;
-        frag.appendChild(googleAd);
+    // 🔹 Google AdSense ads (প্রতি ৫টা পোস্ট পর)
+    if ((i + 1) % 5 === 0) {
+      const googleAd = document.createElement("div");
+      googleAd.innerHTML = `
+        <ins class="adsbygoogle"
+             style="display:block; margin:16px 0;"
+             data-ad-client="ca-pub-5103982667997489"
+             data-ad-slot="3093231148"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      `;
+      frag.appendChild(googleAd);
 
-        try { (adsbygoogle = window.adsbygoogle || []).push({}); }
-        catch(e){ console.log("AdSense skipped:", e); }
-      }
-
-    } catch(err){
-      console.error("Error rendering post:", err);
-      continue;
+      // ✅ DOM append হওয়ার পরে push
+      setTimeout(() => {
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch(e) {
+          console.log("AdSense push skipped:", e);
+        }
+      }, 100);
     }
   }
 
+  // 🟢 DOM এ append করো
   feedEl.appendChild(frag);
   currentIndex = end;
   }
