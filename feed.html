@@ -373,18 +373,15 @@ function shuffleArray(arr) {
     }
 
     // ---------- Load posts & ads ----------
-    function subscribeToPosts(){
+    async function subscribeToPosts(){
   loadingEl.style.display = "block";
   feedEl.innerHTML = "";
   endMsgEl.style.display = "none";
 
+  // 🔹 আগে Ads লোড করো
+  await loadAdsOnce();  
+
   const q = query(collection(db, "posts"), where("approved","==", true));
-
-  // 🔹 Ads লোড
-  onSnapshot(collection(db, "ads"), (snapAds)=>{
-    ads = snapAds.docs.map(d=>({id:d.id,...d.data()}));
-  });
-
   // 🔹 Posts লোড
   onSnapshot(q, async (snap)=>{
   let fetched = snap.docs.map(d=>({ id:d.id, ...d.data() }));
