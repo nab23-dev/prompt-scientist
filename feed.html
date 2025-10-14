@@ -487,13 +487,20 @@ for(let i=currentIndex;i<end;i++){
 }
     const reactionBtn=(t,e,c)=>`<button class="btn-react" data-type="${t}"><span>${e}</span><span class="count">${c}</span></button>`;
     function renderAd(a){
-      const el=document.createElement("div");
-      el.className="card ad-card";
-      el.innerHTML=`<div style="padding:12px">
-        <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Sponsored</div>
-        <a href="${escapeHtml(a.link||"#")}" target="_blank"><img src="${escapeHtml(a.imageURL||"")}"></a>
-      </div>`;
-      return el;
+  const el = document.createElement("div");
+  el.className = "card ad-card";
+  
+  const imgPart = a.imageURL ? `<img src="${escapeHtml(a.imageURL)}" alt="Ad" style="width:100%;border-radius:6px;">` : "";
+  const linkStart = a.link ? `<a href="${escapeHtml(a.link)}" target="_blank">` : "";
+  const linkEnd   = a.link ? "</a>" : "";
+
+  el.innerHTML = `
+    <div style="padding:12px">
+      <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Sponsored</div>
+      ${linkStart}${imgPart}${linkEnd}
+      ${a.caption ? `<div style="font-size:13px;margin-top:6px;">${escapeHtml(a.caption)}</div>` : ""}
+    </div>`;
+  return el;
     }
 
     // ---------- Events ----------
