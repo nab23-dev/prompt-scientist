@@ -417,34 +417,49 @@ function shuffleArray(arr) {
   }
     // ---------- Render ----------
     function renderNext(){
-      if(currentIndex >= posts.length){
-        endMsgEl.style.display="block"; return;
+  if(currentIndex >= posts.length){
+    endMsgEl.style.display="block";
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  const end = Math.min(currentIndex + PAGE_SIZE, posts.length);
+
+  for(let i=currentIndex; i<end; i++){
+    // 🔹 পোস্ট যোগ করো
+    frag.appendChild(renderPost(posts[i]));
+
+    // 🔹 Firebase ads (random gap)
+    if(ads.length && ((i+1-currentIndex) % nextAdAfter === 0)){
+      frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
+      nextAdAfter = randomAdGap(); // নতুন gap
+    }
+
+    // 🔹 Google AdSense ads (প্রতি ৫টা পোস্ট পর)
+    if ((i + 1) % 5 === 0) {
+      const googleAd = document.createElement("div");
+      googleAd.innerHTML = `
+        <ins class="adsbygoogle"
+             style="display:block; margin:16px 0;"
+             data-ad-client="ca-pub-5103982667997489"
+             data-ad-slot="3093231148"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      `;
+      frag.appendChild(googleAd);
+
+      // ❌ Safe push: যদি error হয় loop থামবে না
+      try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } catch(err) {
+        console.log("AdSense push skipped:", err);
       }
-      const frag = document.createDocumentFragment();
-      const end = Math.min(currentIndex + PAGE_SIZE, posts.length);
-      for(let i=currentIndex;i<end;i++){
-        frag.appendChild(renderPost(posts[i]));
-        if(ads.length && ( (i+1-currentIndex) % nextAdAfter === 0 )){
-          frag.appendChild(renderAd(ads[Math.floor(Math.random()*ads.length)]));
-          nextAdAfter = randomAdGap();
-        }
-        // 🔹 প্রতি ৫টা পোস্ট পর Google AdSense Ad দেখাবে
-if ((i + 1) % 5 === 0) {
-  const googleAd = document.createElement("div");
-  googleAd.innerHTML = `
-    <ins class="adsbygoogle"
-         style="display:block; margin:16px 0;"
-         data-ad-client="ca-pub-5103982667997489"
-         data-ad-slot="3093231148"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-  `;
-  frag.appendChild(googleAd);
-  (adsbygoogle = window.adsbygoogle || []).push({});
-         }
-      }
-      feedEl.appendChild(frag);
-      currentIndex=end;
+    }
+  }
+
+  // 🟢 DOM এ append করো
+  feedEl.appendChild(frag);
+  currentIndex = end;
     }
 
     function renderPost(p){
