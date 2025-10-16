@@ -1,20 +1,20 @@
 {
   "name": "Prompt Scientist",
   "short_name": "PromptSci",
-  "start_url": "/prompt-scientist/feed.html",
-  "scope": "/prompt-scientist/",
+  "start_url": "/feed.html",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "prompticon.png",
+      "src": "/prompt-scientist/prompticon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "prompticon.png",
+      "src": "/prompt-scientist/prompticon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
