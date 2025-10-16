@@ -4,7 +4,6 @@ const CACHE_NAME = 'prompt-scientist-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/feed.html',
   '/profile.html',
   '/privacy-policy.html',
   '/manifest.json',
