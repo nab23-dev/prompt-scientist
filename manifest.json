@@ -1,7 +1,7 @@
 {
 "name": "Prompt Scientist",
 "short_name": "PromptSci",
-"start_url": "/prompt-scientist/feed.html",
+"start_url": "/feed.html",
 "scope": "/prompt-scientist/",
 "display": "standalone",
 "orientation": "portrait",
